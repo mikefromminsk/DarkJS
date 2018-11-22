@@ -1,8 +1,5 @@
-package com.metabrain.gui;
+package com.metabrain.gui.server;
 
-
-import java.io.IOException;
-import java.net.*;
 
 public class Http extends NanoHTTPD {
 
