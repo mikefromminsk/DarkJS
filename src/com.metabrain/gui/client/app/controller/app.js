@@ -1,8 +1,8 @@
-var app = angular.module("myApp", ["ngRoute"]);
+let app = angular.module("myApp", ["ngRoute"]);
 
-var remoteHost = 'http://localhost:/';
+let remoteHost = '/';
 
-var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
+let isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
 
 function merge(source, object) {
     if (source instanceof Array)
@@ -12,7 +12,7 @@ function merge(source, object) {
             delete source[key];
         });
     if (source != null)
-        for (var key in object)
+        for (let key in object)
             if (object.hasOwnProperty(key)) {
                 if (source instanceof Array)
                     source.push(object[key]);
