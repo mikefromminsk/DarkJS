@@ -1,4 +1,4 @@
-let app = angular.module("myApp", ["ngRoute"]);
+let app = angular.module("myApp", ["ngRoute", "ngMaterial", "ngMessages"]);
 
 let remoteHost = '/';
 
