@@ -2,16 +2,20 @@ app.controller("start", function ($scope, $mdDialog) {
 
     $scope.openDialog = function (number) {
         $mdDialog.show({
-            controller: function (){
-
+            controller: function ($scope, number) {
+                $scope.number = number;
+                $scope.answer = function (result) {
+                    alert(result);
+                }
             },
             templateUrl: 'app/template/start_dialog.html',
-            clickOutsideToClose:false,
-            fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+            locals: {
+                number: number
+            }
         })
-            .then(function(answer) {
+            .then(function (answer) {
                 $scope.status = 'You said the information was "' + answer + '".';
-            }, function() {
+            }, function () {
                 $scope.status = 'You cancelled the dialog.';
             });
     }
