@@ -17,6 +17,10 @@ public class Server extends NanoHTTPD {
         super(port);
     }
 
+    public void join() throws InterruptedException {
+        myThread.join();
+    }
+
     @Override
     public Response serve(IHTTPSession session) {
 
@@ -28,22 +32,22 @@ public class Server extends NanoHTTPD {
 
                 Map<String, String> files = new HashMap<>();
                 session.parseBody(files);
-                String body = session.getQueryParameterString();
+                String body = files.get("postData");
                 GetNodeBody getNodeBody;
                 switch (uri.getPath()) {
-                    case "setNode":
+                    case "/setNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
                         responseData = thread.setNode(getNodeBody.nodeId, getNodeBody.body.toString());
                         break;
-                    case "getNode":
+                    case "/getNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
                         responseData = thread.getNode(getNodeBody.nodeId);
                         break;
-                    case "runNode":
+                    case "/runNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
                         responseData = thread.runNode(getNodeBody.nodeId, getNodeBody.body.toString());
                         break;
-                    case "stop":
+                    case "/stop":
                         System.exit(0);
                         break;
                 }
@@ -59,6 +63,7 @@ public class Server extends NanoHTTPD {
             response = NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, "empty");
         }
         response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
         return response;
     }
 

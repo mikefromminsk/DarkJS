@@ -1784,7 +1784,7 @@ public abstract class NanoHTTPD {
 
     private NanoHTTPD.ServerSocketFactory serverSocketFactory = new NanoHTTPD.DefaultServerSocketFactory();
 
-    private Thread myThread;
+    protected Thread myThread;
 
     /**
      * Pluggable strategy for asynchronously executing requests.
