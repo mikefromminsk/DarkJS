@@ -1,6 +1,6 @@
 let app = angular.module("myApp", ["ngRoute", "ngMaterial", "ngMessages"]);
 
-let remoteHost = '/';
+let remoteHost = '//localhost:9080/';
 
 let isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
 
