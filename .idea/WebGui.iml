@@ -13,5 +13,6 @@
     <orderEntry type="library" scope="TEST" name="JUnit5.0" level="project" />
     <orderEntry type="module" module-name="JavaScriptEngine" />
     <orderEntry type="module" module-name="SimpleGraphDB" />
+    <orderEntry type="library" scope="TEST" name="lib" level="project" />
   </component>
 </module>

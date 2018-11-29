@@ -37,15 +37,15 @@ public class Server extends NanoHTTPD {
                 switch (uri.getPath()) {
                     case "/setNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
-                        responseData = thread.setNode(getNodeBody.nodeId, getNodeBody.body.toString());
+                        responseData = thread.setNode(getNodeBody);
                         break;
                     case "/getNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
-                        responseData = thread.getNode(getNodeBody.nodeId);
+                        responseData = thread.getNode(getNodeBody);
                         break;
                     case "/runNode":
                         getNodeBody = json.fromJson(body, GetNodeBody.class);
-                        responseData = thread.runNode(getNodeBody.nodeId, getNodeBody.body.toString());
+                        responseData = thread.runNode(getNodeBody);
                         break;
                     case "/stop":
                         System.exit(0);
