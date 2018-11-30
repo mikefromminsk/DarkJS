@@ -1,5 +1,8 @@
 app.controller("start", function ($scope, $mdDialog) {
 
+    let N = "n";
+    let W = "w";
+
     var width = 700,
         height = 500;
 
@@ -8,38 +11,36 @@ app.controller("start", function ($scope, $mdDialog) {
 
     var svg = d3.select("#canvas").append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .call(d3.behavior.zoom()
+            .scaleExtent([1, 10])
+            .on("zoom", function () {
+                canvas.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            }));
 
-    var rect = svg.append("rect")
+    svg.append("rect")
         .attr("width", width)
         .attr("height", height)
         .style("fill", "none")
         .style("pointer-events", "all")
-        .call(d3.behavior.zoom()
-            .scaleExtent([1, 10])
-            .on("zoom", function () {
-                container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            }))
         .on('mousedown', function () {
             startTime = new Date();
-            console.log(d3.mouse(this));
+            //console.log(d3.mouse(this));
         })
         .on('mouseup', function () {
-            let pos = d3.mouse(this);
-            console.log(pos);
             endTime = new Date();
             if ((endTime - startTime) > 300) {
-                console.log("long click, " + (endTime - startTime) + " milliseconds long");
-            }
-            else {
-                console.log("regular click, " + (endTime - startTime) + " milliseconds long");
+                createNewNode();
+                console.log("long click");
+            } else {
+                console.log("regular click");
             }
         });
 
-    var container = svg.append("g")
+    var canvas = svg.append("g")
         .attr("class", "canvas");
 
-    container.append("g")
+    canvas.append("g")
         .attr("class", "x axis")
         .selectAll("line")
         .data(d3.range(0, width, 10))
@@ -53,7 +54,7 @@ app.controller("start", function ($scope, $mdDialog) {
         })
         .attr("y2", height);
 
-    container.append("g")
+    canvas.append("g")
         .attr("class", "y axis")
         .selectAll("line")
         .data(d3.range(0, height, 10))
@@ -73,30 +74,44 @@ app.controller("start", function ($scope, $mdDialog) {
 
     });*/
 
-    var data = d3.range(20).map(function () {
+    function showCrrentNode() {
+        var currentNode = nodes[N + currentNodeId];
+        if (currentNode != null) {
+            circles.selectAll("*").remove();
+            if (currentNode.local != null){
+                var locals = [];
+                for (var i = 0; i < currentNode.local.length; i++)
+                    locals.push(currentNode.local[i])
+                circles.selectAll("circle")
+                    .data(locals)
+                    .enter().append("circle")
+                    .attr("r", 20)
+                    .attr("cx", function (d) {
+                        return d.x;
+                    })
+                    .attr("cy", function (d) {
+                        return d.y;
+                    })
+                    .call(drag);
+            }
+        }
+    }
+
+    /*var data = d3.range(20).map(function () {
         return {x: Math.random() * width, y: Math.random() * height};
-    });
+    });*/
 
-    var dot = container.append("g")
-        .attr("class", "circles")
-        .selectAll("circle")
-        .data(data)
-        .enter().append("circle")
-        .attr("r", 20)
-        .attr("cx", function (d) {
-            return d.x;
-        })
-        .attr("cy", function (d) {
-            return d.y;
-        })
-        .call(d3.behavior.drag()
-            .origin(function (d) {
-                return d;
-            })
-            .on("dragstart", dragstarted)
-            .on("drag", dragged)
-            .on("dragend", dragended));
+    var circles = canvas.append("g")
+        .attr("class", "circles");
 
+
+    let drag = d3.behavior.drag()
+        .origin(function (d) {
+            return d;
+        })
+        .on("dragstart", dragstarted)
+        .on("drag", dragged)
+        .on("dragend", dragended);
 
     function dragstarted(d) {
         startTime = new Date();
@@ -112,11 +127,45 @@ app.controller("start", function ($scope, $mdDialog) {
         d3.select(this).classed("dragging", false);
     }
 
-    $scope.request('getNode', {
-        nodeId: 0
-    }, function (data) {
 
-    });
+    let nodes = {};
+    var currentNodeId;
+
+    function setCurrentNode(nodeId) {
+        $scope.request('getNode', {
+            nodeId: nodeId
+        }, function (data) {
+            merge(nodes, data.body, true);
+            currentNodeId = nodeId;
+        });
+    }
+
+    setCurrentNode(0);
+
+    function setLink() {
+    }
+
+    function addLink(nodeId, linkName, attachId) {
+        if (nodeId instanceof Number)
+            nodeId = N + nodeId;
+        if (attachId instanceof Number)
+            attachId = N + attachId;
+        var node = nodes[nodeId];
+        if (node[linkName] == null || !(node[linkName] instanceof Array))
+            node[linkName] = [];
+        node[linkName].push(attachId)
+    }
+
+    function createNewNode() {
+        addLink(currentNodeId, "local", W + 0);
+        $scope.request('setNode', {
+            nodeId: currentNodeId,
+            body: nodes[N + currentNodeId]
+        }, function (data) {
+            merge(nodes, data.body, true);
+        });
+    }
+
 
     $scope.openDialog = function (number) {
         $mdDialog.show({

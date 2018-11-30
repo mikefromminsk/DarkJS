@@ -1,6 +1,5 @@
 package com.metabrain.gui.server;
 
-import com.metabrain.djs.refactored.Caller;
 import com.metabrain.djs.refactored.Formatter;
 import com.metabrain.djs.refactored.Runner;
 import com.metabrain.djs.refactored.node.LinkType;
@@ -76,29 +75,16 @@ public class DjsThread extends Runner {
                         setLink(builder, node, linkType, replacementTable, (char[]) obj);
                     }
             }
-            
+
             builder.set(node).commit();
         }
-
     }
 
-
-    String getNode(GetNodeBody getNodeBody) {
-        /*Node node = builder.get(nodeId).getNode();
-        return Formatter.toJson(node);*/
-        return null;
+    void setNode(GetNodeBody getNodeBody) {
+        updateNode(getNodeBody.body);
     }
 
-    String setNode(GetNodeBody getNodeBody) {
-        //updateNode(getNodeBody);
-        return null;
-    }
-
-    String runNode(GetNodeBody getNodeBody) {
-        /*updateNode(body);
-        Node node = builder.get(nodeId).getNode();
-        run(node);*/
-        //return getNode(nodeId);
-        return null;
+    void runNode(GetNodeBody getNodeBody) {
+        run(getNodeBody.nodeId);
     }
 }

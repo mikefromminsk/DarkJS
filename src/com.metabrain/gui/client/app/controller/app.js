@@ -4,13 +4,15 @@ let remoteHost = '//localhost:9080/';
 
 let isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
 
-function merge(source, object) {
-    if (source instanceof Array)
-        source.splice(0, source.length);
-    if (source instanceof Object)
-        Object.keys(source).forEach(function (key) {
-            delete source[key];
-        });
+function merge(source, object, append) {
+    if (append || false !== true) {
+        if (source instanceof Array)
+            source.splice(0, source.length);
+        if (source instanceof Object)
+            Object.keys(source).forEach(function (key) {
+                delete source[key];
+            });
+    }
     if (source != null)
         for (let key in object)
             if (object.hasOwnProperty(key)) {
@@ -38,28 +40,41 @@ app.controller("app", function ($scope, $location, $window, $http) {
 
     $scope.http = function (method, endpoint, params, success, error, async) {
         if (error == null)
-            error = function (response) {
+            error = function (status, response) {
+                console.log(status);
+                console.log(response);
             };
 
-        let xhr = new XMLHttpRequest();
+        let xhr = XMLHttpRequest ? new XMLHttpRequest() :
+            new ActiveXObject("Microsoft.XMLHTTP");
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    success(JSON.parse(xhr.response))
+                    let object = null;
+                    try {
+                        object = JSON.parse(xhr.response);
+                    } catch (e) {
+                        error("Json parse error", xhr.response);
+                    }
+                    if (object != null)
+                        success(object)
                 } else {
-                    error();
+                    error(xhr.status);
                 }
             }
         };
+        xhr.onerror = function () {
+            error(xhr.status);
+        };
 
-        xhr.open(method, endpoint, async);
+        xhr.open(method, endpoint, async || true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
         xhr.send((params == null) ? null : JSON.stringify(params));
     };
 
     $scope.request = function (endpoint, params, success, error) {
-        $scope.http("POST", remoteHost + endpoint, params, success, error);
+        $scope.http("POST", remoteHost + endpoint, params, success, error, true);
     };
 
 });
