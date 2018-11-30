@@ -1,41 +1,30 @@
 app.controller("start", function ($scope, $mdDialog) {
 
-    var margin = {top: -5, right: -5, bottom: -5, left: -5},
-        width = 700 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
-
-    var zoom = d3.behavior.zoom()
-        .scaleExtent([1, 10])
-        .on("zoom", zoomed);
-
-    var drag = d3.behavior.drag()
-        .origin(function (d) {
-            return d;
-        })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);
+    var width = 700,
+        height = 500;
 
     var startTime;
     var endTime;
 
     var svg = d3.select("#canvas").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.right + ")");
+        .attr("width", width)
+        .attr("height", height);
 
     var rect = svg.append("rect")
         .attr("width", width)
         .attr("height", height)
         .style("fill", "none")
         .style("pointer-events", "all")
-        .call(zoom)
-        .on('mousedown', function() {
+        .call(d3.behavior.zoom()
+            .scaleExtent([1, 10])
+            .on("zoom", function () {
+                container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            }))
+        .on('mousedown', function () {
             startTime = new Date();
             console.log(d3.mouse(this));
         })
-        .on('mouseup',function() {
+        .on('mouseup', function () {
             let pos = d3.mouse(this);
             console.log(pos);
             endTime = new Date();
@@ -47,7 +36,8 @@ app.controller("start", function ($scope, $mdDialog) {
             }
         });
 
-    var container = svg.append("g");
+    var container = svg.append("g")
+        .attr("class", "canvas");
 
     container.append("g")
         .attr("class", "x axis")
@@ -77,12 +67,18 @@ app.controller("start", function ($scope, $mdDialog) {
             return d;
         });
 
+    /*$scope.request('getNode', {
+        nodeId: 0
+    }, function () {
+
+    });*/
+
     var data = d3.range(20).map(function () {
         return {x: Math.random() * width, y: Math.random() * height};
     });
 
-    dot = container.append("g")
-        .attr("class", "dot")
+    var dot = container.append("g")
+        .attr("class", "circles")
         .selectAll("circle")
         .data(data)
         .enter().append("circle")
@@ -93,15 +89,17 @@ app.controller("start", function ($scope, $mdDialog) {
         .attr("cy", function (d) {
             return d.y;
         })
-        .call(drag);
+        .call(d3.behavior.drag()
+            .origin(function (d) {
+                return d;
+            })
+            .on("dragstart", dragstarted)
+            .on("drag", dragged)
+            .on("dragend", dragended));
 
-    function zoomed() {
-        container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-    }
 
     function dragstarted(d) {
         startTime = new Date();
-        console.log(d);
         d3.event.sourceEvent.stopPropagation();
         d3.select(this).classed("dragging", true);
     }

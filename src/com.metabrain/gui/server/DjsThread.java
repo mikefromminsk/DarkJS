@@ -1,5 +1,6 @@
 package com.metabrain.gui.server;
 
+import com.metabrain.djs.refactored.Caller;
 import com.metabrain.djs.refactored.Formatter;
 import com.metabrain.djs.refactored.Runner;
 import com.metabrain.djs.refactored.node.LinkType;
@@ -53,29 +54,30 @@ public class DjsThread extends Runner {
 
             Object nodeTypeObj = links.get(Formatter.TYPE_PREFIX);
             if (nodeTypeObj instanceof char[]) {
-
                 byte nodeType = NodeType.fromString(new String((char[]) nodeTypeObj));
-                if (nodeType == NodeType.STRING ||
-                        nodeType == NodeType.NUMBER ||
-                        nodeType == NodeType.BOOL) {
-                    Object dataObj = links.get(Formatter.DATA_PREFIX);
-                    if (dataObj instanceof char[])
-                        builder.create(nodeType).setData(new String((char[]) dataObj));
-                } else if (nodeType == NodeType.NATIVE_FUNCTION) {
-                    ///
+                if (nodeType == NodeType.NATIVE_FUNCTION) {
+                    Object functionIdObj = links.get(Formatter.FUNCTION_ID_PREFIX);
+                    builder.create(NodeType.NATIVE_FUNCTION)
+                            .setFunctionId(Integer.valueOf(new String((char[]) functionIdObj)))
+                            .commit();
+                } else if (nodeType != -1) {
+                    node.type = nodeType;
                 }
-            } else {
-                for (String linkName : links.keySet()) {
-                    Object obj = links.get(linkName);
-                    byte linkType = LinkType.fromString(linkName);
+            }
+
+            for (String linkName : links.keySet()) {
+                Object obj = links.get(linkName);
+                byte linkType = LinkType.fromString(linkName);
+                if (linkType != -1)
                     if (obj instanceof ArrayList) {
                         for (Object item : (ArrayList) obj)
                             setLink(builder, node, linkType, replacementTable, (char[]) item);
                     } else if (obj instanceof char[]) {
                         setLink(builder, node, linkType, replacementTable, (char[]) obj);
                     }
-                }
             }
+            
+            builder.set(node).commit();
         }
 
     }
