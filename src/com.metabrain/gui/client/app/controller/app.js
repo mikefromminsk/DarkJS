@@ -5,7 +5,7 @@ let remoteHost = '//localhost:9080/';
 let isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
 
 function merge(source, object, append) {
-    if (append || false !== true) {
+    if (append || true !== true) {
         if (source instanceof Array)
             source.splice(0, source.length);
         if (source instanceof Object)
@@ -45,6 +45,7 @@ app.controller("app", function ($scope, $location, $window, $http) {
                 console.log(response);
             };
 
+        console.log(params);
         let xhr = XMLHttpRequest ? new XMLHttpRequest() :
             new ActiveXObject("Microsoft.XMLHTTP");
 

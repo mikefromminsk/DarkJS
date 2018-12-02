@@ -14,8 +14,7 @@ import java.util.Map;
 
 public class DjsThread extends Runner {
 
-    private static void setLink(NodeBuilder builder, Node node, byte linkType, Map<String, Node> replacementTable, char[] itemCharArr) {
-        String itemStr = new String(itemCharArr);
+    private static void setLink(NodeBuilder builder, Node node, byte linkType, Map<String, Node> replacementTable, String itemStr) {
         Node linkValueNode = null;
         if (itemStr.equals(Formatter.TRUE) || itemStr.equals(Formatter.FALSE))
             linkValueNode = builder.create(NodeType.BOOL)
@@ -34,22 +33,26 @@ public class DjsThread extends Runner {
         builder.set(node).setLink(linkType, linkValueNode);
     }
 
-    public static void updateNode(Map<String, Map<String, Object>> bodyMap) {
+    public void updateNode(GetNodeBody request) {
         NodeBuilder builder = new NodeBuilder();
         Map<String, Node> replacementTable = new HashMap<>();
 
-        for (String nodeStr : bodyMap.keySet()) {
+        for (String nodeStr : request.nodes.keySet()) {
+            Node node = null;
             if (nodeStr.startsWith(Formatter.NODE_PREFIX)) {
                 Long nodeId = Long.valueOf(nodeStr.substring(Formatter.NODE_PREFIX.length()));
-                replacementTable.put(nodeStr, builder.get(nodeId).getNode());
+                node = builder.get(nodeId).getNode();
             }
-            if (nodeStr.startsWith(Formatter.NEW_NODE_PREFIX))
-                replacementTable.put(nodeStr, builder.create().getNode());
+            if (nodeStr.startsWith(Formatter.NEW_NODE_PREFIX)) {
+                node = builder.create().commit();
+                request.replacements.put(nodeStr, Formatter.NODE_PREFIX + node.id);
+            }
+            replacementTable.put(nodeStr, node);
         }
 
-        for (String nodeStr : bodyMap.keySet()) {
+        for (String nodeStr : request.nodes.keySet()) {
             Node node = replacementTable.get(nodeStr);
-            Map<String, Object> links = bodyMap.get(nodeStr);
+            Map<String, Object> links = request.nodes.get(nodeStr);
 
             Object nodeTypeObj = links.get(Formatter.TYPE_PREFIX);
             if (nodeTypeObj instanceof char[]) {
@@ -64,15 +67,17 @@ public class DjsThread extends Runner {
                 }
             }
 
+            builder.clearLinks(node);
             for (String linkName : links.keySet()) {
                 Object obj = links.get(linkName);
                 byte linkType = LinkType.fromString(linkName);
                 if (linkType != -1)
                     if (obj instanceof ArrayList) {
                         for (Object item : (ArrayList) obj)
-                            setLink(builder, node, linkType, replacementTable, (char[]) item);
-                    } else if (obj instanceof char[]) {
-                        setLink(builder, node, linkType, replacementTable, (char[]) obj);
+                            if (item instanceof String)
+                                setLink(builder, node, linkType, replacementTable, (String) item);
+                    } else if (obj instanceof String) {
+                        setLink(builder, node, linkType, replacementTable, (String) obj);
                     }
             }
 
@@ -80,11 +85,16 @@ public class DjsThread extends Runner {
         }
     }
 
-    void setNode(GetNodeBody getNodeBody) {
-        updateNode(getNodeBody.body);
+    void runNode(GetNodeBody getNodeBody) {
     }
 
-    void runNode(GetNodeBody getNodeBody) {
-        run(getNodeBody.nodeId);
+    public Node getNode(String nodeLink, Map<String, String> replacements) {
+        if (replacements != null && replacements.get(nodeLink) != null)
+            nodeLink = replacements.get(nodeLink);
+        if (nodeLink.startsWith(Formatter.NODE_PREFIX)) {
+            Long nodeId = Long.valueOf(nodeLink.substring(Formatter.NODE_PREFIX.length()));
+            return new NodeBuilder().get(nodeId).getNode();
+        }
+        return null;
     }
 }

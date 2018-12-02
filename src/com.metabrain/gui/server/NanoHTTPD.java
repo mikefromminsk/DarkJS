@@ -874,7 +874,7 @@ public abstract class NanoHTTPD {
         }
 
         /**
-         * Find byte index separating header from body. It must be the last byte
+         * Find byte index separating header from nodes. It must be the last byte
          * of the first two sequential new lines.
          */
         private int findHeaderEnd(final byte[] buf, int rlen) {
@@ -986,7 +986,7 @@ public abstract class NanoHTTPD {
         }
 
         /**
-         * Deduce body length in bytes. Either from "content-length" header or
+         * Deduce nodes length in bytes. Either from "content-length" header or
          * read bytes.
          */
         public long getBodySize() {
@@ -1015,7 +1015,7 @@ public abstract class NanoHTTPD {
                     request_data_output = randomAccessFile;
                 }
 
-                // Read all the body and write it to request_data_output
+                // Read all the nodes and write it to request_data_output
                 byte[] buf = new byte[REQUEST_BUFFER_LEN];
                 while (this.rlen >= 0 && size > 0) {
                     this.rlen = this.inputStream.read(buf, 0, (int) Math.min(size, REQUEST_BUFFER_LEN));
@@ -1134,7 +1134,7 @@ public abstract class NanoHTTPD {
         String getUri();
 
         /**
-         * Adds the files in the request body to the files map.
+         * Adds the files in the request nodes to the files map.
          *
          * @param files
          *            map to modify
@@ -1452,7 +1452,7 @@ public abstract class NanoHTTPD {
         }
 
         /**
-         * Sends the body to the specified OutputStream. The pending parameter
+         * Sends the nodes to the specified OutputStream. The pending parameter
          * limits the maximum amounts of bytes sent unless it is -1, in which
          * case everything is sent.
          *

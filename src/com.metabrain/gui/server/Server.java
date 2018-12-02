@@ -4,7 +4,6 @@ package com.metabrain.gui.server;
 import com.google.gson.Gson;
 import com.metabrain.djs.refactored.Formatter;
 import com.metabrain.djs.refactored.node.Node;
-import com.metabrain.djs.refactored.node.NodeBuilder;
 import com.metabrain.gui.server.model.GetNodeBody;
 
 import java.net.URI;
@@ -39,20 +38,15 @@ public class Server extends NanoHTTPD {
                 String body = files.get("postData");
                 String path = uri.getPath().substring(1);
                 switch (path) {
-                    case "setNode":
-                    case "getNode":
-                    case "runNode":
+                    case "node":
                         GetNodeBody request = json.fromJson(body, GetNodeBody.class);
-                        switch (path) {
-                            case "setNode":
-                                thread.setNode(request);
-                                break;
-                            case "runNode":
-                                thread.setNode(request);
-                                thread.runNode(request);
-                                break;
-                        }
-                        request.body = Formatter.toMap(new NodeBuilder().get(request.nodeId).getNode());
+                        request.replacements = new HashMap<>();
+                        if (request.nodes != null)
+                            thread.updateNode(request);
+                        if (request.run != null && request.run)
+                            thread.runNode(request);
+                        Node node = thread.getNode(request.nodeLink, request.replacements);
+                        request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
                         break;
                     case "stop":
