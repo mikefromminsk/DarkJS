@@ -11,6 +11,8 @@ app.controller("main", function ($scope, $mdDialog) {
 
     let nodes = {};
     var currentNodeLink;
+    var rectMousePos = [0, 0];
+    var svgMousePos = [0, 0];
 
     var svg = d3.select("#canvas").append("svg")
         .attr("width", width)
@@ -19,30 +21,46 @@ app.controller("main", function ($scope, $mdDialog) {
             .scaleExtent([1, 10])
             .on("zoom", function () {
                 canvas.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            }));
+            }))
+        .on("mousemove", function () {
+            svgMousePos = d3.mouse(this)
+        });
 
-    svg.append("rect")
-        .attr("width", width)
+    var createNewNodeTimer;
+
+    var distance = function (pos1, pos2) {
+        return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+    };
+
+    var rect = svg.append("rect");
+
+    rect.attr("width", width)
         .attr("height", height)
         .style("fill", "none")
         .style("pointer-events", "all")
         .on('mousedown', function () {
             startTime = new Date();
-            //console.log(d3.mouse(this));
+            let startPos = svgMousePos;
+            createNewNodeTimer = setTimeout(function () {
+                if (distance(startPos, svgMousePos) < 30)
+                    createNewNode(rectMousePos);
+                else
+                    console.log("big distance")
+            }, 300);
         })
         .on('mouseup', function () {
             endTime = new Date();
-            if ((endTime - startTime) > 300) {
-                var pos = d3.mouse(this);
-                createNewNode(pos);
-                console.log("long click");
-            } else {
+            if ((endTime - startTime) < 300) {
+                clearTimeout(createNewNodeTimer);
                 console.log("regular click");
             }
         });
 
     var canvas = svg.append("g")
-        .attr("class", "canvas");
+        .attr("class", "canvas")
+        .on("mousemove", function () {
+            rectMousePos = d3.mouse(this)
+        });
 
     canvas.append("g")
         .attr("class", "x axis")
@@ -121,19 +139,36 @@ app.controller("main", function ($scope, $mdDialog) {
         .on("dragend", dragended);
 
     function dragstarted(d) {
-        startTime = new Date();
         d3.event.sourceEvent.stopPropagation();
         d3.select(this).classed("dragging", true);
     }
 
-    function dragged(d) {
-        d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    function dragged() {
+        var pos = d3.mouse(this);
+        d3.select(this).attr("cx", pos[0]).attr("cy", pos[1]);
     }
 
-    function dragended(d) {
+    function dragended(localLink) {
         d3.select(this).classed("dragging", false);
+        updateNodePosition(localLink, rectMousePos);
     }
 
+
+    function updateNodePosition(nodeLink, pos) {
+        var xLink = setStyle(nodeLink, "x", pos[0]);
+        var yLink = setStyle(nodeLink, "y", pos[1]);
+        var changes = {};
+        changes[nodeLink] = nodes[nodeLink];
+        changes[xLink] = nodes[xLink];
+        changes[yLink] = nodes[yLink];
+        $scope.request('node', {
+            nodeLink: nodeLink,
+            nodes: changes
+        }, function (data) {
+            merge(nodes, data.nodes);
+            showNode(currentNodeLink);
+        });
+    }
 
     function addLink(nodeId, linkName, attachId) {
         var node = nodes[nodeId];
@@ -153,7 +188,7 @@ app.controller("main", function ($scope, $mdDialog) {
     function getStyle(nodeLink, styleTitle, defValue) {
         if (nodeLink.startsWith(N)) {
             var node = nodes[nodeLink];
-            if (node.style != null){
+            if (node.style != null) {
                 styleTitle = "!" + styleTitle;
                 for (var i = 0; i < node.style.length; i++) {
                     var styleLink = node.style[i];
@@ -175,7 +210,7 @@ app.controller("main", function ($scope, $mdDialog) {
             return value ? "true" : "false";
     }
 
-    function isNumeric(num){
+    function isNumeric(num) {
         return !isNaN(num)
     }
 
@@ -191,6 +226,7 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function setStyle(nodeLink, styleTitle, styleValue) {
+        styleTitle = "!" + styleTitle;
         var node = nodes[nodeLink];
         if (node.style != null)
             for (var i = 0; i < node.style.length; i++) {
@@ -230,11 +266,6 @@ app.controller("main", function ($scope, $mdDialog) {
             showNode(currentNodeLink);
         });
     }
-
-
-    setTimeout(function () {
-        createNewNode([200, 200]);
-    }, 1000);
 
     $scope.openDialog = function (number) {
         $mdDialog.show({

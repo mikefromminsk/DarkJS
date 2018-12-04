@@ -16,6 +16,7 @@ public class DjsThread extends Runner {
 
     private static void setLink(NodeBuilder builder, Node node, byte linkType, Map<String, Node> replacementTable, String itemStr) {
         Node linkValueNode = null;
+
         if (itemStr.equals(Formatter.TRUE) || itemStr.equals(Formatter.FALSE))
             linkValueNode = builder.create(NodeType.BOOL)
                     .setData(itemStr)
@@ -28,6 +29,9 @@ public class DjsThread extends Runner {
             linkValueNode = builder.create(NodeType.STRING)
                     .setData(itemStr.substring(Formatter.STRING_PREFIX.length()))
                     .commit();
+        if (itemStr.startsWith(Formatter.NODE_PREFIX))
+            linkValueNode = builder.get(Long.valueOf(itemStr.substring(Formatter.NODE_PREFIX.length())))
+                    .getNode();
         if (linkValueNode == null)
             linkValueNode = replacementTable.get(itemStr);
         builder.set(node).setLink(linkType, linkValueNode);
@@ -38,20 +42,17 @@ public class DjsThread extends Runner {
         Map<String, Node> replacementTable = new HashMap<>();
 
         for (String nodeStr : request.nodes.keySet()) {
-            Node node = null;
-            if (nodeStr.startsWith(Formatter.NODE_PREFIX)) {
-                Long nodeId = Long.valueOf(nodeStr.substring(Formatter.NODE_PREFIX.length()));
-                node = builder.get(nodeId).getNode();
-            }
             if (nodeStr.startsWith(Formatter.NEW_NODE_PREFIX)) {
-                node = builder.create().commit();
+                Node node = builder.create().commit();
                 request.replacements.put(nodeStr, Formatter.NODE_PREFIX + node.id);
+                replacementTable.put(nodeStr, node);
             }
-            replacementTable.put(nodeStr, node);
         }
 
         for (String nodeStr : request.nodes.keySet()) {
             Node node = replacementTable.get(nodeStr);
+            if (node == null && nodeStr.startsWith(Formatter.NODE_PREFIX))
+                node = builder.get(Long.valueOf(nodeStr.substring(Formatter.NODE_PREFIX.length()))).getNode();
             Map<String, Object> links = request.nodes.get(nodeStr);
 
             Object nodeTypeObj = links.get(Formatter.TYPE_PREFIX);
@@ -67,7 +68,7 @@ public class DjsThread extends Runner {
                 }
             }
 
-            builder.clearLinks(node);
+            builder.set(node).clearLinks();
             for (String linkName : links.keySet()) {
                 Object obj = links.get(linkName);
                 byte linkType = LinkType.fromString(linkName);

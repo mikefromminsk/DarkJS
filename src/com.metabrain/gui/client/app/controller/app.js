@@ -71,7 +71,8 @@ app.controller("app", function ($scope, $location, $window, $http) {
 
         xhr.open(method, endpoint, async || true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-        xhr.send((params == null) ? null : JSON.stringify(params));
+        var stringParams = (params == null) ? null : JSON.stringify(params);
+        xhr.send(stringParams);
     };
 
     $scope.request = function (endpoint, params, success, error) {
