@@ -1,22 +1,16 @@
 app.controller("main", function ($scope, $mdDialog) {
 
-    let N = "n";
-    let W = "w";
 
     var width = 700,
         height = 500;
 
     var startTime;
-    var endTime;
 
-    let nodes = {};
-    var currentNodeLink;
+    var currentLink = N + 0;
 
     var data = d3.range(20).map(function () {
         return [Math.random() * width, Math.random() * height];
     });
-
-    var color = d3.scale.category10();
 
     var zoom = d3.behavior.zoom()
         .on("zoom", zoomed);
@@ -34,21 +28,33 @@ app.controller("main", function ($scope, $mdDialog) {
     g.append("rect")
         .attr("width", width)
         .attr("height", height)
+        .attr("fill", "white")
         .on("mousedown", function () {
             startTime = new Date();
         })
         .on("click", function clicked(d, i) {
             if (d3.event.defaultPrevented) return; // zoomed
 
-            if (new Date() - startTime > 300)
-                d3.select(this).transition()
-                    .style("fill", "black")
-                    .transition()
-                    .style("fill", "white");
+            if (new Date() - startTime > 300) {
+                let pos = d3.mouse(this);
+                createLocalNode(currentLink, function (link) {
+                    setStyle(link, {
+                        x: pos[0],
+                        y: pos[1],
+                        r: 20,
+                    }, function () {
+                        showNode(currentLink)
+                    })
+                });
+            }
+            d3.select(this).transition()
+                .style("fill", "black")
+                .transition()
+                .style("fill", "white");
         });
 
     var view = g.append("g")
-        .attr("class", "view");
+        .attr("class", "circles");
 
 
     var drag = d3.behavior.drag()
@@ -81,13 +87,13 @@ app.controller("main", function ($scope, $mdDialog) {
     view.selectAll("circle")
         .data(data)
         .enter().append("circle")
-        .attr("transform", function (d) {
-            return "translate(" + d + ")";
+        .attr("cx", function (d) {
+            return d[0];
+        })
+        .attr("cy", function (d) {
+            return d[1];
         })
         .attr("r", 32)
-        .style("fill", function (d, i) {
-            return color(i);
-        })
         .call(drag);
 
     function zoomed() {
@@ -98,6 +104,28 @@ app.controller("main", function ($scope, $mdDialog) {
         d3.event.preventDefault();
     }
 
+    function showNode(link) {
+        currentLink = link;
+        let showNode = nodes[currentLink];
+        let circles = view.selectAll("circle")
+            .data(showNode.local || []);
+
+        circles.exit().remove();
+        circles.enter().append("circle");
+        circles
+            .attr("r", function (link) {
+                return getStyleValue(link, "r", 20);
+            })
+            .attr("cx", function (link) {
+                return getStyleValue(link, "x", 0);
+            })
+            .attr("cy", function (link) {
+                return getStyleValue(link, "y", 0);
+            })
+            .call(drag);
+    }
+
+    loadNode(currentLink, showNode);
 
     /*
         var zoom = d3.behavior.zoom()
@@ -171,40 +199,6 @@ app.controller("main", function ($scope, $mdDialog) {
             });
 
 
-        function showNode(nodeLink) {
-            circlesContainer.selectAll("*").remove();
-            currentNodeLink = nodeLink;
-            var showNode = nodes[currentNodeLink];
-            var circles = circlesContainer.selectAll("circle")
-                .data(showNode.local || []);
-
-            circles.exit().remove();
-            circles.enter().append("circle");
-            circles
-                .attr("r", function (localLink) {
-                    return getStyle(localLink, "r", 20);
-                })
-                .attr("cx", function (localLink) {
-                    return getStyle(localLink, "x", 0);
-                })
-                .attr("cy", function (localLink) {
-                    return getStyle(localLink, "y", 0);
-                })
-                .call(drag);
-        }
-
-        function loadNode(nodeLink) {
-            $scope.request('node', {
-                nodeLink: nodeLink
-            }, function (data) {
-                merge(nodes, data.nodes);
-                var replaceNodeLink = data.replacements[nodeLink] || data.nodeLink;
-                showNode(replaceNodeLink);
-            });
-        }
-
-        // show first node
-        loadNode(N + 0);
 
 
         var circlesContainer = view.append("g")

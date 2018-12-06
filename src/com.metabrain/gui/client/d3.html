@@ -33,6 +33,40 @@
         .attr('height', 200)
         .attr("x", 50)
         .attr("y", 300)
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .selectAll("line")
+        .data(d3.range(0, width, 10))
+        .enter().append("line")
+        .attr("x1", function (d) {
+            return d;
+        })
+        .attr("y1", 0)
+        .attr("x2", function (d) {
+            return d;
+        })
+        .attr("y2", height);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .selectAll("line")
+        .data(d3.range(0, height, 10))
+        .enter().append("line")
+        .attr("x1", 0)
+        .attr("y1", function (d) {
+            return d;
+        })
+        .attr("x2", width)
+        .attr("y2", function (d) {
+            return d;
+        });
+
+    var distance = function (pos1, pos2) {
+        return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+    };
+
+
 </script>
 </body>
 </html>
