@@ -140,18 +140,60 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
 
-    loadNode(currentLink, showNode);
+    loadNode(currentLink, function (link) {
+        showNode(link);
+        openDialog(link);
+    });
+
 
     let openDialog = function (link) {
 
         $mdDialog.show({
             controller: function ($scope, link) {
+                $scope.source_code = "    function showNode(link) {\n" +
+                    "        currentLink = link;\n" +
+                    "        let showNode = nodes[currentLink];\n" +
+                    "        let circles = view.selectAll(\"circle\")\n" +
+                    "            .data(showNode.local || []);\n" +
+                    "\n" +
+                    "        circles.exit().remove();\n" +
+                    "        circles.enter().append(\"circle\");\n" +
+                    "        circles\n" +
+                    "            .attr(\"r\", function (link) {\n" +
+                    "                return getStyleValue(link, \"r\", 20);\n" +
+                    "            })\n" +
+                    "            .attr(\"cx\", function (link) {\n" +
+                    "                return getStyleValue(link, \"x\", 0);\n" +
+                    "            })\n" +
+                    "            .attr(\"cy\", function (link) {\n" +
+                    "                return getStyleValue(link, \"y\", 0);\n" +
+                    "            })\n" +
+                    "            .on(\"dblclick\", function (link) {\n" +
+                    "                d3.event.stopPropagation();\n" +
+                    "                openDialog(link)\n" +
+                    "            })\n" +
+                    "            .call(drag);\n" +
+                    "    }\n";
+
                 $scope.link = link;
                 $scope.close = function () {
                     $mdDialog.hide();
                 };
+                $scope.onload = function () {
+                    setTimeout(function () {
+                        CodeMirror.fromTextArea(document.getElementById("code"), {
+                            styleActiveLine: true,
+                            matchBrackets: true,
+                            scrollbarStyle: "simple",
+                            theme: "darcula"
+                        });
+                        CodeMirror.fromTextArea(document.getElementById("run_code"), {
+                            matchBrackets: true,
+                            theme: "darcula"
+                        });
 
-
+                    }, 0);
+                };
             },
             templateUrl: 'app/template/main_dialog.html',
             locals: {
