@@ -147,14 +147,18 @@ app.controller("main", function ($scope, $mdDialog) {
         $mdDialog.show({
             controller: function ($scope, link) {
                 $scope.link = link;
-                $scope.answer = function (result) {
+                $scope.close = function () {
                     $mdDialog.hide();
                 };
+
+
             },
             templateUrl: 'app/template/main_dialog.html',
             locals: {
                 link: link
-            }
+            },
+            clickOutsideToClose: true,
+            fullscreen: true,
         }).then(function (answer) {
             $scope.status = 'You said the information was "' + answer + '".';
         }, function () {
