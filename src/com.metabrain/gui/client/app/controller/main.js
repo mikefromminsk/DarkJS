@@ -36,7 +36,7 @@ app.controller("main", function ($scope, $mdDialog) {
             if (d3.event.defaultPrevented) return; // zoomed
 
             if (new Date() - startTime > 300) {
-                let pos = d3.mouse(this);
+                let pos = d3.mouse(view.node());
                 createLocalNode(currentLink, function (link) {
                     setStyle(link, {
                         x: pos[0],
@@ -72,7 +72,7 @@ app.controller("main", function ($scope, $mdDialog) {
 
         let clickPos = d3.mouse(this);
         let circle = d3.select(this);
-        centerOffset = [circle.attr("cx") - clickPos[0],  circle.attr("cy") - clickPos[1]];
+        centerOffset = [circle.attr("cx") - clickPos[0], circle.attr("cy") - clickPos[1]];
         circle.classed("dragging", true);
     }
 
@@ -143,25 +143,23 @@ app.controller("main", function ($scope, $mdDialog) {
     loadNode(currentLink, showNode);
 
     let openDialog = function (link) {
-        alert(link);
-        /*
-                $mdDialog.show({
-                    controller: function ($scope, number) {
-                        $scope.number = number;
-                        $scope.answer = function (result) {
-                            alert(result);
-                        }
-                    },
-                    templateUrl: 'app/template/start_dialog.html',
-                    locals: {
-                        number: number
-                    }
-                })
-                    .then(function (answer) {
-                        $scope.status = 'You said the information was "' + answer + '".';
-                    }, function () {
-                        $scope.status = 'You cancelled the dialog.';
-                    });
-        */
+
+        $mdDialog.show({
+            controller: function ($scope, link) {
+                $scope.link = link;
+                $scope.answer = function (result) {
+                    $mdDialog.hide();
+                };
+            },
+            templateUrl: 'app/template/main_dialog.html',
+            locals: {
+                link: link
+            }
+        }).then(function (answer) {
+            $scope.status = 'You said the information was "' + answer + '".';
+        }, function () {
+            $scope.status = 'You cancelled the dialog.';
+        });
+
     }
 });
