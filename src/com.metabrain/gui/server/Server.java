@@ -2,6 +2,7 @@ package com.metabrain.gui.server;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.metabrain.djs.refactored.Formatter;
 import com.metabrain.djs.refactored.node.Node;
 import com.metabrain.gui.server.model.GetNodeBody;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class Server extends NanoHTTPD {
 
-    static private Gson json = new Gson();
+    static private Gson json = new GsonBuilder().setPrettyPrinting().create();
     private DjsThread thread = new DjsThread();
     private static final String APPLICATION_JSON = "application/json";
 
