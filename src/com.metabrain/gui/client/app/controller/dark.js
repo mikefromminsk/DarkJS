@@ -47,12 +47,12 @@ function encodeValue(value) {
 
 function getStyleValue(nodeLink, styleTitle, defValue) {
     if (nodeLink.startsWith(N)) {
-        var node = nodes[nodeLink];
+        let node = nodes[nodeLink];
         if (node.style != null) {
             styleTitle = "!" + styleTitle;
-            for (var i = 0; i < node.style.length; i++) {
-                var styleLink = node.style[i];
-                var styleNode = nodes[styleLink];
+            for (let i = 0; i < node.style.length; i++) {
+                let styleLink = node.style[i];
+                let styleNode = nodes[styleLink];
                 if (styleNode.title === styleTitle)
                     return decodeValue(styleNode.value);
             }
@@ -63,11 +63,11 @@ function getStyleValue(nodeLink, styleTitle, defValue) {
 
 function setStyleValue(nodeLink, styleTitle, styleValue) {
     styleTitle = "!" + styleTitle;
-    var node = nodes[nodeLink];
+    let node = nodes[nodeLink];
     if (node.style != null)
-        for (var i = 0; i < node.style.length; i++) {
-            var styleLink = node.style[i];
-            var styleNode = nodes[styleLink];
+        for (let i = 0; i < node.style.length; i++) {
+            let styleLink = node.style[i];
+            let styleNode = nodes[styleLink];
             if (styleNode.title === styleTitle) {
                 styleNode.value = encodeValue(styleValue);
                 return styleLink;
@@ -75,7 +75,7 @@ function setStyleValue(nodeLink, styleTitle, styleValue) {
         }
     if (node.style == null)
         node.style = [];
-    var styleLink = newNodeLink();
+    let styleLink = newNodeLink();
     nodes[styleLink] = {title: styleTitle};
     nodes[styleLink].value = encodeValue(styleValue);
     node.style.push(styleLink);
@@ -85,11 +85,9 @@ function setStyleValue(nodeLink, styleTitle, styleValue) {
 let http = function (method, endpoint, params, success, error, async) {
     if (error == null)
         error = function (status, response) {
-            console.log(status);
             console.log(response);
         };
 
-    console.log(params);
     let xhr = XMLHttpRequest ? new XMLHttpRequest() :
         new ActiveXObject("Microsoft.XMLHTTP");
 
@@ -114,33 +112,14 @@ let http = function (method, endpoint, params, success, error, async) {
     };
 
     xhr.open(method, endpoint, async || true);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-    var stringParams = (params == null) ? null : JSON.stringify(params);
+    xhr.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
+    let stringParams = (params == null) ? null : JSON.stringify(params);
     xhr.send(stringParams);
 };
 
 let request = function (params, success, error) {
     http("POST", remoteHost + 'node', params, success, error, true);
 };
-
-function setStyle(nodeLink, styleObj, success, error) {
-    if (typeof styleObj === "object") {
-        let changes = {};
-        changes[nodeLink] = nodes[nodeLink];
-        for (key in styleObj)
-            if (styleObj.hasOwnProperty(key)) {
-                let keyLink = setStyleValue(nodeLink, key, styleObj[key]);
-                changes[keyLink] = nodes[keyLink];
-            }
-        request({
-            nodeLink: nodeLink,
-            nodes: changes
-        }, function (data) {
-            merge(nodes, data.nodes);
-            success(data.replacements[nodeLink] || data.nodeLink)
-        }, error);
-    }
-}
 
 
 let lastNewId = 0;
@@ -151,28 +130,58 @@ function newNodeLink() {
     return nodeLink;
 }
 
+function deleteReplacements(replacements) {
+    for (let key in replacements)
+        if (replacements.hasOwnProperty(key))
+            delete nodes[key]
+}
+
+function successResponse(data) {
+    merge(nodes, data.nodes);
+    deleteReplacements(data.replacements);
+}
+
+function setStyle(link, styleObj, success, error) {
+    if (typeof styleObj === "object") {
+        let changes = {};
+        changes[link] = nodes[link];
+        for (let key in styleObj)
+            if (styleObj.hasOwnProperty(key)) {
+                let keyLink = setStyleValue(link, key, styleObj[key]);
+                changes[keyLink] = nodes[keyLink];
+            }
+        request({
+            nodeLink: link,
+            nodes: changes
+        }, function (data) {
+            successResponse(data, success);
+            success(data.replacements[data.nodeLink] || data.nodeLink);
+        }, error);
+    }
+}
+
 function createLocalNode(parent, success, error) {
-    let nodeLink = newNodeLink();
+    let link = newNodeLink();
     let changes = {};
     changes[parent] = nodes[parent];
     if (changes[parent].local == null)
         changes[parent].local = [];
-    changes[parent].local.push(nodeLink);
-    changes[nodeLink] = {};
+    changes[parent].local.push(link);
+    changes[link] = {};
     request({
-        nodeLink: nodeLink,
+        nodeLink: parent,
         nodes: changes
     }, function (data) {
-        merge(nodes, data.nodes);
-        success(data.replacements[nodeLink] || data.nodeLink);
+        successResponse(data, success);
+        success(data.replacements[link]);
     }, error);
 }
 
-function loadNode(nodeLink, success, error) {
+function loadNode(link, success, error) {
     request({
-        nodeLink: nodeLink
+        nodeLink: link
     }, function (data) {
-        merge(nodes, data.nodes);
-        success(data.replacements[nodeLink] || data.nodeLink);
+        successResponse(data, success);
+        success(link);
     }, error);
 }

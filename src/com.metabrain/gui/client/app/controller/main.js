@@ -1,28 +1,28 @@
 app.controller("main", function ($scope, $mdDialog) {
 
 
-    var width = 700,
+    let width = 700,
         height = 500;
 
-    var startTime;
+    let startTime;
 
-    var currentLink = N + 0;
+    let currentLink = N + 0;
 
-    var data = d3.range(20).map(function () {
+    let data = d3.range(20).map(function () {
         return [Math.random() * width, Math.random() * height];
     });
 
-    var zoom = d3.behavior.zoom()
+    let zoom = d3.behavior.zoom()
         .on("zoom", zoomed);
 
-    var svg = d3.select("#canvas")
+    let svg = d3.select("#canvas")
         .on("touchstart", nozoom)
         .on("touchmove", nozoom)
         .append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    var g = svg.append("g")
+    let g = svg.append("g")
         .call(zoom);
 
     g.append("rect")
@@ -53,11 +53,11 @@ app.controller("main", function ($scope, $mdDialog) {
                 .style("fill", "white");
         });
 
-    var view = g.append("g")
+    let view = g.append("g")
         .attr("class", "circles");
 
 
-    var drag = d3.behavior.drag()
+    let drag = d3.behavior.drag()
         .origin(function (d) {
             return d;
         })
@@ -72,16 +72,22 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function dragged() {
-        var pos = d3.mouse(this);
+        let pos = d3.mouse(this);
         d3.select(this)
             .attr("cx", pos[0])
             .attr("cy", pos[1]);
     }
 
-    function dragended(localLink) {
+    function dragended(link) {
         d3.select(this)
             .classed("dragging", false);
-        //updateNodePosition(localLink, d3.mouse(this));
+        let pos = d3.mouse(this);
+        setStyle(link, {
+            x: pos[0],
+            y: pos[1]
+        }, function (link) {
+           showNode(currentLink)
+        });
     }
 
     view.selectAll("circle")
@@ -125,15 +131,20 @@ app.controller("main", function ($scope, $mdDialog) {
             .call(drag);
     }
 
+
+    function updateNodePosition(nodeLink, pos) {
+    }
+
+
     loadNode(currentLink, showNode);
 
     /*
-        var zoom = d3.behavior.zoom()
+        let zoom = d3.behavior.zoom()
             .on("zoom", function zoomed() {
                 view.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
             });
 
-        var svg = d3.select("#canvas")
+        let svg = d3.select("#canvas")
             .on("touchstart", nozoom)
             .on("touchmove", nozoom)
             .append("svg")
@@ -145,7 +156,7 @@ app.controller("main", function ($scope, $mdDialog) {
             d3.event.preventDefault();
         }
 
-        var g = svg.append("g")
+        let g = svg.append("g")
             .call(zoom);
 
         g.append("rect")
@@ -162,11 +173,11 @@ app.controller("main", function ($scope, $mdDialog) {
                 }
             });
 
-        var view = g.append("g")
+        let view = g.append("g")
             .attr("class", "view");
 
 
-        var distance = function (pos1, pos2) {
+        let distance = function (pos1, pos2) {
             return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
         };
 
@@ -201,7 +212,7 @@ app.controller("main", function ($scope, $mdDialog) {
 
 
 
-        var circlesContainer = view.append("g")
+        let circlesContainer = view.append("g")
             .attr("class", "circles");
 
         let drag = d3.behavior.drag()
@@ -219,7 +230,7 @@ app.controller("main", function ($scope, $mdDialog) {
         }
 
         function dragged() {
-            var pos = d3.mouse(this);
+            let pos = d3.mouse(this);
             d3.select(this)
                 .attr("cx", pos[0])
                 .attr("cy", pos[1]);
@@ -233,9 +244,9 @@ app.controller("main", function ($scope, $mdDialog) {
 
 
         function updateNodePosition(nodeLink, pos) {
-            var xLink = setStyle(nodeLink, "x", pos[0]);
-            var yLink = setStyle(nodeLink, "y", pos[1]);
-            var changes = {};
+            let xLink = setStyle(nodeLink, "x", pos[0]);
+            let yLink = setStyle(nodeLink, "y", pos[1]);
+            let changes = {};
             changes[nodeLink] = nodes[nodeLink];
             changes[xLink] = nodes[xLink];
             changes[yLink] = nodes[yLink];
@@ -249,28 +260,28 @@ app.controller("main", function ($scope, $mdDialog) {
         }
 
         function addLink(nodeId, linkName, attachId) {
-            var node = nodes[nodeId];
+            let node = nodes[nodeId];
             if (node[linkName] == null || !(node[linkName] instanceof Array))
                 node[linkName] = [];
             node[linkName].push(attachId)
         }
 
-        var lastNewId = 0;
+        let lastNewId = 0;
 
         function newNodeLink() {
-            var nodeLink = W + lastNewId++;
+            let nodeLink = W + lastNewId++;
             nodes[nodeLink] = {};
             return nodeLink;
         }
 
         function getStyle(nodeLink, styleTitle, defValue) {
             if (nodeLink.startsWith(N)) {
-                var node = nodes[nodeLink];
+                let node = nodes[nodeLink];
                 if (node.style != null) {
                     styleTitle = "!" + styleTitle;
-                    for (var i = 0; i < node.style.length; i++) {
-                        var styleLink = node.style[i];
-                        var styleNode = nodes[styleLink];
+                    for (let i = 0; i < node.style.length; i++) {
+                        let styleLink = node.style[i];
+                        let styleNode = nodes[styleLink];
                         if (styleNode.title === styleTitle)
                             return decodeValue(styleNode.value);
                     }
@@ -305,11 +316,11 @@ app.controller("main", function ($scope, $mdDialog) {
 
         function setStyle(nodeLink, styleTitle, styleValue) {
             styleTitle = "!" + styleTitle;
-            var node = nodes[nodeLink];
+            let node = nodes[nodeLink];
             if (node.style != null)
-                for (var i = 0; i < node.style.length; i++) {
-                    var styleLink = node.style[i];
-                    var styleNode = nodes[styleLink];
+                for (let i = 0; i < node.style.length; i++) {
+                    let styleLink = node.style[i];
+                    let styleNode = nodes[styleLink];
                     if (styleNode.title === styleTitle) {
                         styleNode.value = encodeValue(styleValue);
                         return styleLink;
@@ -317,7 +328,7 @@ app.controller("main", function ($scope, $mdDialog) {
                 }
             if (node.style == null)
                 node.style = [];
-            var styleLink = newNodeLink();
+            let styleLink = newNodeLink();
             nodes[styleLink] = {title: styleTitle};
             nodes[styleLink].value = encodeValue(styleValue);
             node.style.push(styleLink);
@@ -325,12 +336,12 @@ app.controller("main", function ($scope, $mdDialog) {
         }
 
         function createNewNode(pos) {
-            var nodeLink = newNodeLink();
-            var xLink = setStyle(nodeLink, "x", pos[0]);
-            var yLink = setStyle(nodeLink, "y", pos[1]);
-            var rLink = setStyle(nodeLink, "r", 20);
+            let nodeLink = newNodeLink();
+            let xLink = setStyle(nodeLink, "x", pos[0]);
+            let yLink = setStyle(nodeLink, "y", pos[1]);
+            let rLink = setStyle(nodeLink, "r", 20);
             addLink(currentNodeLink, "local", nodeLink);
-            var changes = {};
+            let changes = {};
             changes[nodeLink] = nodes[nodeLink];
             changes[currentNodeLink] = nodes[currentNodeLink];
             changes[xLink] = nodes[xLink];
