@@ -65,28 +65,32 @@ app.controller("main", function ($scope, $mdDialog) {
         .on("drag", dragged)
         .on("dragend", dragended);
 
+    let centerOffset;
+
     function dragstarted(d) {
         d3.event.sourceEvent.stopPropagation();
-        d3.select(this)
-            .classed("dragging", true);
+
+        let clickPos = d3.mouse(this);
+        let circle = d3.select(this);
+        centerOffset = [circle.attr("cx") - clickPos[0],  circle.attr("cy") - clickPos[1]];
+        circle.classed("dragging", true);
     }
 
     function dragged() {
         let pos = d3.mouse(this);
         d3.select(this)
-            .attr("cx", pos[0])
-            .attr("cy", pos[1]);
+            .attr("cx", pos[0] + centerOffset[0])
+            .attr("cy", pos[1] + centerOffset[1]);
     }
 
     function dragended(link) {
-        d3.select(this)
-            .classed("dragging", false);
+        d3.select(this).classed("dragging", false);
         let pos = d3.mouse(this);
         setStyle(link, {
-            x: pos[0],
-            y: pos[1]
-        }, function (link) {
-           showNode(currentLink)
+            x: pos[0] + centerOffset[0],
+            y: pos[1] + centerOffset[1],
+        }, function () {
+            showNode(currentLink)
         });
     }
 
@@ -128,251 +132,36 @@ app.controller("main", function ($scope, $mdDialog) {
             .attr("cy", function (link) {
                 return getStyleValue(link, "y", 0);
             })
+            .on("dblclick", function (link) {
+                d3.event.stopPropagation();
+                openDialog(link)
+            })
             .call(drag);
-    }
-
-
-    function updateNodePosition(nodeLink, pos) {
     }
 
 
     loadNode(currentLink, showNode);
 
-    /*
-        let zoom = d3.behavior.zoom()
-            .on("zoom", function zoomed() {
-                view.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-            });
-
-        let svg = d3.select("#canvas")
-            .on("touchstart", nozoom)
-            .on("touchmove", nozoom)
-            .append("svg")
-            .attr("fill", "none")
-            .attr("width", width)
-            .attr("height", height);
-
-        function nozoom() {
-            d3.event.preventDefault();
-        }
-
-        let g = svg.append("g")
-            .call(zoom);
-
-        g.append("rect")
-            .attr("width", width)
-            .attr("height", height)
-            .on('mousedown', function () {
-                startTime = new Date();
-            })
-            .on("click", function clicked(d, i) {
-                if (d3.event.defaultPrevented) return; // zoomed
-
-                if (new Date() - startTime > 200) {
-                    createNewNode(d3.mouse(this));
-                }
-            });
-
-        let view = g.append("g")
-            .attr("class", "view");
-
-
-        let distance = function (pos1, pos2) {
-            return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
-        };
-
-        view.append("g")
-            .attr("class", "x axis")
-            .selectAll("line")
-            .data(d3.range(0, width, 10))
-            .enter().append("line")
-            .attr("x1", function (d) {
-                return d;
-            })
-            .attr("y1", 0)
-            .attr("x2", function (d) {
-                return d;
-            })
-            .attr("y2", height);
-
-        view.append("g")
-            .attr("class", "y axis")
-            .selectAll("line")
-            .data(d3.range(0, height, 10))
-            .enter().append("line")
-            .attr("x1", 0)
-            .attr("y1", function (d) {
-                return d;
-            })
-            .attr("x2", width)
-            .attr("y2", function (d) {
-                return d;
-            });
-
-
-
-
-        let circlesContainer = view.append("g")
-            .attr("class", "circles");
-
-        let drag = d3.behavior.drag()
-            .origin(function (d) {
-                return d;
-            })
-            .on("dragstart", dragstarted)
-            .on("drag", dragged)
-            .on("dragend", dragended);
-
-        function dragstarted(d) {
-            d3.event.sourceEvent.stopPropagation();
-            d3.select(this)
-                .classed("dragging", true);
-        }
-
-        function dragged() {
-            let pos = d3.mouse(this);
-            d3.select(this)
-                .attr("cx", pos[0])
-                .attr("cy", pos[1]);
-        }
-
-        function dragended(localLink) {
-            d3.select(this)
-                .classed("dragging", false);
-            updateNodePosition(localLink, d3.mouse(this));
-        }
-
-
-        function updateNodePosition(nodeLink, pos) {
-            let xLink = setStyle(nodeLink, "x", pos[0]);
-            let yLink = setStyle(nodeLink, "y", pos[1]);
-            let changes = {};
-            changes[nodeLink] = nodes[nodeLink];
-            changes[xLink] = nodes[xLink];
-            changes[yLink] = nodes[yLink];
-            $scope.request('node', {
-                nodeLink: nodeLink,
-                nodes: changes
-            }, function (data) {
-                merge(nodes, data.nodes);
-                showNode(currentNodeLink);
-            });
-        }
-
-        function addLink(nodeId, linkName, attachId) {
-            let node = nodes[nodeId];
-            if (node[linkName] == null || !(node[linkName] instanceof Array))
-                node[linkName] = [];
-            node[linkName].push(attachId)
-        }
-
-        let lastNewId = 0;
-
-        function newNodeLink() {
-            let nodeLink = W + lastNewId++;
-            nodes[nodeLink] = {};
-            return nodeLink;
-        }
-
-        function getStyle(nodeLink, styleTitle, defValue) {
-            if (nodeLink.startsWith(N)) {
-                let node = nodes[nodeLink];
-                if (node.style != null) {
-                    styleTitle = "!" + styleTitle;
-                    for (let i = 0; i < node.style.length; i++) {
-                        let styleLink = node.style[i];
-                        let styleNode = nodes[styleLink];
-                        if (styleNode.title === styleTitle)
-                            return decodeValue(styleNode.value);
+    let openDialog = function (link) {
+        alert(link);
+        /*
+                $mdDialog.show({
+                    controller: function ($scope, number) {
+                        $scope.number = number;
+                        $scope.answer = function (result) {
+                            alert(result);
+                        }
+                    },
+                    templateUrl: 'app/template/start_dialog.html',
+                    locals: {
+                        number: number
                     }
-                }
-            }
-            return defValue;
-        }
-
-        function encodeValue(value) {
-            if (typeof value === "number")
-                return "" + value;
-            if (typeof value === "string")
-                return "!" + value;
-            if (typeof value === "boolean")
-                return value ? "true" : "false";
-        }
-
-        function isNumeric(num) {
-            return !isNaN(num)
-        }
-
-        function decodeValue(value) {
-            if (isNumeric(value))
-                return parseFloat(value);
-            if (value.startsWith("!"))
-                return value.substr(1);
-            if (value === "true")
-                return true;
-            if (value === "false")
-                return false;
-        }
-
-        function setStyle(nodeLink, styleTitle, styleValue) {
-            styleTitle = "!" + styleTitle;
-            let node = nodes[nodeLink];
-            if (node.style != null)
-                for (let i = 0; i < node.style.length; i++) {
-                    let styleLink = node.style[i];
-                    let styleNode = nodes[styleLink];
-                    if (styleNode.title === styleTitle) {
-                        styleNode.value = encodeValue(styleValue);
-                        return styleLink;
-                    }
-                }
-            if (node.style == null)
-                node.style = [];
-            let styleLink = newNodeLink();
-            nodes[styleLink] = {title: styleTitle};
-            nodes[styleLink].value = encodeValue(styleValue);
-            node.style.push(styleLink);
-            return styleLink;
-        }
-
-        function createNewNode(pos) {
-            let nodeLink = newNodeLink();
-            let xLink = setStyle(nodeLink, "x", pos[0]);
-            let yLink = setStyle(nodeLink, "y", pos[1]);
-            let rLink = setStyle(nodeLink, "r", 20);
-            addLink(currentNodeLink, "local", nodeLink);
-            let changes = {};
-            changes[nodeLink] = nodes[nodeLink];
-            changes[currentNodeLink] = nodes[currentNodeLink];
-            changes[xLink] = nodes[xLink];
-            changes[yLink] = nodes[yLink];
-            changes[rLink] = nodes[rLink];
-            $scope.request('node', {
-                nodeLink: currentNodeLink,
-                nodes: changes
-            }, function (data) {
-                merge(nodes, data.nodes);
-                showNode(currentNodeLink);
-            });
-        }
-
-        $scope.openDialog = function (number) {
-            $mdDialog.show({
-                controller: function ($scope, number) {
-                    $scope.number = number;
-                    $scope.answer = function (result) {
-                        alert(result);
-                    }
-                },
-                templateUrl: 'app/template/start_dialog.html',
-                locals: {
-                    number: number
-                }
-            })
-                .then(function (answer) {
-                    $scope.status = 'You said the information was "' + answer + '".';
-                }, function () {
-                    $scope.status = 'You cancelled the dialog.';
-                });
-        }*/
+                })
+                    .then(function (answer) {
+                        $scope.status = 'You said the information was "' + answer + '".';
+                    }, function () {
+                        $scope.status = 'You cancelled the dialog.';
+                    });
+        */
+    }
 });
