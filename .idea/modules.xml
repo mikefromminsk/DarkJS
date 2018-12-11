@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../JavaScriptEngine/JavaScriptEngine.iml" filepath="$PROJECT_DIR$/../JavaScriptEngine/JavaScriptEngine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SimpleGraphDB/SimpleGraphDB.iml" filepath="$PROJECT_DIR$/../SimpleGraphDB/SimpleGraphDB.iml" />
       <module fileurl="file://$PROJECT_DIR$/WebGui.iml" filepath="$PROJECT_DIR$/WebGui.iml" />
     </modules>
   </component>
