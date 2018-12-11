@@ -181,18 +181,21 @@ app.controller("main", function ($scope, $mdDialog) {
                 };
                 $scope.onload = function () {
                     setTimeout(function () {
-                        CodeMirror.fromTextArea(document.getElementById("code"), {
+                        let codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
                             styleActiveLine: true,
                             matchBrackets: true,
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        CodeMirror.fromTextArea(document.getElementById("run_code"), {
+                        let runEditor = CodeMirror.fromTextArea(document.getElementById("run_code"), {
                             matchBrackets: true,
                             theme: "darcula"
                         });
-
-                    }, 0);
+                        setTimeout(function () {
+                            codeEditor.refresh();
+                            runEditor.refresh();
+                        });
+                    });
                 };
             },
             templateUrl: 'app/template/main_dialog.html',
