@@ -62,51 +62,6 @@ app.controller("main", function ($scope, $mdDialog) {
         .attr("class", "circles");
 
 
-    let drag = d3.behavior.drag()
-        .origin(function (d) {
-            return d;
-        })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);
-
-    let centerOffset;
-
-    function dragstarted(d) {
-        hideMenu();
-        startTime = new Date();
-        d3.event.sourceEvent.stopPropagation();
-        let clickPos = d3.mouse(this);
-        let circle = d3.select(this);
-        centerOffset = [circle.attr("cx") - clickPos[0], circle.attr("cy") - clickPos[1]];
-        circle.classed("dragging", true);
-    }
-
-    function dragged() {
-        let pos = d3.mouse(this);
-        d3.select(this)
-            .attr("cx", pos[0] + centerOffset[0])
-            .attr("cy", pos[1] + centerOffset[1]);
-    }
-
-    function dragended(link) {
-        let circle = d3.select(this);
-        circle.classed("dragging", false);
-        if (new Date() - startTime > 300) {//long click{
-            showMenu(this);
-            d3.event.stopPropagation();
-        }
-
-        let pos = d3.mouse(this);
-        setStyle(link, {
-            x: pos[0] + centerOffset[0],
-            y: pos[1] + centerOffset[1],
-        }, function () {
-            showNode(currentLink)
-        });
-    }
-
-
     var resizeBtn;
 
     function initResizeBtn() {
@@ -119,10 +74,8 @@ app.controller("main", function ($scope, $mdDialog) {
     initResizeBtn();
 
     function showMenu(ths) {
-        let circle = d3.select(ths);
-        resizeBtn
-            .attr("cx", circle.attr("cx"))
-            .attr("cy", circle.attr("cy") - nodeRadius * 2 - 10)
+        let circle = d3.transform(d3.select(ths)).translate;
+        resizeBtn.attr("transform", tr(circle[0], circle[1] - nodeRadius * 2 - 10))
             .transition()
             .duration(300)
             .style("opacity", 1);
@@ -136,36 +89,97 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function zoomed() {
-        view.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+        view.attr("transform", tr(d3.event.translate.x, d3.event.translate.y, d3.event.scale));
     }
 
     function nozoom() {
         d3.event.preventDefault();
     }
 
+
+    let drag = d3.behavior.drag()
+        .origin(function (d) {
+            return d;
+        })
+        .on("dragstart", dragstarted)
+        .on("drag", dragged)
+        .on("dragend", dragended);
+
+    let centerOffset;
+
+    function getX(ths) {
+        return d3.transform(ths.attr("transform")).translate[0];
+    }
+
+    function getY(ths) {
+        return d3.transform(ths.attr("transform")).translate[1];
+    }
+
+    function dragstarted(d) {
+        hideMenu();
+        startTime = new Date();
+        d3.event.sourceEvent.stopPropagation();
+        let clickPos = d3.mouse(this);
+        let circle = d3.select(this);
+        centerOffset = [getX(circle) - clickPos[0], getY(circle) - clickPos[1]];
+        circle.classed("dragging", true);
+    }
+
+    function tr(x, y, s) {
+        return "translate(" + x + "," + y + ")" + (s === undefined ? "" : "scale(" + s + ")");
+    }
+
+    function tr(x, y, s) {
+        if (typeof x === "object")
+            return "translate(" + x + ")" + (y === undefined ? "" : "scale(" + y + ")");
+        return "translate(" + x + "," + y + ")" + (s === undefined ? "" : "scale(" + s + ")");
+    }
+
+    function dragged() {
+        d3.select(this).attr("transform", tr(d3.mouse(this)));
+    }
+
+    function dragended(link) {
+        let circle = d3.select(this);
+        circle.classed("dragging", false);
+        if (new Date() - startTime > 300) {//long click{
+            showMenu(this);
+            // d3.event.stopPropagation();
+        }
+
+        let pos = d3.mouse(this);
+        setStyle(link, {
+            x: pos[0] + centerOffset[0],
+            y: pos[1] + centerOffset[1],
+        }, function () {
+            showNode(currentLink)
+        });
+    }
+
     function showNode(link) {
         currentLink = link;
         let showNode = nodes[currentLink];
-        let circles = view.selectAll(".node")
-            .data(showNode.local || []);
-
-        circles.exit().remove();
-        circles.enter().append("circle");
-        circles.attr("class", "node")
-            .attr("r", function (link) {
-                return getStyleValue(link, "r", 20);
-            })
-            .attr("cx", function (link) {
-                return getStyleValue(link, "x", 0);
-            })
-            .attr("cy", function (link) {
-                return getStyleValue(link, "y", 0);
+        view.selectAll(".node").remove();
+        let nodeList = view.selectAll(".node")
+            .data(showNode.local || []).enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function (link) {
+                return tr(getStyleValue(link, "x", 0), getStyleValue(link, "y", 0));
             })
             .on("dblclick", function (link) {
                 d3.event.stopPropagation();
                 openDialog(link)
             })
             .call(drag);
+
+        nodeList.append("circle")
+            .attr("r", function (link) {
+                return getStyleValue(link, "r", 20);
+            });
+        nodeList.append("text")
+            .attr("dx", nodeRadius + 10)
+            .text(showNode.title);
     }
 
 
@@ -191,7 +205,7 @@ app.controller("main", function ($scope, $mdDialog) {
 
         var titleArc = root.append("path")
             .attr("d", arc)
-            .attr("transform", "translate(" + x + "," + y + ") ")
+            .attr("transform", tr(x, y))
             .on("click", function () {
                 x = width / 2;
                 y = height / 2;
@@ -200,7 +214,7 @@ app.controller("main", function ($scope, $mdDialog) {
                 titleArc.transition()
                     .duration(1000)
                     .attr("d", arc)
-                    .attr("transform", "translate(" + x + "," + y + ")");
+                    .attr("transform", tr(x, y));
             });
     }
 
