@@ -156,7 +156,6 @@ app.controller("main", function ($scope, $mdDialog) {
                     "    let showNode = nodes[currentLink];\n" +
                     "    let circles = view.selectAll(\"circle\")\n" +
                     "        .data(showNode.local || []);\n" +
-                    "\n" +
                     "    circles.exit().remove();\n" +
                     "    circles.enter().append(\"circle\");\n" +
                     "    circles\n" +
@@ -194,9 +193,9 @@ app.controller("main", function ($scope, $mdDialog) {
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        codeEditor.setSize('100%', '100%');
                         var show = setInterval(function() {
                             codeEditor.refresh();
+                            runEditor.refresh();
                         }, 10);
                         setTimeout(function() {
                             clearInterval(show);
