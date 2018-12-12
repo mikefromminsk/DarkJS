@@ -33,6 +33,7 @@ app.controller("main", function ($scope, $mdDialog) {
         .attr("fill", "white")
         .on("mousedown", function () {
             startTime = new Date();
+            hideMenu();
         })
         .on("click", function clicked(d, i) {
             if (d3.event.defaultPrevented) return; // zoomed
@@ -108,6 +109,7 @@ app.controller("main", function ($scope, $mdDialog) {
     let centerOffset;
 
     function dragstarted(d) {
+        startTime = new Date();
         d3.event.sourceEvent.stopPropagation();
 
         let clickPos = d3.mouse(this);
@@ -124,7 +126,11 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function dragended(link) {
-        d3.select(this).classed("dragging", false);
+        let circle = d3.select(this);
+        circle.classed("dragging", false);
+        if (new Date() - startTime > 300) //long click
+            showMenu(circle);
+
         let pos = d3.mouse(this);
         setStyle(link, {
             x: pos[0] + centerOffset[0],
@@ -132,6 +138,34 @@ app.controller("main", function ($scope, $mdDialog) {
         }, function () {
             showNode(currentLink)
         });
+    }
+
+    var menu = root.append("g")
+        .style("opacity", 0);
+
+    menu.append("circle")
+        .attr("class", "resizeMenu")
+        .attr("cx", 0)
+        .attr("cy", -nodeRadius * 2.5)
+        .attr("r", nodeRadius);
+
+    menu.append("circle")
+        .attr("class", "resizeMenu")
+        .attr("cx", -nodeRadius * 2.5)
+        .attr("cy", 0)
+        .attr("r", nodeRadius);
+
+    function showMenu(circle) {
+        menu.attr("transform", "translate(" + circle.attr("cx") + "," + circle.attr("cy") + ")")
+            .transition()
+            .duration(300)
+            .style("opacity", 1)
+    }
+
+    function hideMenu() {
+        menu.transition()
+            .duration(300)
+            .style("opacity", 0.0001)
     }
 
     view.selectAll("circle")
