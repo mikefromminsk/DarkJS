@@ -4,6 +4,8 @@ app.controller("main", function ($scope, $mdDialog) {
     let width = 700,
         height = 500;
 
+    var nodeRadius = 20;
+
     let startTime;
 
     let currentLink = N + 0;
@@ -22,10 +24,10 @@ app.controller("main", function ($scope, $mdDialog) {
         .attr("width", width)
         .attr("height", height);
 
-    let g = svg.append("g")
+    let root = svg.append("g")
         .call(zoom);
 
-    g.append("rect")
+    root.append("rect")
         .attr("width", width)
         .attr("height", height)
         .attr("fill", "white")
@@ -41,7 +43,7 @@ app.controller("main", function ($scope, $mdDialog) {
                     setStyle(link, {
                         x: pos[0],
                         y: pos[1],
-                        r: 20,
+                        r: nodeRadius,
                     }, function () {
                         showNode(currentLink)
                     })
@@ -53,7 +55,46 @@ app.controller("main", function ($scope, $mdDialog) {
                 .style("fill", "white");
         });
 
-    let view = g.append("g")
+
+    /*
+            .on("click", arcTween(outerRadius, 0))
+            .on("mouseout", arcTween(outerRadius - 20, 150));*/
+
+    function rad(val) {
+        return val * (Math.PI / 180)
+    }
+
+    function toolbarAnimation() {
+        var r = 10000;
+        var x = width / 2;
+        var y = r + 40;
+
+        var arc = d3.svg.arc()
+            .innerRadius(r)
+            .outerRadius(r + 1000)
+            .startAngle(rad(0))
+            .endAngle(rad(360));
+
+        var titleArc = root.append("path")
+            .attr("d", arc)
+            .attr("transform", "translate(" + x + "," + y + ") ");
+
+        titleArc.on("click", function () {
+            x = width / 2;
+            y = height / 2;
+            arc.innerRadius(0.1);
+            arc.outerRadius(nodeRadius);
+            titleArc.transition()
+                .duration(1000)
+                .attr("d", arc)
+                .attr("transform", "translate(" + x + "," + y + ")");
+        });
+    }
+
+    toolbarAnimation();
+
+
+    let view = root.append("g")
         .attr("class", "circles");
 
 
@@ -142,7 +183,6 @@ app.controller("main", function ($scope, $mdDialog) {
 
     loadNode(currentLink, function (link) {
         showNode(link);
-        openDialog(link);
     });
 
 
@@ -193,11 +233,11 @@ app.controller("main", function ($scope, $mdDialog) {
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        var show = setInterval(function() {
+                        var show = setInterval(function () {
                             codeEditor.refresh();
                             runEditor.refresh();
                         }, 10);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             clearInterval(show);
                         }, 500);
                     });
