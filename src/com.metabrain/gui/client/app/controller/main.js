@@ -150,30 +150,31 @@ app.controller("main", function ($scope, $mdDialog) {
 
         $mdDialog.show({
             controller: function ($scope, link) {
-                $scope.source_code = "    function showNode(link) {\n" +
-                    "        currentLink = link;\n" +
-                    "        let showNode = nodes[currentLink];\n" +
-                    "        let circles = view.selectAll(\"circle\")\n" +
-                    "            .data(showNode.local || []);\n" +
+                $scope.source_code =
+                    "function showNode(link) {\n" +
+                    "    currentLink = link;\n" +
+                    "    let showNode = nodes[currentLink];\n" +
+                    "    let circles = view.selectAll(\"circle\")\n" +
+                    "        .data(showNode.local || []);\n" +
                     "\n" +
-                    "        circles.exit().remove();\n" +
-                    "        circles.enter().append(\"circle\");\n" +
-                    "        circles\n" +
-                    "            .attr(\"r\", function (link) {\n" +
-                    "                return getStyleValue(link, \"r\", 20);\n" +
-                    "            })\n" +
-                    "            .attr(\"cx\", function (link) {\n" +
-                    "                return getStyleValue(link, \"x\", 0);\n" +
-                    "            })\n" +
-                    "            .attr(\"cy\", function (link) {\n" +
-                    "                return getStyleValue(link, \"y\", 0);\n" +
-                    "            })\n" +
-                    "            .on(\"dblclick\", function (link) {\n" +
-                    "                d3.event.stopPropagation();\n" +
-                    "                openDialog(link)\n" +
-                    "            })\n" +
-                    "            .call(drag);\n" +
-                    "    }\n";
+                    "    circles.exit().remove();\n" +
+                    "    circles.enter().append(\"circle\");\n" +
+                    "    circles\n" +
+                    "        .attr(\"r\", function (link) {\n" +
+                    "            return getStyleValue(link, \"r\", 20);\n" +
+                    "        })\n" +
+                    "        .attr(\"cx\", function (link) {\n" +
+                    "            return getStyleValue(link, \"x\", 0);\n" +
+                    "        })\n" +
+                    "        .attr(\"cy\", function (link) {\n" +
+                    "            return getStyleValue(link, \"y\", 0);\n" +
+                    "        })\n" +
+                    "        .on(\"dblclick\", function (link) {\n" +
+                    "            d3.event.stopPropagation();\n" +
+                    "            openDialog(link)\n" +
+                    "        })\n" +
+                    "        .call(drag);\n" +
+                    "}\n";
 
                 $scope.link = link;
                 $scope.close = function () {
@@ -181,20 +182,25 @@ app.controller("main", function ($scope, $mdDialog) {
                 };
                 $scope.onload = function () {
                     setTimeout(function () {
-                        let codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+                        var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
                             styleActiveLine: true,
+                            matchBrackets: true,
+                            lineNumbers: true,
+                            scrollbarStyle: "simple",
+                            theme: "darcula"
+                        });
+                        var runEditor = CodeMirror.fromTextArea(document.getElementById("run_code"), {
                             matchBrackets: true,
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        let runEditor = CodeMirror.fromTextArea(document.getElementById("run_code"), {
-                            matchBrackets: true,
-                            theme: "darcula"
-                        });
-                        setTimeout(function () {
+                        codeEditor.setSize('100%', '100%');
+                        var show = setInterval(function() {
                             codeEditor.refresh();
-                            runEditor.refresh();
-                        });
+                        }, 10);
+                        setTimeout(function() {
+                            clearInterval(show);
+                        }, 500);
                     });
                 };
             },
