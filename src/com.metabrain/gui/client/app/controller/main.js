@@ -10,10 +10,6 @@ app.controller("main", function ($scope, $mdDialog) {
 
     let currentLink = N + 0;
 
-    let data = d3.range(20).map(function () {
-        return [Math.random() * width, Math.random() * height];
-    });
-
     let zoom = d3.behavior.zoom()
         .on("zoom", zoomed);
 
@@ -61,6 +57,123 @@ app.controller("main", function ($scope, $mdDialog) {
             .on("click", arcTween(outerRadius, 0))
             .on("mouseout", arcTween(outerRadius - 20, 150));*/
 
+
+    let view = root.append("g")
+        .attr("class", "circles");
+
+
+    let drag = d3.behavior.drag()
+        .origin(function (d) {
+            return d;
+        })
+        .on("dragstart", dragstarted)
+        .on("drag", dragged)
+        .on("dragend", dragended);
+
+    let centerOffset;
+
+    function dragstarted(d) {
+        hideMenu();
+        startTime = new Date();
+        d3.event.sourceEvent.stopPropagation();
+        let clickPos = d3.mouse(this);
+        let circle = d3.select(this);
+        centerOffset = [circle.attr("cx") - clickPos[0], circle.attr("cy") - clickPos[1]];
+        circle.classed("dragging", true);
+    }
+
+    function dragged() {
+        let pos = d3.mouse(this);
+        d3.select(this)
+            .attr("cx", pos[0] + centerOffset[0])
+            .attr("cy", pos[1] + centerOffset[1]);
+    }
+
+    function dragended(link) {
+        let circle = d3.select(this);
+        circle.classed("dragging", false);
+        if (new Date() - startTime > 300) {//long click{
+            showMenu(this);
+            d3.event.stopPropagation();
+        }
+
+        let pos = d3.mouse(this);
+        setStyle(link, {
+            x: pos[0] + centerOffset[0],
+            y: pos[1] + centerOffset[1],
+        }, function () {
+            showNode(currentLink)
+        });
+    }
+
+
+    var resizeBtn;
+
+    function initResizeBtn() {
+        resizeBtn = view.append("circle")
+            .attr("class", "resize")
+            .style("opacity", 0)
+            .attr("r", nodeRadius)
+    }
+
+    initResizeBtn();
+
+    function showMenu(ths) {
+        let circle = d3.select(ths);
+        resizeBtn
+            .attr("cx", circle.attr("cx"))
+            .attr("cy", circle.attr("cy") - nodeRadius * 2 - 10)
+            .transition()
+            .duration(300)
+            .style("opacity", 1);
+    }
+
+    function hideMenu() {
+        if (resizeBtn.attr("opacity") !== 0)
+            resizeBtn.transition()
+                .duration(300)
+                .style("opacity", 0)
+    }
+
+    function zoomed() {
+        view.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+    }
+
+    function nozoom() {
+        d3.event.preventDefault();
+    }
+
+    function showNode(link) {
+        currentLink = link;
+        let showNode = nodes[currentLink];
+        let circles = view.selectAll(".node")
+            .data(showNode.local || []);
+
+        circles.exit().remove();
+        circles.enter().append("circle");
+        circles.attr("class", "node")
+            .attr("r", function (link) {
+                return getStyleValue(link, "r", 20);
+            })
+            .attr("cx", function (link) {
+                return getStyleValue(link, "x", 0);
+            })
+            .attr("cy", function (link) {
+                return getStyleValue(link, "y", 0);
+            })
+            .on("dblclick", function (link) {
+                d3.event.stopPropagation();
+                openDialog(link)
+            })
+            .call(drag);
+    }
+
+
+    loadNode(currentLink, function (link) {
+        showNode(link);
+    });
+
+
     function rad(val) {
         return val * (Math.PI / 180)
     }
@@ -92,132 +205,6 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     toolbarAnimation();
-
-
-    let view = root.append("g")
-        .attr("class", "circles");
-
-
-    let drag = d3.behavior.drag()
-        .origin(function (d) {
-            return d;
-        })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);
-
-    let centerOffset;
-
-    function dragstarted(d) {
-        startTime = new Date();
-        d3.event.sourceEvent.stopPropagation();
-
-        let clickPos = d3.mouse(this);
-        let circle = d3.select(this);
-        centerOffset = [circle.attr("cx") - clickPos[0], circle.attr("cy") - clickPos[1]];
-        circle.classed("dragging", true);
-    }
-
-    function dragged() {
-        let pos = d3.mouse(this);
-        d3.select(this)
-            .attr("cx", pos[0] + centerOffset[0])
-            .attr("cy", pos[1] + centerOffset[1]);
-    }
-
-    function dragended(link) {
-        let circle = d3.select(this);
-        circle.classed("dragging", false);
-        if (new Date() - startTime > 300) //long click
-            showMenu(circle);
-
-        let pos = d3.mouse(this);
-        setStyle(link, {
-            x: pos[0] + centerOffset[0],
-            y: pos[1] + centerOffset[1],
-        }, function () {
-            showNode(currentLink)
-        });
-    }
-
-    var menu = root.append("g")
-        .style("opacity", 0);
-
-    menu.append("circle")
-        .attr("class", "resizeMenu")
-        .attr("cx", 0)
-        .attr("cy", -nodeRadius * 2.5)
-        .attr("r", nodeRadius);
-
-    menu.append("circle")
-        .attr("class", "resizeMenu")
-        .attr("cx", -nodeRadius * 2.5)
-        .attr("cy", 0)
-        .attr("r", nodeRadius);
-
-    function showMenu(circle) {
-        menu.attr("transform", "translate(" + circle.attr("cx") + "," + circle.attr("cy") + ")")
-            .transition()
-            .duration(300)
-            .style("opacity", 1)
-    }
-
-    function hideMenu() {
-        menu.transition()
-            .duration(300)
-            .style("opacity", 0.0001)
-    }
-
-    view.selectAll("circle")
-        .data(data)
-        .enter().append("circle")
-        .attr("cx", function (d) {
-            return d[0];
-        })
-        .attr("cy", function (d) {
-            return d[1];
-        })
-        .attr("r", 32)
-        .call(drag);
-
-    function zoomed() {
-        view.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-    }
-
-    function nozoom() {
-        d3.event.preventDefault();
-    }
-
-    function showNode(link) {
-        currentLink = link;
-        let showNode = nodes[currentLink];
-        let circles = view.selectAll("circle")
-            .data(showNode.local || []);
-
-        circles.exit().remove();
-        circles.enter().append("circle");
-        circles
-            .attr("r", function (link) {
-                return getStyleValue(link, "r", 20);
-            })
-            .attr("cx", function (link) {
-                return getStyleValue(link, "x", 0);
-            })
-            .attr("cy", function (link) {
-                return getStyleValue(link, "y", 0);
-            })
-            .on("dblclick", function (link) {
-                d3.event.stopPropagation();
-                openDialog(link)
-            })
-            .call(drag);
-    }
-
-
-    loadNode(currentLink, function (link) {
-        showNode(link);
-    });
-
 
     let openDialog = function (link) {
 
