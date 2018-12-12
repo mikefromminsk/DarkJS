@@ -77,18 +77,17 @@ app.controller("main", function ($scope, $mdDialog) {
 
         var titleArc = root.append("path")
             .attr("d", arc)
-            .attr("transform", "translate(" + x + "," + y + ") ");
-
-        titleArc.on("click", function () {
-            x = width / 2;
-            y = height / 2;
-            arc.innerRadius(0.1);
-            arc.outerRadius(nodeRadius);
-            titleArc.transition()
-                .duration(1000)
-                .attr("d", arc)
-                .attr("transform", "translate(" + x + "," + y + ")");
-        });
+            .attr("transform", "translate(" + x + "," + y + ") ")
+            .on("click", function () {
+                x = width / 2;
+                y = height / 2;
+                arc.innerRadius(0.01);
+                arc.outerRadius(nodeRadius);
+                titleArc.transition()
+                    .duration(1000)
+                    .attr("d", arc)
+                    .attr("transform", "translate(" + x + "," + y + ")");
+            });
     }
 
     toolbarAnimation();
