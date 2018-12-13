@@ -11,6 +11,7 @@ import jdk.nashorn.internal.runtime.ParserException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,13 +50,8 @@ public class Server extends NanoHTTPD {
                             thread.updateNode(request);
                         Node node = thread.getNode(request.nodeLink, request.replacements);
 
-                        if (request.source_code != null) {
-                            try{
-                                thread.parse(node, request);
-                            } catch (ParserException e){
-
-                            }
-                        }
+                        if (request.source_code != null)
+                            thread.parse(node, request);
 
                         request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
@@ -71,7 +67,7 @@ public class Server extends NanoHTTPD {
             request.error = e.getMessage();
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            request.stack = errors.toString();
+            request.stack = Arrays.asList(errors.toString().split("\r\n\t"));
             responseString = json.toJson(request);
             System.out.println(responseString);
         }

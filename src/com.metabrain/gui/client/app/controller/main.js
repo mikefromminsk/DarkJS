@@ -241,10 +241,18 @@ app.controller("main", function ($scope, $mdDialog) {
                 $scope.result_node_show = true;
                 $scope.result_nodes = "";
                 $scope.link = link;
-                $scope.start = 0;
                 $scope.error = 1;
                 $scope.success = 2;
+                $scope.in_proccess = 3;
                 $scope.result_code = $scope.start;
+
+                $scope.result_code_color = function () {
+                    switch ($scope.result_code){
+                        case $scope.error: return "red";
+                        case $scope.success: return "green";
+                        case $scope.in_proccess: return "yellow";
+                    }
+                };
 
                 var codeEditor;
                 var runEditor;
@@ -279,32 +287,42 @@ app.controller("main", function ($scope, $mdDialog) {
                         }, 10);
                         setTimeout(function () {
                             clearInterval(show);
+                            $scope.run();
                         }, 500);
                     });
                 };
 
                 $scope.run = function () {
-                    $scope.result_code = $scope.success;
-                    parseJs($scope.link, $scope.source_code,
+                    $scope.result_code = $scope.in_proccess;
+                    var sourc_code = codeEditor.getValue();
+                    parseJs($scope.link, sourc_code,
                         function (link) {
                             var codeParsedSuccessful = getStyleValue(link, "source_code", "");
                             if (codeParsedSuccessful !== "") {
                                 runNode(link, function () {
 
+                                    $scope.result_code = $scope.success;
+                                    $scope.$apply();
+                                }, function () {
+                                    $scope.result_code = $scope.error;
+                                    $scope.$apply();
                                 })
                             }else{
 
                             }
+                        }, function () {
+                            $scope.result_code = $scope.error;
+                            $scope.$apply();
                         });
                 };
 
                 $scope.save = function () {
-                    setStyle($scope.link, {
+                    /*setStyle($scope.link, {
                         source_code: codeEditor.getValue()
                     }, function (link) {
                         $scope.showNode(link);
                         $scope.close();
-                    });
+                    });*/
                 }
             },
             templateUrl: 'app/template/main_dialog.html',

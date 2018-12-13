@@ -14,5 +14,5 @@ public class GetNodeBody {
     public Map<String, String> replacements;
     public Map<String, Map<String, Object>> nodes;
     public String error;
-    public String stack;
+    public List<String> stack;
 }

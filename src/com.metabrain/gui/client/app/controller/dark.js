@@ -101,10 +101,14 @@ let http = function (method, endpoint, params, success, error, async) {
                 } catch (e) {
                     error("Json parse error", xhr.response);
                 }
-                if (object != null)
-                    success(object)
+                if (object != null) {
+                    if (object.error != null || object.stack != null)
+                        error(object.error, xhr.response);
+                    else
+                        success(object)
+                }
             } else {
-                error(xhr.status);
+                error(xhr.status, xhr.response);
             }
         }
     };

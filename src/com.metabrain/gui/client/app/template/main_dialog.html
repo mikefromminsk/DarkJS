@@ -28,7 +28,7 @@
         <md-button class="md-icon-button"
                    ng-click="run()">
             <md-icon md-font-icon="fa fa-play"
-                     ng-style="{ 'color': (result_code == start? '#00bb00' : 'yellow') }"></md-icon>
+                     ng-style="{ 'color': result_code_color() }"></md-icon>
         </md-button>
     </div>
     <div class="layout-column" ng-show="result_node_show">
