@@ -5,6 +5,11 @@
         <div class="layout-row layout-align-center-center">
             <h2 style="color: white">Mango (Fruit){{number}}</h2>
             <span class="flex"></span>
+            <md-button class="md-button"
+                       style="background-color: #9e9e9e; color: #000;"
+                       ng-click="save()">
+                Save
+            </md-button>
             <md-button class="md-icon-button" ng-click="close()">
                 <md-icon md-font-icon="fa fa-times"></md-icon>
             </md-button>
@@ -22,7 +27,8 @@
         <textarea id="run_code" class="flex" >func(123, "wwerer");</textarea>
         <md-button class="md-icon-button"
                    ng-click="run()">
-            <md-icon md-font-icon="fa fa-play" style="color: #00bb00;"></md-icon>
+            <md-icon md-font-icon="fa fa-play"
+                     ng-style="{ 'color': (result_code == start? '#00bb00' : 'yellow') }"></md-icon>
         </md-button>
     </div>
     <div class="layout-column" ng-show="result_node_show">

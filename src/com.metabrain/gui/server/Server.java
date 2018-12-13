@@ -6,7 +6,10 @@ import com.google.gson.GsonBuilder;
 import com.metabrain.djs.refactored.Formatter;
 import com.metabrain.djs.refactored.node.Node;
 import com.metabrain.gui.server.model.GetNodeBody;
+import jdk.nashorn.internal.runtime.ParserException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +47,16 @@ public class Server extends NanoHTTPD {
                         request.replacements = new HashMap<>();
                         if (request.nodes != null)
                             thread.updateNode(request);
-                        if (request.run != null && request.run)
-                            thread.runNode(request);
                         Node node = thread.getNode(request.nodeLink, request.replacements);
+
+                        if (request.source_code != null) {
+                            try{
+                                thread.parse(node, request);
+                            } catch (ParserException e){
+
+                            }
+                        }
+
                         request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
                         break;
@@ -57,6 +67,12 @@ public class Server extends NanoHTTPD {
             }
 
         } catch (Exception e) {
+            GetNodeBody request = new GetNodeBody();
+            request.error = e.getMessage();
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            request.stack = errors.toString();
+            responseString = json.toJson(request);
             e.printStackTrace();
         }
         NanoHTTPD.Response response =

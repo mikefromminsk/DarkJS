@@ -1,12 +1,14 @@
 package com.metabrain.gui.server;
 
 import com.metabrain.djs.refactored.Formatter;
+import com.metabrain.djs.refactored.Parser;
 import com.metabrain.djs.refactored.Runner;
 import com.metabrain.djs.refactored.node.LinkType;
 import com.metabrain.djs.refactored.node.Node;
 import com.metabrain.djs.refactored.node.NodeBuilder;
 import com.metabrain.djs.refactored.node.NodeType;
 import com.metabrain.gui.server.model.GetNodeBody;
+import jdk.nashorn.internal.runtime.ParserException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,5 +99,10 @@ public class DjsThread extends Runner {
             return new NodeBuilder().get(nodeId).getNode();
         }
         return null;
+    }
+
+    public void parse(Node module, GetNodeBody body) throws ParserException {
+        Parser parser = new Parser();
+        parser.parse(module, body.source_code);
     }
 }

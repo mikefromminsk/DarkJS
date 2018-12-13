@@ -196,3 +196,13 @@ function runNode(link, success, error) {
         success(link, data);
     }, error);
 }
+
+function parseJs(link, code, success, error) {
+    request({
+        nodeLink: link,
+        source_code: code
+    }, function (data) {
+        successResponse(data, success);
+        success(link);
+    }, error);
+}

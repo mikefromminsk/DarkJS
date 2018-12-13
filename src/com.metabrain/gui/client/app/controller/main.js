@@ -42,10 +42,11 @@ app.controller("main", function ($scope, $mdDialog) {
                         y: pos[1],
                         r: nodeRadius,
                     }, function () {
-                        showNode(currentLink)
+                        $scope.showNode(currentLink)
                     })
                 });
             }
+            var ss = $scope.close;
             d3.select(this).transition()
                 .style("fill", "black")
                 .transition()
@@ -135,7 +136,7 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function posDst(a, b) {
-        return  Math.pow(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2), 0.5);
+        return Math.pow(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2), 0.5);
     }
 
     function getTranslate(ths) {
@@ -162,11 +163,11 @@ app.controller("main", function ($scope, $mdDialog) {
             x: translate[0],
             y: translate[1],
         }, function () {
-            showNode(currentLink)
+            $scope.showNode(currentLink)
         });
     }
 
-    function showNode(link) {
+    $scope.showNode = function (link) {
         currentLink = link;
         let showNode = nodes[currentLink];
         view.selectAll(".node").remove();
@@ -179,7 +180,7 @@ app.controller("main", function ($scope, $mdDialog) {
             })
             .on("dblclick", function (link) {
                 d3.event.stopPropagation();
-                openDialog(link)
+                $scope.openDialog(link)
             })
             .call(drag);
 
@@ -194,8 +195,8 @@ app.controller("main", function ($scope, $mdDialog) {
 
 
     loadNode(currentLink, function (link) {
-        showNode(link);
-        openDialog(link);
+        $scope.showNode(link);
+        $scope.openDialog(link);
     });
 
 
@@ -231,61 +232,42 @@ app.controller("main", function ($scope, $mdDialog) {
 
     toolbarAnimation();
 
-    let openDialog = function (link) {
+    $scope.openDialog = function (link) {
 
         $mdDialog.show({
             controller: function ($scope, link) {
+                $scope.showNode(link);
                 $scope.source_code = getStyleValue(link, "source_code", "");
                 $scope.result_node_show = true;
-                $scope.result_nodes = "{\n" +
-                    "  \"nodeLink\": \"n0\",\n" +
-                    "  \"replacements\": {},\n" +
-                    "  \"nodes\": {\n" +
-                    "    \"n0\": {\n" +
-                    "      \"local\": [\n" +
-                    "        \"n1\"\n" +
-                    "      ]\n" +
-                    "    },\n" +
-                    "    \"n1\": {\n" +
-                    "      \"style\": [\n" +
-                    "        \"n2\",\n" +
-                    "        \"n3\",\n" +
-                    "        \"n4\"\n" +
-                    "      ]\n" +
-                    "    },\n" +
-                    "    \"n2\": {\n" +
-                    "      \"title\": \"!x\",\n" +
-                    "      \"value\": \"337\"\n" +
-                    "    },\n" +
-                    "    \"n3\": {\n" +
-                    "      \"title\": \"!y\",\n" +
-                    "      \"value\": \"228\"\n" +
-                    "    },\n" +
-                    "    \"n4\": {\n" +
-                    "      \"title\": \"!r\",\n" +
-                    "      \"value\": \"20\"\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}";
+                $scope.result_nodes = "";
                 $scope.link = link;
+                $scope.start = 0;
+                $scope.error = 1;
+                $scope.success = 2;
+                $scope.result_code = $scope.start;
+
+                var codeEditor;
+                var runEditor;
+                var resultEditor;
+
                 $scope.close = function () {
                     $mdDialog.hide();
                 };
                 $scope.onload = function () {
                     setTimeout(function () {
-                        var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+                        codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
                             styleActiveLine: true,
                             matchBrackets: true,
                             lineNumbers: true,
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        var runEditor = CodeMirror.fromTextArea(document.getElementById("run_code"), {
+                        runEditor = CodeMirror.fromTextArea(document.getElementById("run_code"), {
                             matchBrackets: true,
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
-                        var resultEditor = CodeMirror.fromTextArea(document.getElementById("result"), {
+                        resultEditor = CodeMirror.fromTextArea(document.getElementById("result"), {
                             matchBrackets: true,
                             scrollbarStyle: "simple",
                             theme: "darcula"
@@ -302,13 +284,26 @@ app.controller("main", function ($scope, $mdDialog) {
                 };
 
                 $scope.run = function () {
-                    setStyle($scope.link, {
-                        source_code: $scope.source_code
-                    }, function (link, data) {
-                        runNode(link, function () {
-                            $scope.result_nodes = data;
-                            $scope.result_node_show = true;
+                    $scope.result_code = $scope.success;
+                    parseJs($scope.link, $scope.source_code,
+                        function (link) {
+                            var codeParsedSuccessful = getStyleValue(link, "source_code", "");
+                            if (codeParsedSuccessful !== "") {
+                                runNode(link, function () {
+
+                                })
+                            }else{
+
+                            }
                         });
+                };
+
+                $scope.save = function () {
+                    setStyle($scope.link, {
+                        source_code: codeEditor.getValue()
+                    }, function (link) {
+                        $scope.showNode(link);
+                        $scope.close();
                     });
                 }
             },
@@ -316,6 +311,7 @@ app.controller("main", function ($scope, $mdDialog) {
             locals: {
                 link: link
             },
+            scope: $scope.$new(),
             clickOutsideToClose: true,
             fullscreen: true,
         }).then(function (answer) {
