@@ -74,8 +74,8 @@ app.controller("main", function ($scope, $mdDialog) {
     initResizeBtn();
 
     function showMenu(ths) {
-        let circle = d3.transform(d3.select(ths)).translate;
-        resizeBtn.attr("transform", tr(circle[0], circle[1] - nodeRadius * 2 - 10))
+        var translate = tr(posSum(getTranslate(ths), [0, - nodeRadius * 2 - 10]));
+        resizeBtn.attr("transform", translate)
             .transition()
             .duration(300)
             .style("opacity", 1);
@@ -89,7 +89,7 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function zoomed() {
-        view.attr("transform", tr(d3.event.translate.x, d3.event.translate.y, d3.event.scale));
+        view.attr("transform", tr(d3.event.translate, d3.event.scale));
     }
 
     function nozoom() {
@@ -106,48 +106,54 @@ app.controller("main", function ($scope, $mdDialog) {
         .on("dragend", dragended);
 
     let centerOffset;
-
-    function getX(ths) {
-        return d3.transform(ths.attr("transform")).translate[0];
-    }
-
-    function getY(ths) {
-        return d3.transform(ths.attr("transform")).translate[1];
-    }
-
     function dragstarted(d) {
         hideMenu();
         startTime = new Date();
         d3.event.sourceEvent.stopPropagation();
-        let clickPos = d3.mouse(this);
-        let circle = d3.select(this);
-        centerOffset = [getX(circle) - clickPos[0], getY(circle) - clickPos[1]];
-        circle.classed("dragging", true);
+        let node = d3.select(this);
+        let nodeTranslate = d3.transform(node.attr("transform")).translate;
+        centerOffset = [0,0]//posSuB(nodeTranslate, d3.mouse(this));
+        node.classed("dragging", true);
     }
 
     function tr(x, y, s) {
-        return "translate(" + x + "," + y + ")" + (s === undefined ? "" : "scale(" + s + ")");
+        if (typeof x === "object"){
+            y = x[1];
+            x = x[0];
+        }
+        return "translate(" + Math.floor(x) + "," + Math.floor(y) + ")" + (s === undefined ? "" : "scale(" + s + ")");
     }
 
-    function tr(x, y, s) {
-        if (typeof x === "object")
-            return "translate(" + x + ")" + (y === undefined ? "" : "scale(" + y + ")");
-        return "translate(" + x + "," + y + ")" + (s === undefined ? "" : "scale(" + s + ")");
+    function posSum(a, b){
+        return [a[0] + b[0], a[1] + b[1]];
+    }
+
+    function posSuB(a, b){
+        return [a[0] - b[0], a[1] - b[1]];
+    }
+
+    function getTranslate(ths){
+        return d3.transform(d3.select(ths).attr("transform")).translate
     }
 
     function dragged() {
-        d3.select(this).attr("transform", tr(d3.mouse(this)));
+        /*let pos = d3.mouse(this);
+        d3.select(this)
+            .attr("cx", pos[0] + centerOffset[0])
+            .attr("cy", pos[1] + centerOffset[1]);*/
+        var tra =  tr(posSum(getTranslate(this), d3.mouse(this)));
+        d3.select(this).attr("transform", tra);
     }
 
     function dragended(link) {
-        let circle = d3.select(this);
-        circle.classed("dragging", false);
+        let node = d3.select(this);
+        node.classed("dragging", false);
         if (new Date() - startTime > 300) {//long click{
             showMenu(this);
             // d3.event.stopPropagation();
         }
 
-        let pos = d3.mouse(this);
+        let pos = posSum(getTranslate(this), d3.mouse(this));
         setStyle(link, {
             x: pos[0] + centerOffset[0],
             y: pos[1] + centerOffset[1],
@@ -165,7 +171,10 @@ app.controller("main", function ($scope, $mdDialog) {
             .append("g")
             .attr("class", "node")
             .attr("transform", function (link) {
-                return tr(getStyleValue(link, "x", 0), getStyleValue(link, "y", 0));
+                var x = getStyleValue(link, "x", 0);
+                var y = getStyleValue(link, "y", 0);
+                var translate =  tr(x, y);
+                return translate;
             })
             .on("dblclick", function (link) {
                 d3.event.stopPropagation();
