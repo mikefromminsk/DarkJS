@@ -53,7 +53,8 @@ function getStyleValue(nodeLink, styleTitle, defValue) {
             for (let i = 0; i < node.style.length; i++) {
                 let styleLink = node.style[i];
                 let styleNode = nodes[styleLink];
-                if (styleNode.title === styleTitle && styleNode.value != null)
+                if (styleNode.title === styleTitle && styleNode.value != null
+                    && !styleNode.value.startsWith(N) && !styleNode.value.startsWith(W))
                     return decodeValue(styleNode.value);
             }
         }

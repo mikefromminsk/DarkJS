@@ -74,7 +74,7 @@ app.controller("main", function ($scope, $mdDialog) {
     initResizeBtn();
 
     function showMenu(ths) {
-        var translate = tr(posSum(getTranslate(ths), [0, - nodeRadius * 2 - 10]));
+        var translate = tr(posSum(getTranslate(ths), [0, -nodeRadius * 2 - 10]));
         resizeBtn.attr("transform", translate)
             .transition()
             .duration(300)
@@ -106,38 +106,40 @@ app.controller("main", function ($scope, $mdDialog) {
         .on("dragend", dragended);
 
     let centerOffset;
+    let startDragPos;
+
     function dragstarted(d) {
         hideMenu();
         startTime = new Date();
         d3.event.sourceEvent.stopPropagation();
         let node = d3.select(this);
-        let nodeTranslate = d3.transform(node.attr("transform")).translate;
+        //startDragPos = getTranslate(node);
         centerOffset = d3.mouse(this);
         node.classed("dragging", true);
     }
 
     function tr(x, y, s) {
-        if (typeof x === "object"){
+        if (typeof x === "object") {
             y = x[1];
             x = x[0];
         }
         return "translate(" + Math.floor(x) + "," + Math.floor(y) + ")" + (s === undefined ? "" : "scale(" + s + ")");
     }
 
-    function posSum(a, b){
+    function posSum(a, b) {
         return [a[0] + b[0], a[1] + b[1]];
     }
 
-    function posSub(a, b){
+    function posSub(a, b) {
         return [a[0] - b[0], a[1] - b[1]];
     }
 
-    function getTranslate(ths){
+    function getTranslate(ths) {
         return d3.transform(d3.select(ths).attr("transform")).translate
     }
 
     function dragged() {
-        var translate =  tr(
+        var translate = tr(
             posSum(
                 posSub(getTranslate(this), centerOffset),
                 d3.mouse(this)));
@@ -171,7 +173,7 @@ app.controller("main", function ($scope, $mdDialog) {
             .attr("transform", function (link) {
                 var x = getStyleValue(link, "x", 0);
                 var y = getStyleValue(link, "y", 0);
-                var translate =  tr(x, y);
+                var translate = tr(x, y);
                 return translate;
             })
             .on("dblclick", function (link) {
