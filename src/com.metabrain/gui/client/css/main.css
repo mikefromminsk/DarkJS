@@ -32,9 +32,7 @@ div, img, span {
     height:100%;
     width:100%;
 }
-/*
-.CodeMirror {
-    font-size: 16px;
-    height: 100%;
+
+.md-mini md-icon{
+    font-size: 20px
 }
-*/

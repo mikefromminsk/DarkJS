@@ -106,20 +106,20 @@ app.controller("main", function ($scope, $mdDialog) {
         .on("dragend", dragended);
 
     let centerOffset;
-    let startDragPos;
+    var startDragPos;
 
     function dragstarted(d) {
         hideMenu();
         startTime = new Date();
         d3.event.sourceEvent.stopPropagation();
-        let node = d3.select(this);
-        //startDragPos = getTranslate(node);
+        startDragPos = getTranslate(this);
         centerOffset = d3.mouse(this);
-        node.classed("dragging", true);
+        d3.select(this).classed("dragging", true);
     }
 
     function tr(x, y, s) {
         if (typeof x === "object") {
+            s = y;
             y = x[1];
             x = x[0];
         }
@@ -132,6 +132,10 @@ app.controller("main", function ($scope, $mdDialog) {
 
     function posSub(a, b) {
         return [a[0] - b[0], a[1] - b[1]];
+    }
+
+    function posDst(a, b) {
+        return  Math.pow(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2), 0.5);
     }
 
     function getTranslate(ths) {
@@ -147,13 +151,13 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function dragended(link) {
+        var translate = getTranslate(this);
         let node = d3.select(this);
         node.classed("dragging", false);
-        if (new Date() - startTime > 300) {//long click{
+        if (new Date() - startTime > 300 //long click{
+            && posDst(startDragPos, translate) < 20) {
             showMenu(this);
-            // d3.event.stopPropagation();
         }
-        var translate = getTranslate(this);
         setStyle(link, {
             x: translate[0],
             y: translate[1],
@@ -171,10 +175,7 @@ app.controller("main", function ($scope, $mdDialog) {
             .append("g")
             .attr("class", "node")
             .attr("transform", function (link) {
-                var x = getStyleValue(link, "x", 0);
-                var y = getStyleValue(link, "y", 0);
-                var translate = tr(x, y);
-                return translate;
+                return tr(getStyleValue(link, "x", 0), getStyleValue(link, "y", 0));
             })
             .on("dblclick", function (link) {
                 d3.event.stopPropagation();
@@ -194,6 +195,7 @@ app.controller("main", function ($scope, $mdDialog) {
 
     loadNode(currentLink, function (link) {
         showNode(link);
+        openDialog(link);
     });
 
 
@@ -233,31 +235,38 @@ app.controller("main", function ($scope, $mdDialog) {
 
         $mdDialog.show({
             controller: function ($scope, link) {
-                $scope.source_code =
-                    "function showNode(link) {\n" +
-                    "    currentLink = link;\n" +
-                    "    let showNode = nodes[currentLink];\n" +
-                    "    let circles = view.selectAll(\"circle\")\n" +
-                    "        .data(showNode.local || []);\n" +
-                    "    circles.exit().remove();\n" +
-                    "    circles.enter().append(\"circle\");\n" +
-                    "    circles\n" +
-                    "        .attr(\"r\", function (link) {\n" +
-                    "            return getStyleValue(link, \"r\", 20);\n" +
-                    "        })\n" +
-                    "        .attr(\"cx\", function (link) {\n" +
-                    "            return getStyleValue(link, \"x\", 0);\n" +
-                    "        })\n" +
-                    "        .attr(\"cy\", function (link) {\n" +
-                    "            return getStyleValue(link, \"y\", 0);\n" +
-                    "        })\n" +
-                    "        .on(\"dblclick\", function (link) {\n" +
-                    "            d3.event.stopPropagation();\n" +
-                    "            openDialog(link)\n" +
-                    "        })\n" +
-                    "        .call(drag);\n" +
-                    "}\n";
-
+                $scope.source_code = getStyleValue(link, "source_code", "");
+                $scope.result_node_show = true;
+                $scope.result_nodes = "{\n" +
+                    "  \"nodeLink\": \"n0\",\n" +
+                    "  \"replacements\": {},\n" +
+                    "  \"nodes\": {\n" +
+                    "    \"n0\": {\n" +
+                    "      \"local\": [\n" +
+                    "        \"n1\"\n" +
+                    "      ]\n" +
+                    "    },\n" +
+                    "    \"n1\": {\n" +
+                    "      \"style\": [\n" +
+                    "        \"n2\",\n" +
+                    "        \"n3\",\n" +
+                    "        \"n4\"\n" +
+                    "      ]\n" +
+                    "    },\n" +
+                    "    \"n2\": {\n" +
+                    "      \"title\": \"!x\",\n" +
+                    "      \"value\": \"337\"\n" +
+                    "    },\n" +
+                    "    \"n3\": {\n" +
+                    "      \"title\": \"!y\",\n" +
+                    "      \"value\": \"228\"\n" +
+                    "    },\n" +
+                    "    \"n4\": {\n" +
+                    "      \"title\": \"!r\",\n" +
+                    "      \"value\": \"20\"\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}";
                 $scope.link = link;
                 $scope.close = function () {
                     $mdDialog.hide();
@@ -276,15 +285,32 @@ app.controller("main", function ($scope, $mdDialog) {
                             scrollbarStyle: "simple",
                             theme: "darcula"
                         });
+                        var resultEditor = CodeMirror.fromTextArea(document.getElementById("result"), {
+                            matchBrackets: true,
+                            scrollbarStyle: "simple",
+                            theme: "darcula"
+                        });
                         var show = setInterval(function () {
                             codeEditor.refresh();
                             runEditor.refresh();
+                            resultEditor.refresh();
                         }, 10);
                         setTimeout(function () {
                             clearInterval(show);
                         }, 500);
                     });
                 };
+
+                $scope.run = function () {
+                    setStyle($scope.link, {
+                        source_code: $scope.source_code
+                    }, function (link, data) {
+                        runNode(link, function () {
+                            $scope.result_nodes = data;
+                            $scope.result_node_show = true;
+                        });
+                    });
+                }
             },
             templateUrl: 'app/template/main_dialog.html',
             locals: {

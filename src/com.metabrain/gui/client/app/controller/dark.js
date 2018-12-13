@@ -186,3 +186,13 @@ function loadNode(link, success, error) {
         success(link);
     }, error);
 }
+
+function runNode(link, success, error) {
+    request({
+        nodeLink: link,
+        run: true
+    }, function (data) {
+        successResponse(data, success);
+        success(link, data);
+    }, error);
+}
