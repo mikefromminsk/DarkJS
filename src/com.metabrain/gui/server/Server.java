@@ -73,7 +73,7 @@ public class Server extends NanoHTTPD {
             e.printStackTrace(new PrintWriter(errors));
             request.stack = errors.toString();
             responseString = json.toJson(request);
-            e.printStackTrace();
+            System.out.println(responseString);
         }
         NanoHTTPD.Response response =
                 NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, APPLICATION_JSON, responseString);
