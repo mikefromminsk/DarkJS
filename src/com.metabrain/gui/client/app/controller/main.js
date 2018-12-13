@@ -112,7 +112,7 @@ app.controller("main", function ($scope, $mdDialog) {
         d3.event.sourceEvent.stopPropagation();
         let node = d3.select(this);
         let nodeTranslate = d3.transform(node.attr("transform")).translate;
-        centerOffset = [0,0]//posSuB(nodeTranslate, d3.mouse(this));
+        centerOffset = d3.mouse(this);
         node.classed("dragging", true);
     }
 
@@ -128,7 +128,7 @@ app.controller("main", function ($scope, $mdDialog) {
         return [a[0] + b[0], a[1] + b[1]];
     }
 
-    function posSuB(a, b){
+    function posSub(a, b){
         return [a[0] - b[0], a[1] - b[1]];
     }
 
@@ -137,12 +137,11 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
     function dragged() {
-        /*let pos = d3.mouse(this);
-        d3.select(this)
-            .attr("cx", pos[0] + centerOffset[0])
-            .attr("cy", pos[1] + centerOffset[1]);*/
-        var tra =  tr(posSum(getTranslate(this), d3.mouse(this)));
-        d3.select(this).attr("transform", tra);
+        var translate =  tr(
+            posSum(
+                posSub(getTranslate(this), centerOffset),
+                d3.mouse(this)));
+        d3.select(this).attr("transform", translate);
     }
 
     function dragended(link) {
@@ -152,11 +151,10 @@ app.controller("main", function ($scope, $mdDialog) {
             showMenu(this);
             // d3.event.stopPropagation();
         }
-
-        let pos = posSum(getTranslate(this), d3.mouse(this));
+        var translate = getTranslate(this);
         setStyle(link, {
-            x: pos[0] + centerOffset[0],
-            y: pos[1] + centerOffset[1],
+            x: translate[0],
+            y: translate[1],
         }, function () {
             showNode(currentLink)
         });
