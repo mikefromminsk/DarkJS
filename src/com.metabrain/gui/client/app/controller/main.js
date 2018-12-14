@@ -247,10 +247,13 @@ app.controller("main", function ($scope, $mdDialog) {
                 $scope.result_code = $scope.start;
 
                 $scope.result_code_color = function () {
-                    switch ($scope.result_code){
-                        case $scope.error: return "red";
-                        case $scope.success: return "green";
-                        case $scope.in_proccess: return "yellow";
+                    switch ($scope.result_code) {
+                        case $scope.error:
+                            return "red";
+                        case $scope.success:
+                            return "green";
+                        case $scope.in_proccess:
+                            return "yellow";
                     }
                 };
 
@@ -297,19 +300,14 @@ app.controller("main", function ($scope, $mdDialog) {
                     var sourc_code = codeEditor.getValue();
                     parseJs($scope.link, sourc_code,
                         function (link) {
-                            var codeParsedSuccessful = getStyleValue(link, "source_code", "");
-                            if (codeParsedSuccessful !== "") {
-                                runNode(link, function () {
+                            runNode(link, function () {
 
-                                    $scope.result_code = $scope.success;
-                                    $scope.$apply();
-                                }, function () {
-                                    $scope.result_code = $scope.error;
-                                    $scope.$apply();
-                                })
-                            }else{
-
-                            }
+                                $scope.result_code = sourc_code;
+                                $scope.$apply();
+                            }, function () {
+                                $scope.result_code = $scope.error;
+                                $scope.$apply();
+                            })
                         }, function () {
                             $scope.result_code = $scope.error;
                             $scope.$apply();

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DjsThread extends Runner {
+public class DjsThread {
 
     private static void setLink(NodeBuilder builder, Node node, byte linkType, Map<String, Node> replacementTable, String itemStr) {
         Node linkValueNode = null;
@@ -88,7 +88,10 @@ public class DjsThread extends Runner {
         }
     }
 
-    void runNode(GetNodeBody getNodeBody) {
+    private Runner runner = new Runner();
+
+    synchronized void runNode(Node node) {
+        runner.run(node);
     }
 
     public Node getNode(String nodeLink, Map<String, String> replacements) {

@@ -46,12 +46,17 @@ public class Server extends NanoHTTPD {
                     case "node":
                         GetNodeBody request = json.fromJson(body, GetNodeBody.class);
                         request.replacements = new HashMap<>();
+
                         if (request.nodes != null)
                             thread.updateNode(request);
+
                         Node node = thread.getNode(request.nodeLink, request.replacements);
 
                         if (request.source_code != null)
                             thread.parse(node, request);
+
+                        if (request.run != null)
+                            thread.runNode(node);
 
                         request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
