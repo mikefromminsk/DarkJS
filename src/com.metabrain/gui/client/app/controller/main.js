@@ -192,7 +192,9 @@ app.controller("main", function ($scope, $mdDialog) {
             });
         nodeList.append("text")
             .attr("dx", nodeRadius + 10)
-            .text(showNode.title);
+            .text(function (link) {
+                return getTitle(link)
+            });
     }
 
 
@@ -282,7 +284,7 @@ app.controller("main", function ($scope, $mdDialog) {
                 };
 
                 $scope.save = function () {
-                    parseJs(moduleLink, codeEditor.getValue(),
+                    parseAndRunNode(moduleLink, codeEditor.getValue(),
                         function () {
                             $scope.close();
                         }, function (link, data) {
@@ -290,9 +292,6 @@ app.controller("main", function ($scope, $mdDialog) {
                             resultEditor.setValue(JSON.stringify(data, null, '\t'));
                             $scope.$apply();
                         });
-                };
-
-                $scope.run = function () {
                 };
 
             },

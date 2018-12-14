@@ -188,12 +188,20 @@ function runNode(link, success, error) {
     }, error);
 }
 
-function parseJs(link, code, success, error) {
+function parseAndRunNode(link, code, success, error) {
     request({
         nodeLink: link,
-        source_code: code
+        source_code: code,
+        run: true
     }, function (data) {
         successResponse(data, success);
         success(link);
     }, error);
+}
+
+
+function getTitle(link) {
+    if (nodes[link] != null && nodes[link].title != null)
+        return nodes[link].title.substr(1);
+    return "";
 }
