@@ -8,7 +8,7 @@ app.controller("main", function ($scope, $mdDialog) {
 
     let startTime;
 
-    let currentLink = N + 0;
+   var  currentLink = N + 0;
 
     let zoom = d3.behavior.zoom()
         .on("zoom", zoomed);
@@ -176,7 +176,9 @@ app.controller("main", function ($scope, $mdDialog) {
             .append("g")
             .attr("class", "node")
             .attr("transform", function (link) {
-                return tr(getStyleValue(link, "x", 0), getStyleValue(link, "y", 0));
+                var x = getStyleValue(link, "x", 0);
+                var y = getStyleValue(link, "y", 0);
+                return tr(x, y);
             })
             .on("dblclick", function (link) {
                 d3.event.stopPropagation();
@@ -194,10 +196,7 @@ app.controller("main", function ($scope, $mdDialog) {
     }
 
 
-    loadNode(currentLink, function (link) {
-        $scope.showNode(link);
-        $scope.openDialog(link);
-    });
+    loadNode(currentLink, $scope.showNode);
 
 
     function rad(val) {
@@ -235,33 +234,19 @@ app.controller("main", function ($scope, $mdDialog) {
     $scope.openDialog = function (link) {
 
         $mdDialog.show({
-            controller: function ($scope, link) {
-                $scope.showNode(link);
-                $scope.source_code = getStyleValue(link, "source_code", "");
+            controller: function ($scope, moduleLink, link) {
+                $scope.source_code = getStyleValue(moduleLink, "source_code", "");
                 $scope.result_node_show = true;
                 $scope.result_nodes = "";
                 $scope.link = link;
-                $scope.error = 1;
-                $scope.success = 2;
-                $scope.in_proccess = 3;
-                $scope.result_code = $scope.start;
-
-                $scope.result_code_color = function () {
-                    switch ($scope.result_code) {
-                        case $scope.error:
-                            return "red";
-                        case $scope.success:
-                            return "green";
-                        case $scope.in_proccess:
-                            return "yellow";
-                    }
-                };
+                $scope.title = "Title";
 
                 var codeEditor;
                 var runEditor;
                 var resultEditor;
 
                 $scope.close = function () {
+                    loadNode(moduleLink, $scope.showNode);
                     $mdDialog.hide();
                 };
                 $scope.onload = function () {
@@ -281,8 +266,10 @@ app.controller("main", function ($scope, $mdDialog) {
                         resultEditor = CodeMirror.fromTextArea(document.getElementById("result"), {
                             matchBrackets: true,
                             scrollbarStyle: "simple",
+                            lineNumbers: true,
                             theme: "darcula"
                         });
+
                         var show = setInterval(function () {
                             codeEditor.refresh();
                             runEditor.refresh();
@@ -290,41 +277,28 @@ app.controller("main", function ($scope, $mdDialog) {
                         }, 10);
                         setTimeout(function () {
                             clearInterval(show);
-                            $scope.run();
                         }, 500);
                     });
                 };
 
-                $scope.run = function () {
-                    $scope.result_code = $scope.in_proccess;
-                    var sourc_code = codeEditor.getValue();
-                    parseJs($scope.link, sourc_code,
-                        function (link) {
-                            runNode(link, function () {
-
-                                $scope.result_code = sourc_code;
-                                $scope.$apply();
-                            }, function () {
-                                $scope.result_code = $scope.error;
-                                $scope.$apply();
-                            })
-                        }, function () {
-                            $scope.result_code = $scope.error;
+                $scope.save = function () {
+                    parseJs(moduleLink, codeEditor.getValue(),
+                        function () {
+                            $scope.close();
+                        }, function (link, data) {
+                            $scope.result_node_show = true;
+                            resultEditor.setValue(JSON.stringify(data, null, '\t'));
                             $scope.$apply();
                         });
                 };
 
-                $scope.save = function () {
-                    /*setStyle($scope.link, {
-                        source_code: codeEditor.getValue()
-                    }, function (link) {
-                        $scope.showNode(link);
-                        $scope.close();
-                    });*/
-                }
+                $scope.run = function () {
+                };
+
             },
             templateUrl: 'app/template/main_dialog.html',
             locals: {
+                moduleLink: currentLink,
                 link: link
             },
             scope: $scope.$new(),

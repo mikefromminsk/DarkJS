@@ -21,41 +21,28 @@ function merge(source, object, append) {
             }
 }
 
-function isNumeric(num) {
-    return !isNaN(num)
-}
-
-function decodeValue(value) {
-    if (isNumeric(value))
-        return parseFloat(value);
-    if (value.startsWith("!"))
-        return value.substr(1);
-    if (value === "true")
-        return true;
-    if (value === "false")
-        return false;
-}
-
 function encodeValue(value) {
-    if (typeof value === "number")
-        return "" + value;
     if (typeof value === "string")
         return "!" + value;
-    if (typeof value === "boolean")
-        return value ? "true" : "false";
+    return value;
 }
 
-function getStyleValue(nodeLink, styleTitle, defValue) {
-    if (nodeLink.startsWith(N)) {
-        let node = nodes[nodeLink];
-        if (node.style != null) {
+function getStyleValue(link, styleTitle, defValue) {
+    if (link != null && link.startsWith(N)) {
+        let node = nodes[link];
+        if (node != null && node.style != null) {
             styleTitle = "!" + styleTitle;
             for (let i = 0; i < node.style.length; i++) {
                 let styleLink = node.style[i];
                 let styleNode = nodes[styleLink];
-                if (styleNode.title === styleTitle && styleNode.value != null
-                    && !styleNode.value.startsWith(N) && !styleNode.value.startsWith(W))
-                    return decodeValue(styleNode.value);
+                if (styleNode.title === styleTitle && styleNode.value != null) {
+                    if (typeof styleNode.value === "string") {
+                        if (styleNode.value.startsWith("!"))
+                            return styleNode.value.substr(1);
+                    } else {
+                        return styleNode.value;
+                    }
+                }
             }
         }
     }
@@ -65,7 +52,7 @@ function getStyleValue(nodeLink, styleTitle, defValue) {
 function setStyleValue(nodeLink, styleTitle, styleValue) {
     styleTitle = "!" + styleTitle;
     let node = nodes[nodeLink];
-    if (node.style != null)
+    if (node != null && node.style != null)
         for (let i = 0; i < node.style.length; i++) {
             let styleLink = node.style[i];
             let styleNode = nodes[styleLink];

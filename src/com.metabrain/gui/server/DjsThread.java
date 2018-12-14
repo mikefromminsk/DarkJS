@@ -79,8 +79,8 @@ public class DjsThread {
                         for (Object item : (ArrayList) obj)
                             if (item instanceof String)
                                 setLink(builder, node, linkType, replacementTable, (String) item);
-                    } else if (obj instanceof String) {
-                        setLink(builder, node, linkType, replacementTable, (String) obj);
+                    } else {
+                        setLink(builder, node, linkType, replacementTable, "" + obj);
                     }
             }
 
