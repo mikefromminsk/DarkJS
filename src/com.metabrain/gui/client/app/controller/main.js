@@ -3,6 +3,8 @@ app.controller("main", function ($scope, $mdDialog) {
     let width = 700,
         height = 500;
 
+    let centerPos = [width / 2, height / 2];
+
     var nodeRadius = 20;
 
     let startTime;
@@ -22,8 +24,8 @@ app.controller("main", function ($scope, $mdDialog) {
 
     let root = svg.append("g")
         .call(d3.behavior.zoom()
-            .on("zoom", function zoomed() {
-                view.attr("transform", tr(d3.event.translate, d3.event.scale));
+            .on("zoom", function () {
+                view.attr("transform", tr(posSum(centerPos, d3.event.translate), d3.event.scale));
             }));
 
     root.append("rect")
@@ -45,7 +47,7 @@ app.controller("main", function ($scope, $mdDialog) {
                         y: pos[1],
                         r: nodeRadius,
                     }, function () {
-                        $scope.showNode(currentLink)
+                        showNode(currentLink)
                     })
                 });
             }
@@ -57,7 +59,8 @@ app.controller("main", function ($scope, $mdDialog) {
 
 
     let view = root.append("g")
-        .attr("class", "circles");
+        .attr("class", "circles")
+        .attr("transform", tr(width / 2, height / 2));
 
     var resizeBtn = view.append("circle")
         .attr("class", "resize")
@@ -83,7 +86,7 @@ app.controller("main", function ($scope, $mdDialog) {
     let centerOffset;
     var startDragPos;
 
-    $scope.showNode = function (link) {
+    var showNode = function (link) {
         currentLink = link;
         let showNode = nodes[currentLink];
         view.selectAll(".node").remove();
@@ -131,7 +134,7 @@ app.controller("main", function ($scope, $mdDialog) {
                         x: translate[0],
                         y: translate[1],
                     }, function () {
-                        $scope.showNode(currentLink)
+                        showNode(currentLink)
                     });
                 }));
 
@@ -144,35 +147,77 @@ app.controller("main", function ($scope, $mdDialog) {
             .text(function (link) {
                 return getTitle(link)
             });
+
+        var tt = tr(getTranslate(view.node()), 1.0);
+        view.attr("transform", tt)
+            .transition().duration(1000)
+            .style("opacity", 1)
     };
 
 
-    loadNode(currentLink, $scope.showNode);
+    loadNode(currentLink, showNode);
 
     function toolbarAnimation() {
         var r = 10000;
-        var x = width / 2;
-        var y = r + 40;
-
-        var arc = d3.svg.arc()
-            .innerRadius(r)
-            .outerRadius(r + 1000)
-            .startAngle(rad(0))
-            .endAngle(rad(360));
-
-        var titleArc = root.append("path")
-            .attr("d", arc)
-            .attr("transform", tr(x, y))
+        var title2 = root.append("path")
+            .attr("class", "title2")
+            .attr("fill", "red");
+        root.append("path")
+            .attr("class", "title1")
+            .attr("d", d3.svg.arc()
+                .innerRadius(r)
+                .outerRadius(r + 1000)
+                .startAngle(rad(0))
+                .endAngle(rad(360)))
+            .attr("transform", tr(width / 2, r + 40))
             .on("click", function () {
-                x = width / 2;
-                y = height / 2;
-                arc.innerRadius(0.01);
-                arc.outerRadius(nodeRadius);
-                titleArc.transition()
+                d3.select(this).transition().duration(1000)
+                    .attr("d", d3.svg.arc()
+                        .innerRadius(0.01)
+                        .outerRadius(nodeRadius)
+                        .startAngle(rad(0))
+                        .endAngle(rad(360)))
+                    .attr("transform", tr(width / 2, height / 2))
+                    .each("end", function () {
+                        d3.select(this).transition().duration(1000)
+                            .style("opacity", 0)
+                            .each("end", function () {
+                                d3.select(this)
+                                    .style("opacity", 1)
+                                    .attr("d", d3.svg.arc()
+                                        .innerRadius(r)
+                                        .outerRadius(r + 1000)
+                                        .startAngle(rad(0))
+                                        .endAngle(rad(360)))
+                                    .attr("transform", tr(width / 2, r + 40));
+                            });
+
+                        title2.transition()
+                            .delay(500)
+                            .duration(1000)
+                            .style("opacity", 1);
+
+                    });
+
+                title2
+                    .attr("d", d3.svg.arc()
+                        .innerRadius(r)
+                        .outerRadius(r + 1000)
+                        .startAngle(rad(0))
+                        .endAngle(rad(360)))
+                    .attr("transform", tr(width / 2, r))
+                    .transition()
                     .duration(1000)
-                    .attr("d", arc)
-                    .attr("transform", tr(x, y));
+                    .attr("transform", tr(width / 2, r + 40));
+
+                view.transition().duration(1000)
+                    .attr("transform", tr(getTranslate(view.node()), 0.001))
+                    .style("opacity", 0)
+                    .each("end", function () {
+                        showNode(currentLink);
+                    })
             });
+
     }
 
     toolbarAnimation();
