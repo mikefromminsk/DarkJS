@@ -8,6 +8,8 @@ app.controller("main", function ($scope, $mdDialog) {
     var nodeRadius = 20;
 
     let startTime;
+    var clickTimer;
+    var lastDragTime;
 
     var currentLink = N + 0;
 
@@ -22,11 +24,12 @@ app.controller("main", function ($scope, $mdDialog) {
         .attr("width", width)
         .attr("height", height);
 
+    let zoom = d3.behavior.zoom()
+        .on("zoom", function () {
+            view.attr("transform", tr(posSum(posMul(centerPos, d3.event.scale), d3.event.translate), d3.event.scale));
+        });
     let root = svg.append("g")
-        .call(d3.behavior.zoom()
-            .on("zoom", function () {
-                view.attr("transform", tr(posSum(centerPos, d3.event.translate), d3.event.scale));
-            }));
+        .call(zoom);
 
     root.append("rect")
         .attr("width", width)
@@ -85,23 +88,31 @@ app.controller("main", function ($scope, $mdDialog) {
 
     let centerOffset;
     var startDragPos;
+    var backStack = [];
 
-    var showNode = function (link) {
+    function nextNode(link) {
+        backStack.push(link);
+        showNode(link);
+    }
+
+    function backNode() {
+        var lastNode = backStack.pop();
+        showNode(lastNode);
+    }
+
+    function showNode(link) {
         currentLink = link;
-        let showNode = nodes[currentLink];
+
+        let node = nodes[currentLink];
         view.selectAll(".node").remove();
         let nodeList = view.selectAll(".node")
-            .data(showNode.local || []).enter()
+            .data(node.local || []).enter()
             .append("g")
             .attr("class", "node")
             .attr("transform", function (link) {
                 var x = getStyleValue(link, "x", 0);
                 var y = getStyleValue(link, "y", 0);
                 return tr(x, y);
-            })
-            .on("dblclick", function (link) {
-                d3.event.stopPropagation();
-                openCodeEditor($mdDialog, $scope.$new(), currentLink, link)
             })
             .call(d3.behavior.drag()
                 .origin(function (d) {
@@ -110,32 +121,48 @@ app.controller("main", function ($scope, $mdDialog) {
                 .on("dragstart", function (d) {
                     hideMenu();
                     startTime = new Date();
+                    clearTimeout(clickTimer);
                     d3.event.sourceEvent.stopPropagation();
                     startDragPos = getTranslate(this);
                     centerOffset = d3.mouse(this);
                     d3.select(this).classed("dragging", true);
                 })
                 .on("drag", function () {
-                    var translate = tr(
-                        posSum(
-                            posSub(getTranslate(this), centerOffset),
-                            d3.mouse(this)));
+                    var translate = tr(posSum(posSub(getTranslate(this), centerOffset),d3.mouse(this)));
                     d3.select(this).attr("transform", translate);
                 })
                 .on("dragend", function (link) {
                     var translate = getTranslate(this);
                     let node = d3.select(this);
                     node.classed("dragging", false);
-                    if (new Date() - startTime > 300 //long click{
-                        && posDst(startDragPos, translate) < 20) {
-                        showMenu(this);
+                    var nowTime = new Date();
+
+                    var isLongClick = nowTime - startTime > 300;
+                    var isMoved = posDst(startDragPos, translate) > 20;
+
+                    if (nowTime - lastDragTime < 300) {
+                        //d3.event.stopPropagation();
+                        openCodeEditor($mdDialog, $scope.$new(), currentLink, link, function () {
+                            loadNode(currentLink, showNode);
+                        })
+                    } else {
+                        if (isLongClick && !isMoved) {
+                            showMenu(this);
+                        }
+                        if (!isLongClick && !isMoved) {
+                            clickTimer = setTimeout(function () {
+                                console.log(link)
+                            }, 300);
+                        }
                     }
-                    setStyle(link, {
-                        x: translate[0],
-                        y: translate[1],
-                    }, function () {
-                        showNode(currentLink)
-                    });
+                    lastDragTime = new Date();
+
+                    if (isMoved) {
+                        setStyle(link, {
+                            x: translate[0],
+                            y: translate[1],
+                        });
+                    }
                 }));
 
         nodeList.append("circle")
@@ -148,14 +175,18 @@ app.controller("main", function ($scope, $mdDialog) {
                 return getTitle(link)
             });
 
-        var tt = tr(getTranslate(view.node()), 1.0);
-        view.attr("transform", tt)
+        view.attr("transform", tr(getTranslate(view.node()), 3))
+            .style("opacity", 0)
             .transition().duration(1000)
+            .attr("transform", tr(centerPos, 1))
             .style("opacity", 1)
+            .each("end", function () {
+                zoom.scale(1).translate([0,0]);
+            })
     };
 
 
-    loadNode(currentLink, showNode);
+    loadNode(currentLink, nextNode);
 
     function toolbarAnimation() {
         var r = 10000;
@@ -214,7 +245,7 @@ app.controller("main", function ($scope, $mdDialog) {
                     .attr("transform", tr(getTranslate(view.node()), 0.001))
                     .style("opacity", 0)
                     .each("end", function () {
-                        showNode(currentLink);
+                        backNode();
                     })
             });
 

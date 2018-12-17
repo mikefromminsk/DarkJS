@@ -12,6 +12,10 @@ function posSum(a, b) {
     return [a[0] + b[0], a[1] + b[1]];
 }
 
+function posMul(a, b) {
+    return [a[0] * b, a[1] * b];
+}
+
 function posSub(a, b) {
     return [a[0] - b[0], a[1] - b[1]];
 }

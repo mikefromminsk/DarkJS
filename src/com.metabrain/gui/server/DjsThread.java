@@ -23,7 +23,7 @@ public class DjsThread {
             linkValueNode = builder.create(NodeType.BOOL)
                     .setData(itemStr)
                     .commit();
-        if (itemStr.charAt(0) >= '0' && itemStr.charAt(0) <= '9')
+        if (itemStr.charAt(0) >= '0' && itemStr.charAt(0) <= '9' || itemStr.charAt(0) == '-')
             linkValueNode = builder.create(NodeType.NUMBER)
                     .setData(itemStr)
                     .commit();

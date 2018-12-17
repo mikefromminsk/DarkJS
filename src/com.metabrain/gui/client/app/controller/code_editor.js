@@ -1,4 +1,4 @@
-function openCodeEditor($mdDialog, $scope_new, currentLink, link) {
+function openCodeEditor($mdDialog, $scope_new, currentLink, link, close) {
 
     $mdDialog.show({
         controller: function ($scope, moduleLink, link) {
@@ -13,7 +13,7 @@ function openCodeEditor($mdDialog, $scope_new, currentLink, link) {
             var resultEditor;
 
             $scope.close = function () {
-                loadNode(moduleLink, $scope.showNode);
+                close();
                 $mdDialog.hide();
             };
             $scope.onload = function () {
@@ -68,7 +68,5 @@ function openCodeEditor($mdDialog, $scope_new, currentLink, link) {
         scope: $scope_new,
         clickOutsideToClose: true,
         fullscreen: true,
-    }).then(function (answer) {
-    }, function () {
     });
 }

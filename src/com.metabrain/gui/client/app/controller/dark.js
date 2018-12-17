@@ -147,7 +147,8 @@ function setStyle(link, styleObj, success, error) {
             nodes: changes
         }, function (data) {
             successResponse(data, success);
-            success(data.replacements[data.nodeLink] || data.nodeLink);
+            if (success != null)
+                success(data.replacements[data.nodeLink] || data.nodeLink);
         }, error);
     }
 }
