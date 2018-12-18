@@ -1,6 +1,5 @@
 app.controller("editor_node", function ($scope, $mdDialog) {
 
-
     setTimeout(function () {
         let canvasElement = document.getElementById("canvas");
         let width = canvasElement.offsetWidth;
