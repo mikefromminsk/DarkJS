@@ -1,11 +1,11 @@
 app.config(function($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl : "app/template/main.html",
-            controller: "main"
-        })/*
-        .when("/enter_space", {
-            templateUrl : "app/template/enter_space.html",
-            controller: "enter_space"
-        })*/;
+            templateUrl : "app/template/menu.html",
+            controller: "menu"
+        })
+        .when("/editor", {
+            templateUrl : "app/template/editor_node.html",
+            controller: "editor_node"
+        });
 });

@@ -1,4 +1,4 @@
-app.controller("main", function ($scope, $mdDialog) {
+app.controller("editor_node", function ($scope, $mdDialog) {
 
     let width = 700,
         height = 500;
