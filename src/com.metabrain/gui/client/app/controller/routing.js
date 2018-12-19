@@ -11,5 +11,9 @@ app.config(function($routeProvider) {
         .when("/diagrams", {
             templateUrl : "app/template/diagrams.html",
             controller: "diagrams"
+        })
+        .when("/wiki", {
+            templateUrl : "app/template/wiki.html",
+            controller: "wiki"
         });
 });

@@ -1,4 +1,4 @@
-app.controller("diagrams", function ($scope, $mdDialog) {
+app.controller("wiki", function ($scope, $mdDialog) {
 
     setTimeout(function () {
 
