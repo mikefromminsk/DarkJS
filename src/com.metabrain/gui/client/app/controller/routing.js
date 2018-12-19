@@ -7,5 +7,9 @@ app.config(function($routeProvider) {
         .when("/editor", {
             templateUrl : "app/template/editor_node.html",
             controller: "editor_node"
+        })
+        .when("/diagrams", {
+            templateUrl : "app/template/diagrams.html",
+            controller: "diagrams"
         });
 });
