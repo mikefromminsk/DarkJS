@@ -84,14 +84,10 @@ app.controller("menu", function ($scope, $mdDialog) {
             var newMenu = root.append('g');
 
             var donutData = [
-                {name: "Antelope", value: 15},
-                {name: "Bear", value: 9},
-                {name: "Cheetah", value: 19},
-                {name: "Dolphin", value: 12},
-                {name: "Elephant", value: 14},
-                {name: "Flamingo", value: 21},
-                {name: "Giraffe", value: 18},
-                {name: "Other", value: 8}
+                {name: "Wiki", value: 10, page: "wiki"},
+                {name: "Plans", value: 10, page: "diagrams"},
+                {name: "GrapfDB", value: 10, page: "diagrams"},
+                {name: "Download", value: 10, page: "diagrams"},
             ];
 
             //Create a color scale
@@ -169,6 +165,9 @@ app.controller("menu", function ($scope, $mdDialog) {
                     d3.select(this).transition()
                         .duration(300)
                         .attr("d", arc);
+                })
+                .on("click", function (d) {
+                    $scope.go(d.data.page);
                 });
 
             //Append the label names on the outside
@@ -195,14 +194,33 @@ app.controller("menu", function ($scope, $mdDialog) {
         function initCenter(){
 
             let scale = 1.5;
-            let logoRect = [90, 100];
-            let centerNodePoints = [[45, 0], [0, 25], [0, 75], [45, 100], [90, 75], [90, 25], [45, 0]];
+            let centerNodePoints = [[0, -50], [-45, -25], [-45, 25], [0, 50], [45, 25], [45, -25], [0, -50]];
             let lineGenerator = d3.svg.line();
             let pathString = lineGenerator(centerNodePoints);
-            root.append('path')
+            var center = root.append("g")
+                .on("mouseover", function (d) {
+                    d3.select(this).transition()
+                        .duration(300)
+                        .attr("transform", tr(null, 1.5));
+                })
+                .on("mouseout", function (d) {
+                    d3.select(this).transition()
+                        .duration(300)
+                        .attr("transform", tr(null, 1));
+                })
+                .on("click", function () {
+                    $scope.go("editor")
+                });
+            center.append('path')
                 .attr('d', pathString)
                 .attr("fill", "#000000")
-                .attr("transform", tr(posMul(logoRect, scale / -2), scale));
+                .attr("transform", tr(null, scale));
+            center.append("text")
+                .attr("fill", "white")
+                .attr("dy", 10)
+                .style("text-anchor", "middle")
+                .style("font-size", 40)
+                .text("DarkJS");
         }
 
 

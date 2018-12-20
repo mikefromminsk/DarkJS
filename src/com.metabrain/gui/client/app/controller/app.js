@@ -7,7 +7,8 @@ let isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webO
 app.controller("app", function ($scope, $location, $window, $http) {
 
     $scope.go = function (path) {
-        $location.url(path);
+        $location.url( path);
+        $scope.$apply()
     };
 
     $scope.back = function () {
