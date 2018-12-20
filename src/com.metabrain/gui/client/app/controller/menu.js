@@ -88,6 +88,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {name: "Plans", value: 10, page: "diagrams"},
                 {name: "GrapfDB", value: 10, page: "diagrams"},
                 {name: "Download", value: 10, page: "diagrams"},
+                {name: "DarkJS vs JS", value: 10, page: "diagrams"},
             ];
 
             //Create a color scale
