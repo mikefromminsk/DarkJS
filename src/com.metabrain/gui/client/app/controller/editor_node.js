@@ -65,7 +65,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
 
         let view = root.append("g")
             .attr("class", "circles")
-            .attr("transform", tr(width / 2, height / 2));
+            .attr("transform", tr([width / 2, height / 2]));
 
         var resizeBtn = view.append("circle")
             .attr("class", "resize")
@@ -114,7 +114,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                 .attr("transform", function (link) {
                     var x = getStyleValue(link, "x", 0);
                     var y = getStyleValue(link, "y", 0);
-                    return tr(x, y);
+                    return tr([x, y]);
                 })
                 .call(d3.behavior.drag()
                     .origin(function (d) {
@@ -202,7 +202,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                     .outerRadius(r + 1000)
                     .startAngle(rad(0))
                     .endAngle(rad(360)))
-                .attr("transform", tr(width / 2, r + 40))
+                .attr("transform", tr([width / 2, r + 40]))
                 .on("click", function () {
                     d3.select(this).transition().duration(1000)
                         .attr("d", d3.svg.arc()
@@ -210,7 +210,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                             .outerRadius(nodeRadius)
                             .startAngle(rad(0))
                             .endAngle(rad(360)))
-                        .attr("transform", tr(width / 2, height / 2))
+                        .attr("transform", tr([width / 2, height / 2]))
                         .each("end", function () {
                             d3.select(this).transition().duration(1000)
                                 .style("opacity", 0)
@@ -222,7 +222,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                                             .outerRadius(r + 1000)
                                             .startAngle(rad(0))
                                             .endAngle(rad(360)))
-                                        .attr("transform", tr(width / 2, r + 40));
+                                        .attr("transform", tr([width / 2, r + 40]));
                                 });
 
                             title2.transition()
@@ -238,10 +238,10 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                             .outerRadius(r + 1000)
                             .startAngle(rad(0))
                             .endAngle(rad(360)))
-                        .attr("transform", tr(width / 2, r))
+                        .attr("transform", tr([width / 2, r]))
                         .transition()
                         .duration(1000)
-                        .attr("transform", tr(width / 2, r + 40));
+                        .attr("transform", tr([width / 2, r + 40]));
 
                     view.transition().duration(1000)
                         .attr("transform", tr(getTranslate(view.node()), 0.001))

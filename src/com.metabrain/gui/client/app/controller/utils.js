@@ -1,11 +1,7 @@
-
-function tr(x, y, s) {
-    if (typeof x === "object") {
-        s = y;
-        y = x[1];
-        x = x[0];
-    }
-    return "translate(" + Math.floor(x) + "," + Math.floor(y) + ")" + (s === undefined ? "" : "scale(" + s + ")");
+function tr(translate, scale, rotate) {
+    return (translate == null ? "" : "translate(" + translate + ")")
+        + (scale == null ? "" : "scale(" + scale + ")")
+        + (rotate == null ? "" : "rotate(" + rotate % 360 + ")");
 }
 
 function posSum(a, b) {
@@ -28,6 +24,10 @@ function posDst(a, b) {
     return Math.pow(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2), 0.5);
 }
 
+function hyp(a, b) {
+    return Math.pow(Math.pow(a, 2) + Math.pow(b, 2), 0.5);
+}
+
 function getTranslate(ths) {
     return d3.transform(d3.select(ths).attr("transform")).translate
 }
@@ -36,6 +36,11 @@ function rad(val) {
     return val * (Math.PI / 180)
 }
 
-function url(path){
+function url(path) {
     return "/client/" + path
 }
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+

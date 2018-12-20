@@ -72,7 +72,7 @@ app.controller("menu", function ($scope, $mdDialog) {
 
             let t = d3.timer(function (elapsed) {
                 back.attr("transform", function (data) {
-                    return "rotate(" + (data.reverse || false ? -1 : 1) * Math.floor(elapsed / data.speed) % 360 + ")";
+                    return tr(null, null, (data.reverse || false ? -1 : 1) * Math.floor(elapsed / data.speed));
                 });
                 if (elapsed > 15000) t.stop()
             });
