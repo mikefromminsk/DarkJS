@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.metabrain.djs.Formatter;
 import com.metabrain.djs.node.Node;
+import com.metabrain.djs.node.NodeStorage;
+import com.metabrain.djs.node.NodeStorageTest;
 import com.metabrain.gui.client.WebGuiRoot;
 import com.metabrain.gui.server.model.GetNodeBody;
 import org.apache.commons.io.FilenameUtils;
@@ -38,6 +40,12 @@ public class Server extends NanoHTTPD {
         return s.hasNext() ? s.next() : "";
     }
 
+    static String createJsonResponse(Object object) {
+        return "{\n" +
+                " response: " + json.toJson(object) + "\n" +
+                "}";
+    }
+
     @Override
     public Response serve(IHTTPSession session) {
         NanoHTTPD.Response response = null;
@@ -68,6 +76,14 @@ public class Server extends NanoHTTPD {
 
                         request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
+                        break;
+                    case "testStart":
+                        NodeStorageTest.startTest();
+                        responseString = createJsonResponse(true);
+                        break;
+                    case "testProgress":
+                        NodeStorageTest.startTest();
+                        responseString = createJsonResponse(NodeStorageTest.out);
                         break;
                     case "stop":
                         System.exit(0);

@@ -26,7 +26,7 @@ public class Main {
         try {
             Server server = new Server(post);
             server.start();
-            openWebpage(URI.create("http://localhost:" + post));
+            //openWebpage(URI.create("http://localhost:" + post));
             server.join();
         } catch (Exception e) {
             e.printStackTrace();

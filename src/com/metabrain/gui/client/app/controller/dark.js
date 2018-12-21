@@ -109,10 +109,13 @@ let http = function (method, endpoint, params, success, error, async) {
     xhr.send(stringParams);
 };
 
-let request = function (params, success, error) {
-    http("POST", remoteHost + 'node', params, success, error, true);
+let request = function (url, params, success, error) {
+    http("POST", remoteHost + url, params, success, error, true);
 };
 
+let nodeRequest = function (params, success, error) {
+    request('node', params, success, error);
+};
 
 let lastNewId = 0;
 
@@ -142,7 +145,7 @@ function setStyle(link, styleObj, success, error) {
                 let keyLink = setStyleValue(link, key, styleObj[key]);
                 changes[keyLink] = nodes[keyLink];
             }
-        request({
+        nodeRequest({
             nodeLink: link,
             nodes: changes
         }, function (data) {
@@ -161,7 +164,7 @@ function createLocalNode(parent, success, error) {
         changes[parent].local = [];
     changes[parent].local.push(link);
     changes[link] = {};
-    request({
+    nodeRequest({
         nodeLink: parent,
         nodes: changes
     }, function (data) {
@@ -171,7 +174,7 @@ function createLocalNode(parent, success, error) {
 }
 
 function loadNode(link, success, error) {
-    request({
+    nodeRequest({
         nodeLink: link
     }, function (data) {
         successResponse(data, success);
@@ -180,7 +183,7 @@ function loadNode(link, success, error) {
 }
 
 function runNode(link, success, error) {
-    request({
+    nodeRequest({
         nodeLink: link,
         run: true
     }, function (data) {
@@ -190,7 +193,7 @@ function runNode(link, success, error) {
 }
 
 function parseAndRunNode(link, code, success, error) {
-    request({
+    nodeRequest({
         nodeLink: link,
         source_code: code,
         run: true

@@ -113,7 +113,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "GrapfDB", value: 10,
                     click: function () {
-                        $scope.go("wiki")
+                        $scope.go("gdb")
                     }
                 },
                 {
