@@ -5,12 +5,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.metabrain.djs.Formatter;
 import com.metabrain.djs.node.Node;
+import com.metabrain.gui.client.WebGuiRoot;
 import com.metabrain.gui.server.model.GetNodeBody;
-import jdk.nashorn.internal.runtime.ParserException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,14 +33,18 @@ public class Server extends NanoHTTPD {
         myThread.join();
     }
 
+    static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
     @Override
     public Response serve(IHTTPSession session) {
-
-        String responseString = null;
-        try {
-            URI uri = new URI(session.getUri());
-
-            if (session.getMethod() == NanoHTTPD.Method.POST) {
+        NanoHTTPD.Response response = null;
+        if (session.getMethod() == NanoHTTPD.Method.POST) {
+            String responseString = null;
+            try {
+                URI uri = new URI(session.getUri());
 
                 Map<String, String> files = new HashMap<>();
                 session.parseBody(files);
@@ -65,21 +73,46 @@ public class Server extends NanoHTTPD {
                         System.exit(0);
                         break;
                 }
-            }
 
-        } catch (Exception e) {
-            GetNodeBody request = new GetNodeBody();
-            request.error = e.getMessage();
-            StringWriter errors = new StringWriter();
-            e.printStackTrace(new PrintWriter(errors));
-            request.stack = Arrays.asList(errors.toString().split("\r\n\t"));
-            responseString = json.toJson(request);
-            System.out.println(responseString);
+            } catch (Exception e) {
+                GetNodeBody request = new GetNodeBody();
+                request.error = e.getMessage();
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                request.stack = Arrays.asList(errors.toString().split("\r\n\t"));
+                responseString = json.toJson(request);
+                System.out.println(responseString);
+            }
+            response = NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, APPLICATION_JSON, responseString);
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+
+        } else if (session.getMethod() == NanoHTTPD.Method.GET) {
+            try {
+                URI uri = new URI(session.getUri());
+                String fileName = WebGuiRoot.class.getPackage().getName().replace('.', '/')
+                        + (uri.getPath().equals("/") ? "/index.html" : uri.getPath());
+                InputStream fileStream = getClass().getClassLoader().getResourceAsStream(fileName);
+                if (fileStream == null)
+                    throw new FileNotFoundException();
+
+                String fileData = convertStreamToString(fileStream);
+
+                String mimeType = URLConnection.guessContentTypeFromName(FilenameUtils.getName(uri.getPath()));
+                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, fileData);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                response = NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND,
+                        NanoHTTPD.MIME_PLAINTEXT,
+                        Response.Status.NOT_FOUND.getDescription());
+            }
         }
-        NanoHTTPD.Response response =
-                NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, APPLICATION_JSON, responseString);
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+        if (response == null)
+            response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR,
+                    NanoHTTPD.MIME_PLAINTEXT,
+                    Response.Status.INTERNAL_ERROR.getDescription());
         return response;
     }
 

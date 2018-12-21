@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WebGui.iml" filepath="$PROJECT_DIR$/WebGui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DarkJs.iml" filepath="$PROJECT_DIR$/DarkJs.iml" />
     </modules>
   </component>
 </project>
