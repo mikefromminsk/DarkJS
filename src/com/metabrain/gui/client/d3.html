@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/d3/d3.min.js"></script>
+</head>
+<body>
+
+<script>
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", 800)
+        .attr("height", 800);
+
+    svg.selectAll("text")
+        .data([4, 8, 15, 16, 23, 42])
+        .enter().append("text")
+        .text(function (d) {
+            return "I’m number " + d + "!";
+        })
+        .attr("x", 50)
+        .attr("y", function (d, i) {
+            return 20 * i;
+        });
+
+    svg.transition()
+        .duration(1000).delay(1000)
+        .style("background-color", "red");
+
+    svg.append('image')
+        .attr('xlink:href', 'http://upload.wikimedia.org/wikipedia/commons/b/b0/NewTux.svg')
+        .attr('width', 200)
+        .attr('height', 200)
+        .attr("x", 50)
+        .attr("y", 300)
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .selectAll("line")
+        .data(d3.range(0, width, 10))
+        .enter().append("line")
+        .attr("x1", function (d) {
+            return d;
+        })
+        .attr("y1", 0)
+        .attr("x2", function (d) {
+            return d;
+        })
+        .attr("y2", height);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .selectAll("line")
+        .data(d3.range(0, height, 10))
+        .enter().append("line")
+        .attr("x1", 0)
+        .attr("y1", function (d) {
+            return d;
+        })
+        .attr("x2", width)
+        .attr("y2", function (d) {
+            return d;
+        });
+
+    var distance = function (pos1, pos2) {
+        return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+    };
+
+
+</script>
+</body>
+</html>
