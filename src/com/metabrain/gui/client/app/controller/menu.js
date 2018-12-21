@@ -20,7 +20,7 @@ app.controller("menu", function ($scope, $mdDialog) {
         initCenter();
 
 
-        function initBackground(){
+        function initBackground() {
             var backCirclesData = [{
                 inner: 180,
                 outer: 200,
@@ -79,16 +79,55 @@ app.controller("menu", function ($scope, $mdDialog) {
         }
 
 
-        function initDonutMenu(){
+        function initDonutMenu() {
 
+            function downloadLink(link) {
+                var anchor = angular.element('<a/>');
+                anchor.css({display: 'none'}); // Make sure it's not visible
+                angular.element(document.body).append(anchor); // Attach to document
+
+                anchor.attr({
+                    href: link,
+                    target: '_blank',
+                    download: link.substring(link.lastIndexOf('/') + 1)
+                })[0].click();
+                anchor.remove();
+            }
+
+            $scope.download_link = url("darkjs.jar");
             var newMenu = root.append('g');
 
             var donutData = [
-                {name: "Wiki", value: 10, page: "wiki"},
-                {name: "Plans", value: 10, page: "diagrams"},
-                {name: "GrapfDB", value: 10, page: "diagrams"},
-                {name: "Download", value: 10, page: "diagrams"},
-                {name: "DarkJS vs JS", value: 10, page: "diagrams"},
+                {
+                    name: "Wiki", value: 10,
+                    click: function () {
+                        $scope.go("wiki")
+                    }
+                },
+                {
+                    name: "Plans", value: 10,
+                    click: function () {
+                        $scope.go("diagrams")
+                    }
+                },
+                {
+                    name: "GrapfDB", value: 10,
+                    click: function () {
+                        $scope.go("wiki")
+                    }
+                },
+                {
+                    name: "Download", value: 10,
+                    click: function () {
+                        downloadLink(url("darkjs.jar"))
+                    }
+                },
+                {
+                    name: "DarkJS vs JS", value: 10,
+                    click: function () {
+                        $scope.go("wiki")
+                    }
+                }
             ];
 
             //Create a color scale
@@ -168,7 +207,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                         .attr("d", arc);
                 })
                 .on("click", function (d) {
-                    $scope.go(d.data.page);
+                    d.data.click();
                 });
 
             //Append the label names on the outside
@@ -192,7 +231,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 });
         }
 
-        function initCenter(){
+        function initCenter() {
 
             let scale = 1.5;
             let centerNodePoints = [[0, -50], [-45, -25], [-45, 25], [0, 50], [45, 25], [45, -25], [0, -50]];

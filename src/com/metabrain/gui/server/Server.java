@@ -90,14 +90,13 @@ public class Server extends NanoHTTPD {
         } else if (session.getMethod() == NanoHTTPD.Method.GET) {
             try {
                 URI uri = new URI(session.getUri());
-                String fileName = WebGuiRoot.class.getPackage().getName().replace('.', '/')
-                        + (uri.getPath().equals("/") ? "/index.html" : uri.getPath());
-                InputStream fileStream = getClass().getClassLoader().getResourceAsStream(fileName);
+                String dirPath = WebGuiRoot.class.getPackage().getName().replace('.', File.separatorChar);
+                String fileName = (uri.getPath().equals("/") ? "/index.html" : uri.getPath());
+                String filePath = dirPath + File.separator + fileName;
+                InputStream fileStream = getClass().getClassLoader().getResourceAsStream(filePath);
                 if (fileStream == null)
                     throw new FileNotFoundException();
-
                 String fileData = convertStreamToString(fileStream);
-
                 String mimeType = URLConnection.guessContentTypeFromName(FilenameUtils.getName(uri.getPath()));
                 response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, fileData);
             } catch (URISyntaxException e) {
