@@ -90,9 +90,9 @@ public class Server extends NanoHTTPD {
         } else if (session.getMethod() == NanoHTTPD.Method.GET) {
             try {
                 URI uri = new URI(session.getUri());
-                String dirPath = WebGuiRoot.class.getPackage().getName().replace('.', File.separatorChar);
+                String dirPath = WebGuiRoot.class.getPackage().getName().replace('.', '/');
                 String fileName = (uri.getPath().equals("/") ? "/index.html" : uri.getPath());
-                String filePath = dirPath + File.separator + fileName;
+                String filePath = dirPath + fileName;
                 InputStream fileStream = getClass().getClassLoader().getResourceAsStream(filePath);
                 if (fileStream == null)
                     throw new FileNotFoundException();
