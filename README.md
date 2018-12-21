@@ -1,3 +1,3 @@
-# SimpleGraphDB
+# DarkJS
 
-Project task: create automate updating of gui and create access interface to JavaScriptEngine
+Project goal: create GUI for JavaScriptEngine based on SimpleGraphDB
