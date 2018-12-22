@@ -94,7 +94,6 @@ app.controller("menu", function ($scope, $mdDialog) {
                 anchor.remove();
             }
 
-            $scope.download_link = url("darkjs.jar");
             var newMenu = root.append('g');
 
             var donutData = [
@@ -107,7 +106,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "Plans", value: 10,
                     click: function () {
-                        $scope.go("diagrams")
+                        $scope.go("plans")
                     }
                 },
                 {
@@ -125,7 +124,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "DarkJS vs JS", value: 10,
                     click: function () {
-                        $scope.go("wiki")
+                        $scope.go("darkjsvsnodejs")
                     }
                 }
             ];

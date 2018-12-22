@@ -8,9 +8,9 @@ app.config(function($routeProvider) {
             templateUrl : "app/template/editor_node.html",
             controller: "editor_node"
         })
-        .when("/diagrams", {
-            templateUrl : "app/template/diagrams.html",
-            controller: "diagrams"
+        .when("/plans", {
+            templateUrl : "app/template/plans.html",
+            controller: "plans"
         })
         .when("/wiki", {
             templateUrl : "app/template/wiki.html",
@@ -19,5 +19,9 @@ app.config(function($routeProvider) {
         .when("/gdb", {
             templateUrl : "app/template/gdb.html",
             controller: "gdb"
+        })
+        .when("/darkjsvsnodejs", {
+            templateUrl : "app/template/darkjsvsnodejs.html",
+            controller: "darkjsvsnodejs"
         });
 });

@@ -1,8 +1,8 @@
-app.controller("diagrams", function ($scope, $mdDialog) {
+app.controller("plans", function ($scope, $mdDialog) {
 
     setTimeout(function () {
 
-        let canvasElement = document.getElementById("diagrams");
+        let canvasElement = document.getElementById("plans");
         let width = canvasElement.offsetWidth;
         let height = canvasElement.offsetHeight;
 
