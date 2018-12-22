@@ -13,6 +13,10 @@ app.controller("editor_node", function ($scope, $mdDialog) {
         var clickTimer;
         var lastDragTime;
 
+        var longClickTimer;
+        var newNodePos;
+        var longClickPos;
+
         var currentLink = N + 0;
 
         function nozoom() {
@@ -40,22 +44,33 @@ app.controller("editor_node", function ($scope, $mdDialog) {
             .on("mousedown", function () {
                 startTime = new Date();
                 hideMenu();
+                newNodePos = d3.mouse(view.node());
+                longClickPos = d3.mouse(this);
+                longClickTimer = setTimeout(function () {
+                    longClickTimer = null;
+                    createLocalNode(currentLink, function (link) {
+                        setStyle(link, {
+                            x: newNodePos[0],
+                            y: newNodePos[1],
+                            r: nodeRadius,
+                        }, function () {
+                            showNode(currentLink, false)
+                        })
+                    });
+                }, 300);
+            })
+            .on("mousemove", function () {
+                if (longClickTimer != null && posDst(longClickPos, d3.mouse(this)) > 20){
+                    clearTimeout(longClickTimer);
+                    longClickTimer = null;
+                }
             })
             .on("click", function clicked(d, i) {
                 if (d3.event.defaultPrevented) return; // zoomed
 
-                if (new Date() - startTime > 300) {
-                    let pos = d3.mouse(view.node());
-                    createLocalNode(currentLink, function (link) {
-                        setStyle(link, {
-                            x: pos[0],
-                            y: pos[1],
-                            r: nodeRadius,
-                        }, function () {
-                            showNode(currentLink)
-                        })
-                    });
-                }
+                clearTimeout(longClickTimer);
+                longClickTimer = null;
+
                 d3.select(this).transition()
                     .style("fill", "black")
                     .transition()
@@ -102,7 +117,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
             showNode(lastNode);
         }
 
-        function showNode(link) {
+        function showNode(link, animation) {
             currentLink = link;
 
             let node = nodes[currentLink];
@@ -177,14 +192,15 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                     return getTitle(link)
                 });
 
-            view.attr("transform", tr(getTranslate(view.node()), 3))
-                .style("opacity", 0)
-                .transition().duration(1000)
-                .attr("transform", tr(centerPos, 1))
-                .style("opacity", 1)
-                .each("end", function () {
-                    zoom.scale(1).translate([0, 0]);
-                })
+            if (animation !== false)
+                view.attr("transform", tr(getTranslate(view.node()), 3))
+                    .style("opacity", 0)
+                    .transition().duration(1000)
+                    .attr("transform", tr(centerPos, 1))
+                    .style("opacity", 1)
+                    .each("end", function () {
+                        zoom.scale(1).translate([0, 0]);
+                    })
         };
 
 
