@@ -42,6 +42,8 @@ public class Tree extends InfinityConstArray {
             get(nodeIndex, node);
             byte hashChar = hash[i];
             byte nodeChar = node.mask[i];
+            if (nodeChar == 0)
+                throw new NullPointerException(); // TODO link NodeStorageTest
             while (nodeChar == hashChar && i + 1 < TreeNode.SIZE) {
                 i++;
                 hashChar = hash[i];

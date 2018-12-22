@@ -42,14 +42,14 @@ public class Server extends NanoHTTPD {
 
     static String createJsonResponse(Object object) {
         return "{\n" +
-                " response: " + json.toJson(object) + "\n" +
+                " \"response\": " + json.toJson(object) + "\n" +
                 "}";
     }
 
     @Override
     public Response serve(IHTTPSession session) {
-        NanoHTTPD.Response response = null;
-        if (session.getMethod() == NanoHTTPD.Method.POST) {
+        Response response = null;
+        if (session.getMethod() == Method.POST) {
             String responseString = null;
             try {
                 URI uri = new URI(session.getUri());
@@ -77,13 +77,8 @@ public class Server extends NanoHTTPD {
                         request.nodes = Formatter.toMap(node);
                         responseString = json.toJson(request);
                         break;
-                    case "testStart":
-                        NodeStorageTest.startTest();
-                        responseString = createJsonResponse(true);
-                        break;
-                    case "testProgress":
-                        NodeStorageTest.startTest();
-                        responseString = createJsonResponse(NodeStorageTest.out);
+                    case "test":
+                        responseString = createJsonResponse(NodeStorageTest.getLog());
                         break;
                     case "stop":
                         System.exit(0);
@@ -99,11 +94,11 @@ public class Server extends NanoHTTPD {
                 responseString = json.toJson(request);
                 System.out.println(responseString);
             }
-            response = NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.OK, APPLICATION_JSON, responseString);
+            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, APPLICATION_JSON, responseString);
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Allow-Headers", "Content-Type");
 
-        } else if (session.getMethod() == NanoHTTPD.Method.GET) {
+        } else if (session.getMethod() == Method.GET) {
             try {
                 URI uri = new URI(session.getUri());
                 String dirPath = WebGuiRoot.class.getPackage().getName().replace('.', '/');

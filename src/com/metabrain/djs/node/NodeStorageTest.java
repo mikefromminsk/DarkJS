@@ -4,16 +4,17 @@ import com.metabrain.gdb.DiskManager;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 public class NodeStorageTest implements Runnable {
 
-    private static Random random = new Random();
-    public static List<String> out;
+    private static Integer count = 1000;
+    public static ArrayList<String> out = new ArrayList<>();
+    private static Thread thread;
 
     static void add(String str) {
-        out.add(str);
+        if (out != null)
+            out.add(str);
     }
 
     static void add(String key, String value) {
@@ -38,45 +39,53 @@ public class NodeStorageTest implements Runnable {
         return Min + (int) (Math.random() * ((Max - Min) + 1));
     }
 
-    public static void startTest() {
-        if (out == null) {
-            out = new ArrayList<>();
-            new Thread(new NodeStorageTest()).start();
+    public static ArrayList<String> getLog() {
+        if (thread != null && thread.isAlive()) {
+            // progress request
+            return out;
+        } else {
+            if (out == null) { // init request
+                out = new ArrayList<>();
+                return null;
+            } else if (out.size() > 0) {  // last request
+                ArrayList<String> result = out;
+                out = null;
+                return result;
+            } else {
+                // first request
+                add("partSize", DiskManager.getInstance().partSize);
+                add("cacheSize", DiskManager.getInstance().cacheSize);
+                add("Start", "put " + count + " records without duplicates");
+                thread = new Thread(new NodeStorageTest());
+                thread.start();
+                return out;
+            }
         }
     }
 
     @Override
     public void run() {
-        if (out != null) {
-            String treeFileName = "" + random.nextInt();
-            add("partSize", treeFileName);
-            add("partSize", DiskManager.getInstance().partSize);
-            add("cacheSize", DiskManager.getInstance().cacheSize);
-            int count = 1000;
-            NodeBuilder builder = new NodeBuilder();
+        NodeBuilder builder = new NodeBuilder();
 
-            //diskTesting();
+        long start = time();
+        for (int i = 0; i < count; i++)
+            builder.create(NodeType.STRING).setData("" + i).commit();
+        add("Finish", time() - start);
 
-            add("Start", "put " + count + " records without duplicates");
-            long start = time();
-            for (int i = 0; i < count; i++)
-                builder.create(NodeType.STRING).setData("" + i).commit();
-            add("Finish", time() - start);
+        add("Start", "commit");
+        start = time();
+        NodeStorage.getInstance().transactionCommit();
+        add("Finish(ms)", time() - start);
 
-            add("Start", "commit");
-            start = time();
-            NodeStorage.getInstance().transactionCommit();
-            add("Finish(ms)", time() - start);
+        add("Start", "put " + count + " records with duplicates");
+        for (int i = 0; i < count; i++)
+            builder.create(NodeType.STRING).setData("" + i).commit();
+        add("Finish", time() - start);
 
-            add("Start", "put " + count + " records with duplicates");
-            for (int i = 0; i < count; i++)
-                builder.create(NodeType.STRING).setData("" + i).commit();
-            add("Finish", time() - start);
-
-            add("Start", "random put " + count + " records with duplicates");
-            for (int i = 0; i < count; i++)
-                builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
-            add("Finish", time() - start);
-        }
+        add("Start", "random put " + count + " records with duplicates");
+        for (int i = 0; i < count; i++)
+            builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
+        add("Finish", time() - start);
+        NodeStorage.getInstance().transactionCommit();
     }
 }

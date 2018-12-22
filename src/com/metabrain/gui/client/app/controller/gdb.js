@@ -1,16 +1,22 @@
 app.controller("gdb", function ($scope) {
     $scope.dbLog = [];
-
+    var timer;
     $scope.start = function () {
-        request("testStart", null, function () {
-            var timer = setInterval(function () {
-                request("testProgress", null, function (data) {
-                    if (data.response == null)
+        if (timer == null) {
+            timer = setInterval(function () {
+                request("test", null, function (data) {
+                    if (data.response == null) {
                         clearTimeout(timer);
-                    else
-                        merge($scope.dbLog, data.response)
+                        timer = null;
+                    }
+                    else {
+                        $scope.dbLog.splice(0, $scope.dbLog.length);
+                        merge($scope.dbLog, data.response);
+                        $scope.$apply();
+                    }
+
                 });
             }, 1000)
-        })
+        }
     }
 });

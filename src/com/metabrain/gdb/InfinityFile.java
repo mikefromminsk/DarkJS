@@ -18,6 +18,8 @@ public class InfinityFile {
 
     public InfinityFile(String infinityFileID) {
         this.infinityFileID = infinityFileID;
+        if (infinityFileID.startsWith("_"))
+            throw new NullPointerException();
         DiskManager diskManager = DiskManager.getInstance();
         this.mainThread = diskManager.mainThread;
         this.partSize = diskManager.partSize;

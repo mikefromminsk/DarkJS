@@ -13,9 +13,9 @@ public class NodeBuilder {
         return create(NodeType.VAR);
     }
 
-    public NodeBuilder create(byte type) {
+    public NodeBuilder create(byte nodeType) {
         node = new Node();
-        node.type = type;
+        node.type = nodeType;
         return this;
     }
 
