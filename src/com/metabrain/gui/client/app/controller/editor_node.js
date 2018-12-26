@@ -1,10 +1,6 @@
 app.controller("editor_node", function ($scope, $mdDialog) {
 
     setTimeout(function () {
-        openLogin($mdDialog, $scope.$new())
-    }, 1000);
-
-    setTimeout(function () {
         let canvasElement = document.getElementById("canvas");
         let width = canvasElement.offsetWidth;
         let height = canvasElement.offsetHeight;

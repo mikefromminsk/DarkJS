@@ -86,44 +86,39 @@ app.controller("menu", function ($scope, $mdDialog) {
 
         function initDonutMenu() {
 
-            function downloadLink(link) {
-                var anchor = angular.element('<a/>');
-                anchor.css({display: 'none'}); // Make sure it's not visible
-                angular.element(document.body).append(anchor); // Attach to document
 
-                anchor.attr({
-                    href: link,
-                    target: '_blank',
-                    download: link.substring(link.lastIndexOf('/') + 1)
-                })[0].click();
-                anchor.remove();
-            }
 
             var newMenu = root.append('g');
 
             var donutData = [
                 {
-                    name: "Wiki", value: 10,
+                    name: "Помощь", value: 10,
                     click: function () {
                         $scope.go("wiki")
                     }
                 },
                 {
-                    name: "Plans", value: 10,
+                    name: "Планы", value: 10,
                     click: function () {
                         $scope.go("plans")
                     }
                 },
                 {
-                    name: "GrapfDB", value: 10,
+                    name: "Тест БД", value: 10,
                     click: function () {
                         openDBTest($mdDialog, $scope.$new())
                     }
                 },
                 {
-                    name: "Download", value: 10,
+                    name: "Скачать", value: 10,
                     click: function () {
                         openDownload($mdDialog, $scope.$new())
+                    }
+                },
+                {
+                    name: "О разработчике", value: 10,
+                    click: function () {
+                        openDeveloper($mdDialog, $scope.$new())
                     }
                 },
                 {
@@ -253,7 +248,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                         .attr("transform", tr(null, 1));
                 })
                 .on("click", function () {
-                    $scope.go("editor")
+                    openLogin($mdDialog, $scope.$new())
                 });
             center.append('path')
                 .attr('d', pathString)

@@ -1,4 +1,4 @@
-function openLogin($mdDialog, $scope_new) {
+function openDeveloper($mdDialog, $scope_new) {
 
     $mdDialog.show({
         controller: function ($scope) {
@@ -7,12 +7,11 @@ function openLogin($mdDialog, $scope_new) {
             $scope.close = function () {
                 $mdDialog.hide();
             };
-            $scope.login = function () {
-                $scope.go("editor")
+            $scope.onload = function () {
             };
 
         },
-        templateUrl: 'app/template/login.html',
+        templateUrl: 'app/template/developer.html',
         locals: {
         },
         scope: $scope_new,
