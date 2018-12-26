@@ -116,6 +116,12 @@ app.controller("menu", function ($scope, $mdDialog) {
                     }
                 },
                 {
+                    name: "Настройки", value: 10,
+                    click: function () {
+                        openDownload($mdDialog, $scope.$new())
+                    }
+                },
+                {
                     name: "О разработчике", value: 10,
                     click: function () {
                         openDeveloper($mdDialog, $scope.$new())
