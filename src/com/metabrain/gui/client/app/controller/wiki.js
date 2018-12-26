@@ -10,7 +10,7 @@ app.controller("wiki", function ($scope, $mdDialog) {
 
         let hypScreen = hyp(width, height);
         let h = width * height / hypScreen;
-        let offsetX = - h / Math.pow(2, 0.5);
+        let offsetX = -h / Math.pow(2, 0.5);
         let offsetY = height / 2;
 
         let root = d3.select("#wiki_background")
@@ -31,7 +31,7 @@ app.controller("wiki", function ($scope, $mdDialog) {
             var lineHeight = getRandomInt(200, 800);
             var line = {
                 x: getRandomInt(0, hypScreen - lineWidth),
-                y: getRandomInt(0, (h*2) + height),
+                y: getRandomInt(0, (h * 2) + height),
                 width: lineWidth,
                 height: lineHeight,
                 color: "hsl(" + Math.random() * 360 + ",100%,50%)",
@@ -69,11 +69,12 @@ app.controller("wiki", function ($scope, $mdDialog) {
                 .ease(d3.easeLinear)
                 .duration(function (d) {
                     return d.speed
-                }).attr("transform", function (d) {
-                return tr([0, - (hypScreen + d.height + d.y)]);
-            })
+                })
+                .attr("transform", function (d) {
+                    return tr([0, -(hypScreen + d.height + d.y)]);
+                })
                 .each("end", repeat);
-        };
+        }
     })
 
 });

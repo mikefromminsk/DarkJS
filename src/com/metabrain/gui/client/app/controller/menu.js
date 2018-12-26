@@ -19,33 +19,27 @@ app.controller("menu", function ($scope, $mdDialog) {
         initDonutMenu();
         initCenter();
 
-
         function initBackground() {
-            var backCirclesData = [{
-                inner: 180,
-                outer: 200,
-                speed: 15,
-                start: 90,
-                angle: 90,
-                color: "#0000ff",
-                reverse: true
-            }, {
-                inner: 180,
-                outer: 200,
-                speed: 18,
-                start: 0,
-                angle: 90,
-                color: "#ff0000",
-                reverse: true
-            }, {
-                inner: 180,
-                outer: 200,
-                speed: 32,
-                start: 90,
-                angle: 90,
-                color: "#00ff00",
-                reverse: false
-            }];
+            var circlesCount = getRandomInt(30, 50);
+            var backCirclesData = [];
+            for (var i = 0; i < circlesCount; i++) {
+                var inner = getRandomInt(200, 500);
+                var outer = inner + 20 * inner / 200;
+                var speed = inner / 20 * 1000;
+                var start = getRandomInt(0, 360);
+                var angle = getRandomInt(90, 180);
+                var color = "hsl(" + Math.random() * 360 + ",100%,90%)";
+                var reverse = getRandomInt(0, 2) === 0;
+                backCirclesData.push({
+                    inner: inner,
+                    outer: outer,
+                    speed: speed,
+                    start: start,
+                    angle: angle,
+                    color: color,
+                    reverse: reverse
+                });
+            }
 
             let back = root.selectAll(".back")
                 .data(backCirclesData);
@@ -70,12 +64,23 @@ app.controller("menu", function ($scope, $mdDialog) {
                     return data.color
                 });
 
-            let t = d3.timer(function (elapsed) {
-                back.attr("transform", function (data) {
-                    return tr(null, null, (data.reverse || false ? -1 : 1) * Math.floor(elapsed / data.speed));
-                });
-                if (elapsed > 15000) t.stop()
-            });
+
+            repeat(back);
+
+            function repeat(node) {
+                var select = Array.isArray(node) ? node : d3.select(this);
+                select.attr("transform", tr(null, null, 0))
+                    .transition()
+                    .ease(d3.easeLinear)
+                    .duration(function (d) {
+                        return d.speed
+                    })
+                    .attrTween("transform", function tween(d, i, a) {
+                        return d3.interpolateString("rotate(0)", "rotate(" + ((d.reverse ? -1 : 1) * 360) + ")");
+                    })
+                    .each("end", repeat);
+            }
+
         }
 
 
@@ -118,7 +123,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "Download", value: 10,
                     click: function () {
-                        downloadLink(url("darkjs.jar"))
+                        openDownload($mdDialog, $scope.$new())
                     }
                 },
                 {

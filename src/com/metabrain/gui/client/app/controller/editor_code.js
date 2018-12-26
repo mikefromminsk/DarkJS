@@ -6,7 +6,7 @@ function openCodeEditor($mdDialog, $scope_new, currentLink, link, close) {
             $scope.result_node_show = true;
             $scope.result_nodes = "";
             $scope.link = link;
-            $scope.title = "Title";
+            $scope.title = "Редактирование фунции";
 
             var codeEditor;
             var runEditor;
@@ -60,7 +60,7 @@ function openCodeEditor($mdDialog, $scope_new, currentLink, link, close) {
             };
 
         },
-        templateUrl: 'app/template/main_dialog.html',
+        templateUrl: 'app/template/editor_code.html',
         locals: {
             moduleLink: currentLink,
             link: link
