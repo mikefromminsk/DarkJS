@@ -16,6 +16,5 @@ function openLogin($mdDialog, $scope_new) {
         },
         scope: $scope_new,
         clickOutsideToClose: true,
-        fullscreen: true,
     });
 }

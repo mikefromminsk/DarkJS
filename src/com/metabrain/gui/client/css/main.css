@@ -42,3 +42,31 @@ div, img, span {
     height: 100%;
     overflow: hidden;
 }
+
+.app-dialog{
+    background-color: #eeeeee
+}
+
+.app-dialog-title{
+    height: 80px;
+    background-color: #7f7f7f;
+    color: white;
+    font-size: 20px;
+}
+
+
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}

@@ -1,10 +1,42 @@
-<div class="layout-row layout-align-center-start">
-    <div class="layout-column layout-fill" style="max-width: 760px;">
-        <textarea flex>{{dbLog}}</textarea>
-        <div class="layout-row layout-align-end-start">
-            <md-button class="md-raised md-primary"
-                       ng-click="start()">Primary
-            </md-button>
-        </div>
+<md-dialog class="layout-column app-dialog">
+    <div class="layout-row layout-align-center-center app-dialog-title">
+        <span>Тестирование Базы данных</span>
     </div>
-</div>
+    <table>
+        <tr>
+            <th>Тест</th>
+            <th>Время</th>
+            <th>Результат</th>
+        </tr>
+        <tr>
+            <td>Запись 1000 уникальных записей</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+        <tr>
+            <td>Чтение 1000 уникальных записей</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+        <tr>
+            <td>Чтение/Запись 1000 уникальных записей</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+        <tr>
+            <td>Чтение записи (1мб)</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+        <tr>
+            <td>Чтение записи (10мб)</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+        <tr>
+            <td>Чтение записи (50мб)</td>
+            <td>300 мс</td>
+            <td>Успешно</td>
+        </tr>
+    </table>
+</md-dialog>

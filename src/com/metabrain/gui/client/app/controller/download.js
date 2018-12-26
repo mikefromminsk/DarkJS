@@ -7,15 +7,14 @@ function openDownload($mdDialog, $scope_new) {
             $scope.close = function () {
                 $mdDialog.hide();
             };
-            $scope.onload = function () {
-            };
+            $scope.download = function () {
 
+            };
         },
         templateUrl: 'app/template/download.html',
         locals: {
         },
         scope: $scope_new,
         clickOutsideToClose: true,
-        fullscreen: true,
     });
 }

@@ -117,7 +117,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "GrapfDB", value: 10,
                     click: function () {
-                        $scope.go("gdb")
+                        openDBTest($mdDialog, $scope.$new())
                     }
                 },
                 {

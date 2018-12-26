@@ -1,22 +1,20 @@
-app.controller("gdb", function ($scope) {
-    $scope.dbLog = [];
-    var timer;
-    $scope.start = function () {
-        if (timer == null) {
-            timer = setInterval(function () {
-                request("test", null, function (data) {
-                    if (data.response == null) {
-                        clearTimeout(timer);
-                        timer = null;
-                    }
-                    else {
-                        $scope.dbLog.splice(0, $scope.dbLog.length);
-                        merge($scope.dbLog, data.response);
-                        $scope.$apply();
-                    }
+function openDBTest($mdDialog, $scope_new) {
 
-                });
-            }, 1000)
-        }
-    }
-});
+    $mdDialog.show({
+        controller: function ($scope) {
+            $scope.title = "Скачивание";
+
+            $scope.close = function () {
+                $mdDialog.hide();
+            };
+            $scope.onload = function () {
+            };
+
+        },
+        templateUrl: 'app/template/gdb.html',
+        locals: {
+        },
+        scope: $scope_new,
+        clickOutsideToClose: true,
+    });
+}
