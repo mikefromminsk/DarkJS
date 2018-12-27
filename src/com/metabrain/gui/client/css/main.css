@@ -72,7 +72,6 @@ tr:nth-child(even) {
 .md-button {
     background-color: green;
     color: white;
-    margin-top: 20px;
     height: 30px;
     font-size: 14px;
 }
@@ -82,7 +81,14 @@ tr:nth-child(even) {
 }
 
 .md-button[disabled] {
-    color : rgba(0, 0, 0, 0.26);
+    color: rgba(0, 0, 0, 0.26);
     background-color: transparent;
 }
 
+md-input-container {
+    margin-bottom: 0;
+}
+
+.md-icon-button {
+    background-color: transparent;
+}

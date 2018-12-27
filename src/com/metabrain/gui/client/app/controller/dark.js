@@ -119,6 +119,10 @@ let nodeRequest = function (params, success, error) {
 
 let lastNewId = 0;
 
+function newDataNode(data) {
+    return encodeValue(data);
+}
+
 function newNodeLink() {
     let nodeLink = W + lastNewId++;
     nodes[nodeLink] = {};
@@ -156,20 +160,33 @@ function setStyle(link, styleObj, success, error) {
     }
 }
 
-function createLocalNode(parent, success, error) {
-    let link = newNodeLink();
+
+function setLink(fromNode, linkName, toNode, success, error) {
     let changes = {};
-    changes[parent] = nodes[parent];
-    if (changes[parent].local == null)
-        changes[parent].local = [];
-    changes[parent].local.push(link);
-    changes[link] = {};
+    changes[fromNode] = nodes[fromNode];
+    changes[fromNode][linkName] = toNode;
     nodeRequest({
-        nodeLink: parent,
+        nodeLink: fromNode,
         nodes: changes
     }, function (data) {
         successResponse(data, success);
-        success(data.replacements[link]);
+        success(data.replacements[toNode]);
+    }, error);
+}
+
+function addLink(fromNode, linkName, toNode, success, error) {
+    let changes = {};
+    changes[fromNode] = nodes[fromNode];
+    if (changes[fromNode][linkName] == null)
+        changes[fromNode][linkName] = [];
+    changes[fromNode][linkName].push(toNode);
+    changes[toNode] = {};
+    nodeRequest({
+        nodeLink: fromNode,
+        nodes: changes
+    }, function (data) {
+        successResponse(data, success);
+        success(data.replacements[toNode]);
     }, error);
 }
 
