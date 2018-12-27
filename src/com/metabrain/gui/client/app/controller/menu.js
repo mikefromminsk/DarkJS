@@ -106,25 +106,25 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "Тест БД", value: 10,
                     click: function () {
-                        openDBTest($mdDialog, $scope.$new())
+                        openDBTest($mdDialog, $scope)
                     }
                 },
                 {
                     name: "Скачать", value: 10,
                     click: function () {
-                        openDownload($mdDialog, $scope.$new())
+                        openDownload($mdDialog, $scope)
                     }
                 },
                 {
                     name: "Настройки", value: 10,
                     click: function () {
-                        openDownload($mdDialog, $scope.$new())
+                        openDownload($mdDialog, $scope)
                     }
                 },
                 {
                     name: "О разработчике", value: 10,
                     click: function () {
-                        openDeveloper($mdDialog, $scope.$new())
+                        openDeveloper($mdDialog, $scope)
                     }
                 },
                 {
@@ -254,7 +254,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                         .attr("transform", tr(null, 1));
                 })
                 .on("click", function () {
-                    openLogin($mdDialog, $scope.$new())
+                    openLogin($mdDialog, $scope)
                 });
             center.append('path')
                 .attr('d', pathString)

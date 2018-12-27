@@ -1,4 +1,4 @@
-function openDeveloper($mdDialog, $scope_new) {
+function openDeveloper($mdDialog, $scope) {
 
     $mdDialog.show({
         controller: function ($scope) {
@@ -14,7 +14,7 @@ function openDeveloper($mdDialog, $scope_new) {
         templateUrl: 'app/template/developer.html',
         locals: {
         },
-        scope: $scope_new,
+        scope: $scope.$new(),
         clickOutsideToClose: true,
     });
 }

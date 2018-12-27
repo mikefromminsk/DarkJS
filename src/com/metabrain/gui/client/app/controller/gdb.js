@@ -1,4 +1,4 @@
-function openDBTest($mdDialog, $scope_new) {
+function openDBTest($mdDialog, $scope) {
 
     $mdDialog.show({
         controller: function ($scope) {
@@ -14,7 +14,7 @@ function openDBTest($mdDialog, $scope_new) {
         templateUrl: 'app/template/gdb.html',
         locals: {
         },
-        scope: $scope_new,
+        scope: $scope.$new(),
         clickOutsideToClose: true,
     });
 }

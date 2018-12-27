@@ -1,4 +1,4 @@
-function openLogin($mdDialog, $scope_new) {
+function openLogin($mdDialog, $scope) {
 
     $mdDialog.show({
         controller: function ($scope) {
@@ -15,7 +15,7 @@ function openLogin($mdDialog, $scope_new) {
         templateUrl: 'app/template/login.html',
         locals: {
         },
-        scope: $scope_new,
+        scope: $scope.$new(),
         clickOutsideToClose: true,
     });
 }
