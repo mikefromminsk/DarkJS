@@ -20,8 +20,8 @@ app.config(function($routeProvider) {
             templateUrl : "app/template/gdb.html",
             controller: "gdb"
         })
-        .when("/darkjsvsnodejs", {
-            templateUrl : "app/template/darkjsvsnodejs.html",
-            controller: "darkjsvsnodejs"
+        .when("/vs", {
+            templateUrl : "app/template/vs.html",
+            controller: "vs"
         });
 });
