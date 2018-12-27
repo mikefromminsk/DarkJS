@@ -1,19 +1,15 @@
 <md-dialog class="layout-column app-dialog">
-
     <div class="layout-row app-dialog-title">
         <div class="layout-row layout-align-center-center flex">
-            <span>О разработчике</span>
+            <span>Настройки</span>
         </div>
         <md-button class="md-icon-button" ng-click="close()">
             <md-icon md-font-icon="fa fa-times"></md-icon>
         </md-button>
     </div>
-
-    <div class="layout-column"
-         style="padding: 20px">
-
-        <span>Разработал Гайдук Михаил</span>
-        <span>Группа 581065</span>
-        <span>2018-2019</span>
+    <div class="layout-column">
+        <md-button ng-click="save()">
+            Сохранить
+        </md-button>
     </div>
 </md-dialog>

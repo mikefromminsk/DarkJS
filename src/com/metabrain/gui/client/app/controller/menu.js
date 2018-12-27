@@ -118,7 +118,7 @@ app.controller("menu", function ($scope, $mdDialog) {
                 {
                     name: "Настройки", value: 10,
                     click: function () {
-                        openDownload($mdDialog, $scope)
+                        openSettings($mdDialog, $scope)
                     }
                 },
                 {
