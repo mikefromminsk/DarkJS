@@ -54,6 +54,11 @@ div, img, span {
     font-size: 20px;
 }
 
+.app-dialog-content{
+    width: 400px;
+    padding: 10px;
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -86,9 +91,14 @@ tr:nth-child(even) {
 }
 
 md-input-container {
-    margin-bottom: 0;
+    margin: 0;
 }
 
-.md-icon-button {
+.md-button.md-icon-button {
     background-color: transparent;
+}
+
+.md-button.md-ink-ripple{
+    margin: 0;
+    padding: 0;
 }

@@ -47,3 +47,11 @@ function getRandomInt(min, max) {
 function replace(string, from, to) {
     return string.split(from).join(to);
 }
+
+function getStoreValue(key, def){
+    return key == null ? def : key
+}
+
+function setStoreValue(key, def){
+    return key == null ? def : key
+}

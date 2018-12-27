@@ -7,7 +7,12 @@
             <md-icon md-font-icon="fa fa-times"></md-icon>
         </md-button>
     </div>
-    <div class="layout-column">
+    <div class="layout-column app-dialog-content">
+        <md-input-container>
+            <label>Хост</label>
+            <input ng-model="host">
+        </md-input-container>
+
         <md-button ng-click="save()">
             Сохранить
         </md-button>
