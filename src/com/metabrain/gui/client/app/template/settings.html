@@ -13,7 +13,24 @@
             <input ng-model="host">
         </md-input-container>
 
-        <md-button ng-click="save()">
+        <div class="layout-row">
+            <span>Темная тема</span>
+            <div class="flex"></div>
+            <md-checkbox ng-model="darkTheme"></md-checkbox>
+        </div>
+
+        <md-input-container>
+            <label>Язык</label>
+            <md-select ng-model="language">
+                <md-option ng-repeat="lang in languages" ng-value="lang.code">
+                    {{lang.name}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+
+
+        <md-button ng-click="save()"
+                   style="margin-top: 20px">
             Сохранить
         </md-button>
     </div>
