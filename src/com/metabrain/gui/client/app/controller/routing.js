@@ -23,5 +23,9 @@ app.config(function($routeProvider) {
         .when("/vs", {
             templateUrl : "app/template/vs.html",
             controller: "vs"
+        })
+        .when("/console", {
+            templateUrl : "app/template/console.html",
+            controller: "console"
         });
 });
