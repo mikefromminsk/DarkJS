@@ -48,19 +48,13 @@ app.controller("editor_node", function ($scope, $mdDialog) {
                 longClickPos = d3.mouse(this);
                 longClickTimer = setTimeout(function () {
                     longClickTimer = null;
-                    createLocalNode(currentLink, function (link) {
-                        setStyle(link, {
-                            x: newNodePos[0],
-                            y: newNodePos[1],
-                            r: nodeRadius,
-                        }, function () {
-                            showNode(currentLink, false)
-                        })
-                    });
+                    openNodeChange($mdDialog, $scope, currentLink, newNodePos, function () {
+                        showNode(currentLink, false)
+                    })
                 }, 300);
             })
             .on("mousemove", function () {
-                if (longClickTimer != null && posDst(longClickPos, d3.mouse(this)) > 20){
+                if (longClickTimer != null && posDst(longClickPos, d3.mouse(this)) > 20) {
                     clearTimeout(longClickTimer);
                     longClickTimer = null;
                 }

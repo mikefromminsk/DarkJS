@@ -24,37 +24,35 @@ div, img, span {
 
 .flex-to-block-child {
     position: absolute;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
 .CodeMirror {
-    height:100%;
-    width:100%;
+    height: 100%;
+    width: 100%;
 }
 
-.md-mini md-icon{
+.md-mini md-icon {
     font-size: 20px
 }
 
-.d3-view{
+.d3-view {
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
 
-.app-dialog{
-    background-color: #eeeeee
+.app-dialog {
+    background-color: #eeeeee;
 }
 
-.app-dialog-title{
+.app-dialog-title {
     height: 80px;
     background-color: #7f7f7f;
     color: white;
     font-size: 20px;
 }
-
-
 
 table {
     font-family: arial, sans-serif;
@@ -70,3 +68,21 @@ td, th {
 tr:nth-child(even) {
     background-color: #dddddd;
 }
+
+.md-button {
+    background-color: green;
+    color: white;
+    margin-top: 20px;
+    height: 30px;
+    font-size: 14px;
+}
+
+.md-button:not([disabled]):hover {
+    background-color: green;
+}
+
+.md-button[disabled] {
+    color : rgba(0, 0, 0, 0.26);
+    background-color: transparent;
+}
+
