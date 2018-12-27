@@ -44,3 +44,6 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function replace(string, from, to) {
+    return string.split(from).join(to);
+}

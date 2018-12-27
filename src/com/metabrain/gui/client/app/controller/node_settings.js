@@ -1,3 +1,5 @@
+
+
 function openNodeChange($mdDialog, $scope, currentLink, pos, success) {
 
     $mdDialog.show({
@@ -9,8 +11,9 @@ function openNodeChange($mdDialog, $scope, currentLink, pos, success) {
             };
 
             $scope.submit = function () {
+                var codeTitle = replace($scope.title, " ", "_");
                 addLink(currentLink, "local", newNodeLink(), function (link) {
-                    setLink(link, "title", newDataNode($scope.title), function () {
+                    setLink(link, "title", newDataNode(codeTitle), function () {
                         setStyle(link, {
                             x: pos[0],
                             y: pos[1],
@@ -19,6 +22,9 @@ function openNodeChange($mdDialog, $scope, currentLink, pos, success) {
                             $scope.close();
                             success(link);
                         })
+                    });
+                    setStyle(currentLink, {
+                        source_code: "var " + codeTitle+ ";\n" + getStyleValue(currentLink, "source_code", "")
                     })
                 });
             };

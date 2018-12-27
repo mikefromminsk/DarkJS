@@ -183,7 +183,7 @@ app.controller("editor_node", function ($scope, $mdDialog) {
             nodeList.append("text")
                 .attr("dx", nodeRadius + 10)
                 .text(function (link) {
-                    return getTitle(link)
+                    return replace(getTitle(link), "_", " ")
                 });
 
             if (animation !== false)
