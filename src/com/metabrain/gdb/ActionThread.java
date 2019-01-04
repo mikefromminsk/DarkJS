@@ -9,9 +9,9 @@ public class ActionThread implements Runnable {
     private static final boolean ACTION_READ = true;
     private static final boolean ACTION_WRITE = false;
     private int threadsWaiting = 0;
-    private final Object syncObject = 1;
+    private final Object syncActionLoop = 1;
     private Map<RandomAccessFile, Map<Integer, CacheData>> cache = new HashMap<>();
-    private volatile List<CacheData> writeSequences = new LinkedList<>();
+    private List<CacheData> writeSequences = Collections.synchronizedList(new LinkedList<>());
     public long maxCacheSize;
     public long cacheSize = 0;
     private PriorityQueue<CacheData> cachePriority = new PriorityQueue<>(Comparator.comparingLong(s -> s.saveTime));
@@ -92,28 +92,28 @@ public class ActionThread implements Runnable {
         }
         writeSequences.add(cachedData);
 
-        synchronized (syncObject) {
-            syncObject.notify();
+        synchronized (syncActionLoop) {
+            syncActionLoop.notify();
         }
     }
 
     @Override
     public void run() {
         while (true) {
-            if (threadsWaiting == 0 && writeSequences.size() > 0) {
-                // TODO find why action cab be null
-                CacheData action = writeSequences.get(0); // NullPointerException
-                if (action != null) {
+            if (threadsWaiting == 0) {
+                try {
+                    CacheData action = writeSequences.get(0);
                     boolean success = doAction(ACTION_WRITE, action.file, action.offset, action.data);
                     if (success) {
                         action.isUpdated = false;
-                        writeSequences.remove(0);
+                        writeSequences.remove(action);
                     }
+                } catch (IndexOutOfBoundsException ignore) {
                 }
             } else {
-                synchronized (syncObject) {
+                synchronized (syncActionLoop) {
                     try {
-                        syncObject.wait();
+                        syncActionLoop.wait();
                     } catch (InterruptedException continueLoop) {
                     }
                 }
@@ -132,8 +132,8 @@ public class ActionThread implements Runnable {
             } finally {
                 threadsWaiting--;
                 if (threadsWaiting == 0) {
-                    synchronized (syncObject) {
-                        syncObject.notify();
+                    synchronized (syncActionLoop) {
+                        syncActionLoop.notify();
                     }
                 }
             }

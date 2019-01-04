@@ -1,5 +1,6 @@
 package com.metabrain.gdb;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,9 +17,11 @@ public class InfinityArrayTest {
         assertEquals(startData, new String(data));
     }*/
 
+    @RepeatedTest(1000)
     @Test
     void add() {
         InfinityArray testArray = new InfinityArray("testArray");
+        // TODO issue with multithreading access to equal infinity array
         long index = testArray.add("tests");
         testArray.set(index, "bests");
         String results = testArray.getString(index);
