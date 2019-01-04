@@ -11,7 +11,7 @@ public class ActionThread implements Runnable {
     private int threadsWaiting = 0;
     private final Object syncObject = 1;
     private Map<RandomAccessFile, Map<Integer, CacheData>> cache = new HashMap<>();
-    private List<CacheData> writeSequences = new LinkedList<>();
+    private volatile List<CacheData> writeSequences = new LinkedList<>();
     public long maxCacheSize;
     public long cacheSize = 0;
     private PriorityQueue<CacheData> cachePriority = new PriorityQueue<>(Comparator.comparingLong(s -> s.saveTime));

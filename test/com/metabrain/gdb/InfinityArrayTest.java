@@ -2,20 +2,19 @@ package com.metabrain.gdb;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InfinityArrayTest {
 
-    @Test
+  /*  @Test
     void testEncodingDecoding() {
         String startData = "start data";
         byte[] data = startData.getBytes();
         long accessKey = InfinityArray.encodeData(data);
-        assertFalse(new String(data).equals(startData));
+        assertNotEquals(startData, new String(data));
         InfinityArray.decodeData(data, accessKey);
         assertEquals(startData, new String(data));
-    }
+    }*/
 
     @Test
     void add() {
@@ -26,7 +25,7 @@ public class InfinityArrayTest {
         assertEquals("bests", results);
     }
 
-    @Test
+    /*@Test
     void testAddToGarbage() throws Exception {
         InfinityArray arr = new InfinityArray("testArrayGarbage");
         long index = arr.add("test");
@@ -48,5 +47,5 @@ public class InfinityArrayTest {
 
         long garbage4NewSize = garbage4.getLong(0);
         assertEquals(garbage4Size - 1, garbage4NewSize);
-    }
+    }*/
 }
