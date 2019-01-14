@@ -62,6 +62,7 @@ public class InfinityFile {
         return fileData.files.get(index);
     }
 
+    // TODO increase max file size from long to 2*long or bigger
     public byte[] read(long start, long length) {
         long end = start + length;
         if (end > fileData.sumFilesSize)

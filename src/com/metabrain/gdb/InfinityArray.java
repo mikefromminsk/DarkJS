@@ -15,6 +15,7 @@ public class InfinityArray extends InfinityFile {
     public InfinityArray(String infinityFileID) {
         super(infinityFileID);
         meta = new InfinityConstArray(infinityFileID + ".meta");
+        // TODO change all file types to with string length equal 4
         Map<String, String> garbage = DiskManager.getInstance().properties.getSection(infinityFileID + ".garbage");
         if (garbage != null)
             for (String key : garbage.keySet()) {
