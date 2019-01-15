@@ -9,7 +9,7 @@ public class InfinityArray extends InfinityFile {
     // TODO add secure
 
     protected InfinityConstArray meta;
-    Map<Long, InfinityConstArray> garbageCollector = new HashMap<>();
+    Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
 
 
     public InfinityArray(String infinityFileID) {
@@ -20,7 +20,7 @@ public class InfinityArray extends InfinityFile {
         if (garbage != null)
             for (String key : garbage.keySet()) {
                 Long sectorSize = Long.valueOf(key);
-                InfinityConstArray garbageBySize = new InfinityConstArray(garbage.get(key));
+                InfinityLongArray garbageBySize = new InfinityLongArray(garbage.get(key));
                 garbageCollector.put(sectorSize, garbageBySize);
             }
     }
@@ -109,35 +109,35 @@ public class InfinityArray extends InfinityFile {
     }
 
     public void addToGarbage(long index, long sectorSize) {
-        InfinityConstArray garbageBySize = garbageCollector.get(sectorSize);
+        InfinityLongArray garbageBySize = garbageCollector.get(sectorSize);
         if (true) return;
         if (garbageBySize == null) {
             String garbageName = infinityFileID + ".garbage";
             String garbageNameWithSize = garbageName + sectorSize;
-            garbageBySize = new InfinityConstArray(garbageNameWithSize);
-            garbageBySize.add(1);
-            garbageBySize.add(index);
+            garbageBySize = new InfinityLongArray(garbageNameWithSize);
+            garbageBySize.addLong(1);
+            garbageBySize.addLong(index);
             garbageCollector.put(sectorSize, garbageBySize);
             DiskManager.getInstance().properties.put(garbageName, "" + sectorSize, garbageNameWithSize);
         } else {
             long lastContentIndex = garbageBySize.getLong(0);
             if (lastContentIndex < garbageBySize.fileData.sumFilesSize / Long.BYTES) {
-                garbageBySize.set(lastContentIndex + 1, index);
+                garbageBySize.setLong(lastContentIndex + 1, index);
             } else {
-                garbageBySize.add(index);
+                garbageBySize.addLong(index);
             }
-            garbageBySize.set(0, lastContentIndex + 1);
+            garbageBySize.setLong(0, lastContentIndex + 1);
         }
     }
 
     public MetaCell getGarbage(long sectorSize) {
         // TODO enable garbage collector
         if (true) return null;
-        InfinityConstArray garbageBySize = garbageCollector.get(sectorSize);
+        InfinityLongArray garbageBySize = garbageCollector.get(sectorSize);
         if (garbageBySize != null) {
             long lastGarbageIndex = garbageBySize.getLong(0);
             if (lastGarbageIndex > 1) {
-                garbageBySize.set(0, lastGarbageIndex - 1);
+                garbageBySize.setLong(0, lastGarbageIndex - 1);
                 return getMeta(garbageBySize.getLong(lastGarbageIndex));
             }
         }
