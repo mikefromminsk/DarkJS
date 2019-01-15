@@ -43,7 +43,7 @@ public class InfinityFile {
 
     }
 
-    RandomAccessFile getFile(int index) {
+    RandomAccessFile getPartFile(int index) {
         // TODO create file in action thread
         if (index == fileData.files.size()) {
             try {
@@ -71,12 +71,12 @@ public class InfinityFile {
         int startFileIndex = (int) (start / partSize);
         int endFileIndex = (int) (end / partSize);
         if (startFileIndex == endFileIndex) {
-            RandomAccessFile readingFile = getFile(startFileIndex);
+            RandomAccessFile readingFile = getPartFile(startFileIndex);
             int startInFile = (int) (start % partSize);
             return mainThread.read(readingFile, startInFile, (int) length);
         } else {
-            RandomAccessFile firstFile = getFile(startFileIndex);
-            RandomAccessFile secondFile = getFile(endFileIndex);
+            RandomAccessFile firstFile = getPartFile(startFileIndex);
+            RandomAccessFile secondFile = getPartFile(endFileIndex);
             int lengthInSecondFile = (int) (end % partSize);
             int lengthInFirstFile = (int) (length - lengthInSecondFile);
             int startInFirstFile = (int) (start % partSize);
@@ -96,8 +96,8 @@ public class InfinityFile {
         int startFileIndex = (int) (start / partSize);
         int endFileIndex = (int) (end / partSize);
 
-        RandomAccessFile firstWriteFile = getFile(startFileIndex);
-        RandomAccessFile secondWriteFile = getFile(endFileIndex);
+        RandomAccessFile firstWriteFile = getPartFile(startFileIndex);
+        RandomAccessFile secondWriteFile = getPartFile(endFileIndex);
 
         if (start == fileData.sumFilesSize)
             fileData.sumFilesSize += data.length;
