@@ -1,12 +1,12 @@
 package com.metabrain.djs.node;
 
 import com.metabrain.gdb.Bytes;
-import com.metabrain.gdb.InfinityArrayCell;
+import com.metabrain.gdb.InfinityStringArrayCell;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class Node implements InfinityArrayCell {
+public class Node implements InfinityStringArrayCell {
 
     public boolean isSaved;
     public Long id;
@@ -33,7 +33,7 @@ public class Node implements InfinityArrayCell {
     public ArrayList<Object> cell;
     public ArrayList<Object> prop;
     public ArrayList<Object> style;
-    // after add new link you should add it to listLinks and parse function
+    // after addObject new link you should addObject it to listLinks and parse function
 
     @Override
     public byte[] build() {

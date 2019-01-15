@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class InfinityArray extends InfinityFile {
+public class InfinityStringArray extends InfinityFile {
 
-    // TODO add secure
+    // TODO addObject secure
 
     protected InfinityConstArray meta;
     Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
 
 
-    public InfinityArray(String infinityFileID) {
+    public InfinityStringArray(String infinityFileID) {
         super(infinityFileID);
         meta = new InfinityConstArray(infinityFileID + ".meta");
         // TODO change all file types to with string length equal 4
@@ -33,7 +33,7 @@ public class InfinityArray extends InfinityFile {
         return (MetaCell) meta.get(index, initMeta());
     }
 
-    public InfinityArrayCellParser get(long index, InfinityArrayCellParser dest) {
+    public InfinityStringArrayCellParser getObject(long index, InfinityStringArrayCellParser dest) {
         MetaCell metaCell = getMeta(index);
         byte[] readiedData = read(metaCell.start, metaCell.length);
         decodeData(readiedData, metaCell.accessKey);
@@ -44,8 +44,12 @@ public class InfinityArray extends InfinityFile {
     private StringCell stringCell = new StringCell();
 
     public String getString(long index) {
-        get(index, stringCell);
+        getObject(index, stringCell);
         return stringCell.str;
+    }
+
+    public byte[] getBytes(long index) {
+        return getString(index).getBytes();
     }
 
     private static Random randomOfAccessKeys = new Random(System.currentTimeMillis());
@@ -69,13 +73,13 @@ public class InfinityArray extends InfinityFile {
             data[i] = (byte) ((256 + (data[i] - gamma[i])) % 256);*/
     }
 
-    public void set(long index, byte[] data) {
+    public void setBytes(long index, byte[] data) {
         MetaCell metaCell = getMeta(index);
         int lastSectorLength = getSectorLength((int) metaCell.length);
         int newSectorLength = getSectorLength(data.length);
         if (newSectorLength > lastSectorLength) {
-            MetaCell garbage = getGarbage(newSectorLength);
-            addToGarbage(index, lastSectorLength);
+            MetaCell garbage = getFreeSector(newSectorLength);
+            removeSector(index, lastSectorLength);
             byte[] sectorWithData = new byte[newSectorLength];
             System.arraycopy(data, 0, sectorWithData, 0, data.length);
             long newAccessKey = encodeData(sectorWithData);
@@ -99,16 +103,16 @@ public class InfinityArray extends InfinityFile {
         }
     }
 
-    public void set(long index, String data) {
+    public void setString(long index, String data) {
         stringCell.str = data;
-        set(index, stringCell);
+        setObject(index, stringCell);
     }
 
-    public void set(long index, InfinityArrayCellBuilder cell) {
-        set(index, cell.build());
+    public void setObject(long index, InfinityStringArrayCellBuilder cell) {
+        setBytes(index, cell.build());
     }
 
-    public void addToGarbage(long index, long sectorSize) {
+    public void removeSector(long index, long sectorSize) {
         InfinityLongArray garbageBySize = garbageCollector.get(sectorSize);
         if (true) return;
         if (garbageBySize == null) {
@@ -130,7 +134,7 @@ public class InfinityArray extends InfinityFile {
         }
     }
 
-    public MetaCell getGarbage(long sectorSize) {
+    public MetaCell getFreeSector(long sectorSize) {
         // TODO enable garbage collector
         if (true) return null;
         InfinityLongArray garbageBySize = garbageCollector.get(sectorSize);
@@ -144,8 +148,7 @@ public class InfinityArray extends InfinityFile {
         return null;
     }
 
-
-    public long add(byte[] data) {
+    public long addBytes(byte[] data) {
         MetaCell metaCell = initMeta();
         if (data != null && data.length != 0) {
             byte[] sector = dataToSector(data);
@@ -157,12 +160,12 @@ public class InfinityArray extends InfinityFile {
         return meta.add(metaCell);
     }
 
-    public long add(String data) {
-        return add(data.getBytes());
+    public long addString(String data) {
+        return addBytes(data.getBytes());
     }
 
-    public long add(InfinityArrayCellBuilder cell) {
-        return add(cell.build());
+    public long addObject(InfinityStringArrayCellBuilder cell) {
+        return addBytes(cell.build());
     }
 
     private int getSectorLength(int dataLength) {

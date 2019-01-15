@@ -1,22 +1,22 @@
-package com.metabrain.gdb.tree;
+package com.metabrain.gdb.map;
 
 import com.metabrain.gdb.Bytes;
-import com.metabrain.gdb.InfinityArray;
 import com.metabrain.gdb.InfinityConstArray;
+import com.metabrain.gdb.InfinityStringArray;
 
 import java.util.Arrays;
 
-public class Tree extends InfinityConstArray {
+public class InfinityHashMap extends InfinityConstArray {
     // TODO delete new and use only 3 objects to search
-    // TODO HALF_LONG value change to max tree node count
+    // TODO HALF_LONG value change to max map node count
     private final static long HALF_LONG = 1000000000000000000L;
-    private InfinityArray keys;
-    private InfinityArray hashes;
+    private InfinityStringArray keys;
+    private InfinityStringArray hashes;
 
-    public Tree(String infinityFileID) {
+    public InfinityHashMap(String infinityFileID) {
         super(infinityFileID);
-        keys = new InfinityArray(infinityFileID + ".keys");
-        hashes = new InfinityArray(infinityFileID + ".hashes");
+        keys = new InfinityStringArray(infinityFileID + ".keys");
+        hashes = new InfinityStringArray(infinityFileID + ".hashes");
         if (fileData.sumFilesSize == 0)
             add(new TreeNode("****".getBytes(), new long[TreeNode.LINKS_COUNT]));
     }
@@ -55,7 +55,7 @@ public class Tree extends InfinityConstArray {
                 if (link == 0) {
                     Hash hash1 = new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value);
                     HashVariants hashVariants = new HashVariants(hash, hash1);
-                    node.links[hashChar] = hashes.add(hashVariants) + HALF_LONG;
+                    node.links[hashChar] = hashes.addObject(hashVariants) + HALF_LONG;
                     set(nodeIndex, node);
                     return;
                 } else if (link < HALF_LONG) {
@@ -64,7 +64,7 @@ public class Tree extends InfinityConstArray {
                 } else /* hashIndex >= HALF_LONG */ {
                     long hashVariantIndex = link - HALF_LONG;
                     HashVariants hashVariants = new HashVariants();
-                    hashes.get(hashVariantIndex, hashVariants);
+                    hashes.getObject(hashVariantIndex, hashVariants);
                     if (Arrays.equals(hash, hashVariants.mask)) {
                         long first8Bytes = getFirst8Bytes(hashKey);
                         boolean findKey = false;
@@ -80,7 +80,7 @@ public class Tree extends InfinityConstArray {
                             Hash newHash = new Hash(first8Bytes, keyIndex, value);
                             hashVariants.hashes.add(newHash);
                         }
-                        hashes.set(hashVariantIndex, hashVariants);
+                        hashes.setObject(hashVariantIndex, hashVariants);
                     } else {
                         byte[] newMask = "****".getBytes();
                         int j = 0;
@@ -90,7 +90,7 @@ public class Tree extends InfinityConstArray {
                         int previousIndex = hexCharToInt(hashVariants.mask[j]);
                         int newIndex = hexCharToInt(hash[j]);
                         links[previousIndex] = link;
-                        links[newIndex] = hashes.add(
+                        links[newIndex] = hashes.addObject(
                                 new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value))
                         ) + HALF_LONG;
                         node.links[hashChar] = add(new TreeNode(newMask, links));
@@ -105,7 +105,7 @@ public class Tree extends InfinityConstArray {
                 System.arraycopy(node.mask, 0, newMask, 0, i);
                 long[] links = new long[TreeNode.LINKS_COUNT];
                 links[nodeChar] = nodeIndex;
-                links[hashChar] = hashes.add(new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value))) + HALF_LONG;
+                links[hashChar] = hashes.addObject(new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value))) + HALF_LONG;
                 long newIndex = add(new TreeNode(newMask, links));
                 if (prevIndex != Long.MAX_VALUE) {
                     get(prevIndex, node);
@@ -145,7 +145,7 @@ public class Tree extends InfinityConstArray {
                 } else /* hashIndex >= HALF_LONG */ {
                     long hashVariantIndex = link - HALF_LONG;
                     HashVariants hashVariants = new HashVariants();
-                    hashes.get(hashVariantIndex, hashVariants);
+                    hashes.getObject(hashVariantIndex, hashVariants);
                     if (Arrays.equals(hash, hashVariants.mask)) {
                         long first8Bytes = getFirst8Bytes(hashKey);
                         for (Hash hashl : hashVariants.hashes)

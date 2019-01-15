@@ -241,7 +241,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Provides rudimentary support for cookies. Doesn't support 'path',
-     * 'secure' nor 'httpOnly'. Feel free to improve it and/or add unsupported
+     * 'secure' nor 'httpOnly'. Feel free to improve it and/or addObject unsupported
      * features.
      *
      * @author LordFokas
@@ -311,7 +311,7 @@ public abstract class NanoHTTPD {
         }
 
         /**
-         * Internally used by the webserver to add all queued cookies into the
+         * Internally used by the webserver to addObject all queued cookies into the
          * Response's HTTP Headers.
          *
          * @param response
@@ -330,7 +330,7 @@ public abstract class NanoHTTPD {
      * <p/>
      * <p>
      * By default, the server spawns a new Thread for every incoming request.
-     * These are set to <i>daemon</i> status, and named according to the request
+     * These are setString to <i>daemon</i> status, and named according to the request
      * number. The name is useful when profiling the application.
      * </p>
      */
@@ -763,7 +763,7 @@ public abstract class NanoHTTPD {
                 // Read the first 8192 bytes.
                 // The full header should fit in here.
                 // Apache's default header limit is 8KB.
-                // Do NOT assume that a single read will get the entire header
+                // Do NOT assume that a single read will getObject the entire header
                 // at once!
                 byte[] buf = new byte[NanoHTTPD.HTTPSession.BUFSIZE];
                 this.splitbyte = 0;
@@ -920,7 +920,7 @@ public abstract class NanoHTTPD {
                         if (search_window[j + i] != boundary[i])
                             break;
                         if (i == boundary.length - 1) {
-                            // Match found, add it to results
+                            // Match found, addObject it to results
                             int[] new_res = new int[res.length + 1];
                             System.arraycopy(res, 0, new_res, 0, res.length);
                             new_res[res.length] = search_window_pos + j;
@@ -1282,7 +1282,7 @@ public abstract class NanoHTTPD {
         private long contentLength;
 
         /**
-         * Headers for the HTTP response. Use addHeader() to add lines.
+         * Headers for the HTTP response. Use addHeader() to addObject lines.
          */
         private final Map<String, String> header = new HashMap<String, String>();
 

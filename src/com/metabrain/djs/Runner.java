@@ -12,7 +12,7 @@ public class Runner{
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
 
-    private Node defaultPrototypes;// = builder.get(0L).getObject("defaultPrototypes");
+    private Node defaultPrototypes;// = builder.getObject(0L).getObject("defaultPrototypes");
 
     private Node getDefaultPrototype(Byte nodeType) {
         if (defaultPrototypes == null) {
@@ -158,7 +158,7 @@ public class Runner{
                 .commit();
     }
 /*
-    // TODO add test to cloneArray testing
+    // TODO addObject test to cloneArray testing
     private void cloneArray(Long sourceNodeId, Long templateNodeId) {
         Long newArrauNodeId = new Node(NodeType.ARRAY).commit().getId();
         Node templateLinks = new Node(templateNodeId);
@@ -248,7 +248,7 @@ public class Runner{
                 if (bodyNode != null)
                     sourceNode = bodyNode;
                 if (builder.set(node).getParamCount() != 0) {
-                    // TODO execute market add to parser
+                    // TODO execute market addObject to parser
                     boolean isExecute = builder.set(node).getParamNode(0).id == 0;
                     for (int i = 0; i < builder.set(sourceNode).getParamCount(); i++) {
                         Node sourceParam = builder.set(sourceNode).getParamNode(i);

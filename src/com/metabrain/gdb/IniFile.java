@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class IniFile {
 
     private File iniFile;
-    //TODO add comments pattern
+    //TODO addObject comments pattern
     private Pattern section = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
     private Pattern keyValue = Pattern.compile("\\s*([^=]*)=(.*)");
     private Map<String, Map<String, String>> entries = new HashMap<>();

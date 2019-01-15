@@ -1,5 +1,5 @@
 package com.metabrain.gdb;
 
-public interface InfinityArrayCellBuilder {
+public interface InfinityStringArrayCellBuilder {
     byte[] build();
 }

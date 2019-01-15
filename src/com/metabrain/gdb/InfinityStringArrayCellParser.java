@@ -1,5 +1,5 @@
 package com.metabrain.gdb;
 
-public interface InfinityArrayCellParser {
+public interface InfinityStringArrayCellParser {
     void parse(byte[] data);
 }

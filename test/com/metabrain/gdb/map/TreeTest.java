@@ -1,4 +1,4 @@
-package com.metabrain.gdb.tree;
+package com.metabrain.gdb.map;
 
 
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ public class TreeTest {
     @Test
     void put() {
         int randomInt = new Random(System.currentTimeMillis()).nextInt(1000);
-        Tree tree = new Tree("tree" + randomInt);
+        InfinityHashMap tree = new InfinityHashMap("map" + randomInt);
         assertEquals( TreeNode.SIZE, tree.fileData.sumFilesSize);
         tree.put("String1", "3012".getBytes(), 123);
         assertEquals( TreeNode.SIZE, tree.fileData.sumFilesSize);
@@ -29,6 +29,6 @@ public class TreeTest {
         assertEquals(345, value);
         value = tree.get("String1", "3012".getBytes());
         assertEquals(123, value);
-        // TODO add tests with letters abcdef in hash
+        // TODO addObject tests with letters abcdef in hash
     }
 }

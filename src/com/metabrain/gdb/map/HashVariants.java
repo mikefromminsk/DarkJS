@@ -1,4 +1,4 @@
-package com.metabrain.gdb.tree;
+package com.metabrain.gdb.map;
 
 import com.metabrain.gdb.Bytes;
 import com.metabrain.gdb.InfinityConstArrayCell;

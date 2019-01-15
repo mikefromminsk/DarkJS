@@ -78,7 +78,7 @@ public class Parser {
 
             if (statement instanceof UnaryNode) {
                 UnaryNode unaryNode = (UnaryNode) statement;
-                // TODO add ++a --a
+                // TODO addObject ++a --a
                 TokenType tokenType = unaryNode.tokenType();
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = jsLine(module, unaryNode.getExpression());
@@ -142,7 +142,7 @@ public class Parser {
 
                 if (index.getIndex() instanceof LiteralNode || index.getIndex() instanceof IdentNode) {
                     Node indexNode = jsLine(module, index.getIndex());
-                    builder.set(objectNode).addProperty(indexNode).commit();
+                    builder.setString(objectNode).addProperty(indexNode).commit();
                 }
                 return objectNode;
             }*/

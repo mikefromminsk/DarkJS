@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class DataStream {
 
-    // TODO set buffer size > MAX_STORAGE_DATA_IN_DB
+    // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
     private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
     private byte type;
     public long start;
@@ -45,7 +45,7 @@ public class DataStream {
             int readiedChars = fileReader.read(buf);
             if ((readiedChars) > 0) {
                 if (readiedChars < BUFFER_SIZE)
-                    buf = Arrays.copyOf(buf, readiedChars); // remove zero bytes
+                    buf = Arrays.copyOf(buf, readiedChars); // removeSector zero bytes
                 currentPosition += readiedChars;
                 return buf;
             }

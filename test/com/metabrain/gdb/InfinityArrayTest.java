@@ -20,30 +20,30 @@ public class InfinityArrayTest {
     @RepeatedTest(1000)
     @Test
     void add() {
-        InfinityArray testArray = new InfinityArray("testArray");
+        InfinityStringArray testArray = new InfinityStringArray("testArray");
         // TODO issue with multithreading access to equal infinity array
-        long index = testArray.add("tests");
-        testArray.set(index, "bests");
+        long index = testArray.addString("tests");
+        testArray.setString(index, "bests");
         String results = testArray.getString(index);
         assertEquals("bests", results);
     }
 
     /*@Test
     void testAddToGarbage() throws Exception {
-        InfinityArray arr = new InfinityArray("testArrayGarbage");
-        long index = arr.add("test");
-        arr.set(index, "testss");
+        InfinityStringArray arr = new InfinityArray("testArrayGarbage");
+        long index = arr.addObject("test");
+        arr.setString(index, "testss");
         assertEquals("testss", arr.getString(index));
 
-        InfinityConstArray garbage4 = arr.garbageCollector.get(4L);
+        InfinityConstArray garbage4 = arr.garbageCollector.getObject(4L);
 
         long garbage4Size = garbage4.getLong(0);
         long lastValue = garbage4.getLong(garbage4Size);
         assertEquals(index, lastValue);
 
-        long ssIndex = arr.add("ss");
-        arr.set(ssIndex, "ssdd");
-        InfinityConstArray garbage2 = arr.garbageCollector.get(2L);
+        long ssIndex = arr.addObject("ss");
+        arr.setString(ssIndex, "ssdd");
+        InfinityConstArray garbage2 = arr.garbageCollector.getObject(2L);
         long garbage2Size = garbage2.getLong(0);
         lastValue = garbage2.getLong(garbage2Size);
         assertEquals(ssIndex, lastValue);

@@ -1,13 +1,13 @@
 package com.metabrain.djs.node;
 
 import com.metabrain.gdb.*;
-import com.metabrain.gdb.tree.Crc16;
-import com.metabrain.gdb.tree.Tree;
+import com.metabrain.gdb.map.Crc16;
+import com.metabrain.gdb.map.InfinityHashMap;
 
 import java.io.*;
 import java.util.*;
 
-public class NodeStorage extends InfinityArray {
+public class NodeStorage extends InfinityStringArray {
 
     private static final String nodeStorageID = "node";
     private static final String dataStorageID = "data";
@@ -20,9 +20,9 @@ public class NodeStorage extends InfinityArray {
     private static ArrayList<Node> transactionNodes;
     private static InfinityFile dataStorage;
     private static NodeStorage instance;
-    private static Tree dataHashTree;
-    private static Tree keyValueStorage;
-    private static Tree accountStorage;
+    private static InfinityHashMap dataHashTree;
+    private static InfinityHashMap keyValueStorage;
+    private static InfinityHashMap accountStorage;
     private static Map<Long, Node> nodesCache = new TreeMap<>();
 
 
@@ -44,9 +44,9 @@ public class NodeStorage extends InfinityArray {
             transactionNodes = new ArrayList<>();
             instance = new NodeStorage(nodeStorageID);
             dataStorage = new InfinityFile(dataStorageID);
-            dataHashTree = new Tree(hashStorageID);
-            keyValueStorage = new Tree(keyValueStorageID);
-            accountStorage = new Tree(accountStorageID);
+            dataHashTree = new InfinityHashMap(hashStorageID);
+            keyValueStorage = new InfinityHashMap(keyValueStorageID);
+            accountStorage = new InfinityHashMap(accountStorageID);
         }
         return instance;
     }
@@ -98,7 +98,7 @@ public class NodeStorage extends InfinityArray {
 
     public void set(long index, Node node) {
         if (node.type >= NodeType.VAR)
-            super.set(index, node);
+            super.setObject(index, node);
         // else {data is not mutable}
     }
 
@@ -106,7 +106,7 @@ public class NodeStorage extends InfinityArray {
 
     public void add(Node node) {
         if (node.type >= NodeType.VAR) {
-            node.id = super.add(node);
+            node.id = super.addObject(node);
         } else {
             try {
                 if (node.externalData != null) {
