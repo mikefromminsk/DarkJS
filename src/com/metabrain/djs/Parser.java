@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class Parser {
 
     private NodeBuilder builder = new NodeBuilder();
-    ArrayList<Node> localStack = new ArrayList<>();
+    private ArrayList<Node> localStack = new ArrayList<>();
 
     Node findNodeInLocalStack(String name) {
         Long titleId = NodeStorage.getInstance().getDataId(name.getBytes());
@@ -342,7 +342,6 @@ public class Parser {
 
             Node node = jsLine(module, rootParserNode);
 
-            NodeBuilder builder = new NodeBuilder();
             Node sourceCodeDataNode = builder.create(NodeType.STRING).setData(sourceString).commit();
 
             Node sourceCodeTitle = builder.create(NodeType.STRING).setData("source_code").commit();

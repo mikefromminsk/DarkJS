@@ -1,6 +1,7 @@
 package com.metabrain.djs;
 
 import com.metabrain.djs.node.*;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -11,15 +12,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NodeBuilderTest {
 
     @Test
-    //@RepeatedTest(100)
-    // TODO solve problem with RepeatedTest(100)
-    void create() {
+    static void setValue(){
         NodeBuilder builder = new NodeBuilder();
         Long valueNodeId = builder.create().getId();
-        Long secondValueNodeId = builder.create().getId();
         Node nodeId = builder.create().setValue(valueNodeId).commit();
         Long valueId = builder.set(nodeId).getValue();
         assertEquals(valueNodeId, valueId);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(1);
+        setValue();
+    }
+
+    @Test
+    //@RepeatedTest(100)
+    // TODO solve problem with RepeatedTest(100)
+    void create() {
+        /*NodeBuilder builder = new NodeBuilder();
+        Long secondValueNodeId = builder.create().getId();
         NodeStorage.getInstance().transactionCommit();
         NodeStorage.getInstance().clearCache();
         assertEquals(valueNodeId, builder.set(nodeId).getValue());
@@ -48,7 +59,11 @@ class NodeBuilderTest {
             assertEquals(1024 * 1024 * 3, ss.length);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
+    @AfterAll
+    void finish(){
+
+    }
 }

@@ -12,29 +12,8 @@ public class Runner{
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
 
-    private Node defaultPrototypes;// = builder.getObject(0L).getObject("defaultPrototypes");
-
     private Node getDefaultPrototype(Byte nodeType) {
-        if (defaultPrototypes == null) {
-            NodeBuilder nameBuilder = new NodeBuilder();
-            NodeBuilder prototypeBuilder = new NodeBuilder();
-            Node stringPrototype = prototypeBuilder.create()
-                    .setTitle(nameBuilder.create(NodeType.STRING).setData(NodeType.STRING_NAME).commit())
-                    .addLocal(builder.create(NodeType.NATIVE_FUNCTION)
-                            .setTitle(nameBuilder.create(NodeType.STRING).setData(Caller.STRING_REVERCE_NAME).commit())
-                            .setFunctionId(Caller.STRING_REVERCE)
-                            .commit())
-                    .addLocal(builder.create(NodeType.NATIVE_FUNCTION)
-                            .setTitle(nameBuilder.create(NodeType.STRING).setData(Caller.STRING_TRIM_NAME).commit())
-                            .setFunctionId(Caller.STRING_TRIM)
-                            .commit())
-                    .commit();
-            defaultPrototypes = builder.create()
-                    .addLocal(stringPrototype)
-                    .commit();
-            builder.get(0L).putObject("defaultPrototypes", defaultPrototypes);
-        }
-        return builder.set(defaultPrototypes).findLocal(NodeType.toString(nodeType));
+        return builder.set(DefaultPrototypes.getInstance()).findLocal(NodeType.toString(nodeType));
     }
 
     private Node propCalledNode = null;

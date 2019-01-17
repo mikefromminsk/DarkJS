@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class NodeBuilder {
 
-    NodeStorage storage = NodeStorage.getInstance();
-    Node node;
+    private NodeStorage storage = NodeStorage.getInstance();
+    private Node node;
 
     public NodeBuilder create() {
         return create(NodeType.VAR);
@@ -717,5 +717,11 @@ public class NodeBuilder {
     public NodeBuilder removeAllNext() {
         node.next = null;
         return this;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        storage.transactionCommit();
     }
 }
