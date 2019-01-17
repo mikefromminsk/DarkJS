@@ -14,7 +14,7 @@ public class InfinityFile {
     String infinityFileID;
     public InfinityFileData fileData;
     ActionThread mainThread;
-    public static Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
+    private static Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
 
     public InfinityFile(String infinityFileID) {
         this.infinityFileID = infinityFileID;
@@ -39,6 +39,7 @@ public class InfinityFile {
                         e.printStackTrace();
                     }
                 }
+            infinityFileCache.put(infinityFileID, fileData);
         }
 
     }
