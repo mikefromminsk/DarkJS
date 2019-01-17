@@ -9,7 +9,7 @@ public class InfinityStringArray extends InfinityFile {
     // TODO addObject secure
 
     protected InfinityConstArray meta;
-    Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
+    private Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
 
 
     public InfinityStringArray(String infinityFileID) {

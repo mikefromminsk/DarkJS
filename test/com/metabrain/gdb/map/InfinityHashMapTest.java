@@ -1,14 +1,12 @@
 package com.metabrain.gdb.map;
 
-
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-
-public class TreeTest {
+class InfinityHashMapTest {
 
     @Test
     void put() {

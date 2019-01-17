@@ -53,7 +53,7 @@ public class InfinityHashMap extends InfinityConstArray {
                 hashChar = hexCharToInt(hashChar);
                 long link = node.links[hashChar];
                 if (link == 0) {
-                    Hash hash1 = new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value);
+                    Hash hash1 = new Hash(getFirst8Bytes(hashKey), keys.addBytes(hashKey), value);
                     HashVariants hashVariants = new HashVariants(hash, hash1);
                     node.links[hashChar] = hashes.addObject(hashVariants) + HALF_LONG;
                     set(nodeIndex, node);
@@ -70,13 +70,13 @@ public class InfinityHashMap extends InfinityConstArray {
                         boolean findKey = false;
                         for (Hash hashl : hashVariants.hashes)
                             if (hashl.first8Bytes == first8Bytes)
-                                if (Arrays.equals(hashKey, keys.getString(hashl.keyIndex).getBytes())) {
+                                if (Arrays.equals(hashKey, keys.getBytes(hashl.keyIndex))) {
                                     hashl.value = value;
                                     findKey = true;
                                     break;
                                 }
                         if (!findKey) {
-                            long keyIndex = keys.add(hashKey);
+                            long keyIndex = keys.addBytes(hashKey);
                             Hash newHash = new Hash(first8Bytes, keyIndex, value);
                             hashVariants.hashes.add(newHash);
                         }
@@ -91,7 +91,7 @@ public class InfinityHashMap extends InfinityConstArray {
                         int newIndex = hexCharToInt(hash[j]);
                         links[previousIndex] = link;
                         links[newIndex] = hashes.addObject(
-                                new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value))
+                                new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.addBytes(hashKey), value))
                         ) + HALF_LONG;
                         node.links[hashChar] = add(new TreeNode(newMask, links));
                         set(nodeIndex, node);
@@ -105,7 +105,7 @@ public class InfinityHashMap extends InfinityConstArray {
                 System.arraycopy(node.mask, 0, newMask, 0, i);
                 long[] links = new long[TreeNode.LINKS_COUNT];
                 links[nodeChar] = nodeIndex;
-                links[hashChar] = hashes.addObject(new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.add(hashKey), value))) + HALF_LONG;
+                links[hashChar] = hashes.addObject(new HashVariants(hash, new Hash(getFirst8Bytes(hashKey), keys.addBytes(hashKey), value))) + HALF_LONG;
                 long newIndex = add(new TreeNode(newMask, links));
                 if (prevIndex != Long.MAX_VALUE) {
                     get(prevIndex, node);

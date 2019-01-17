@@ -42,7 +42,7 @@ class NodeBuilderTest {
 
         String string = "string";
         Node str1Id = builder.create(NodeType.STRING).setData(string).commit();
-        String str = DataStreamReader.getString(builder.set(str1Id).getData());
+        String str = builder.set(str1Id).getData().readString();
         assertEquals(string, str);
 
         try {
