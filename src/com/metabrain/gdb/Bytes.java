@@ -3,6 +3,7 @@ package com.metabrain.gdb;
 import java.nio.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Bytes {
 
@@ -84,7 +85,7 @@ public class Bytes {
         return c;
     }
 
-    public static byte[] fromCharArray(char[]  chars) {
+    public static byte[] fromCharArray(char[] chars) {
         return Charset.forName("UTF-8").encode(CharBuffer.wrap(chars)).array();
     }
 
@@ -99,4 +100,9 @@ public class Bytes {
         System.arraycopy(b, 0, result, a.length, b.length);
         return result;
     }
+
+    public static boolean equals(byte[] a, byte[] b) {
+        return Arrays.equals(a, b);
+    }
+
 }

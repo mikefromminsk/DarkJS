@@ -9,11 +9,11 @@ import java.util.Map;
 
 public class InfinityFile {
 
-    public final static String INFINITY_FILE_PART_PREFIX = "part";
-    public long partSize;
-    String infinityFileID;
+    private final static String INFINITY_FILE_PART_PREFIX = "part";
+    private long partSize;
+    protected String infinityFileID;
     public InfinityFileData fileData;
-    ActionThread mainThread;
+    private ActionThread mainThread;
     private static Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
 
     public InfinityFile(String infinityFileID) {
@@ -51,7 +51,7 @@ public class InfinityFile {
                 DiskManager diskManager = DiskManager.getInstance();
                 String partName = INFINITY_FILE_PART_PREFIX + index;
                 String newFileName = infinityFileID + "." + partName;
-                File partFile = new File(diskManager.dbDir, newFileName);
+                File partFile = new File(diskManager.dbDir.getAbsolutePath(), newFileName);
                 diskManager.properties.put(infinityFileID, partName, partFile.getAbsolutePath());
                 RandomAccessFile partRandomAccessFile = new RandomAccessFile(partFile, "rw");
                 fileData.files.add(partRandomAccessFile);
@@ -71,6 +71,10 @@ public class InfinityFile {
 
         int startFileIndex = (int) (start / partSize);
         int endFileIndex = (int) (end / partSize);
+
+        if (end != 0 && end % partSize == 0)
+            endFileIndex -= 1;
+
         if (startFileIndex == endFileIndex) {
             RandomAccessFile readingFile = getPartFile(startFileIndex);
             int startInFile = (int) (start % partSize);
@@ -78,12 +82,14 @@ public class InfinityFile {
         } else {
             RandomAccessFile firstFile = getPartFile(startFileIndex);
             RandomAccessFile secondFile = getPartFile(endFileIndex);
-            int lengthInSecondFile = (int) (end % partSize);
-            int lengthInFirstFile = (int) (length - lengthInSecondFile);
-            int startInFirstFile = (int) (start % partSize);
             int startInSecondFile = 0;
+            int lengthInSecondFile = (int) (end % partSize);
+            int startInFirstFile = (int) (start % partSize);
+            int lengthInFirstFile = (int) (length - lengthInSecondFile);
+
             byte[] dataFromFirstFile = mainThread.read(firstFile, startInFirstFile, lengthInFirstFile);
             byte[] dataFromSecondFile = mainThread.read(secondFile, startInSecondFile, lengthInSecondFile);
+
             return Bytes.concat(dataFromFirstFile, dataFromSecondFile);
         }
     }
@@ -103,17 +109,25 @@ public class InfinityFile {
         if (start == fileData.sumFilesSize)
             fileData.sumFilesSize += data.length;
 
+        if (end != 0 && end % partSize == 0)
+            endFileIndex -= 1;
+
         if (startFileIndex == endFileIndex) {
             int startInFile = (int) (start - startFileIndex * partSize);
             mainThread.write(firstWriteFile, startInFile, data);
             // TODO archive thread
         } else {
-            int lengthInSecondFile = (int) (end % partSize);
-            int lengthInFirstFile = (int) (length - lengthInSecondFile);
-            int startInFirstFile = (int) (start % partSize);
             int startInSecondFile = 0;
-            byte[] dataToFirstFile = new byte[lengthInFirstFile];
+            int lengthInSecondFile = (int) (end % partSize);
+            int startInFirstFile = (int) (start % partSize);
+            int lengthInFirstFile = (int) (length - lengthInSecondFile);
+
+            byte[] dataToFirstFile =new byte[lengthInFirstFile];
             byte[] dataToSecondFile = new byte[lengthInSecondFile];
+
+            System.arraycopy(data, 0, dataToFirstFile, 0, lengthInFirstFile);
+            System.arraycopy(data,  lengthInFirstFile, dataToSecondFile, 0, lengthInSecondFile);
+
             mainThread.write(firstWriteFile, startInFirstFile, dataToFirstFile);
             mainThread.write(secondWriteFile, startInSecondFile, dataToSecondFile);
             // TODO archive thread
