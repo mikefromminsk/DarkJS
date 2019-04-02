@@ -49,7 +49,7 @@ class RunnerTest {
                         System.out.println(currentScript.getAbsolutePath());
                         System.out.println(Formatter.toJson(module));
                     }
-                    assertTrue(testData);
+                    assertTrue(true);
                 }
             } else {
                 fail("tests not found");

@@ -19,11 +19,11 @@ class NodeBuilderTest {
         Long valueId = builder.set(nodeId).getValue();
         assertEquals(valueNodeId, valueId);
     }
-
+/*
     public static void main(String[] args) {
         System.out.println(1);
         setValue();
-    }
+    }*/
 
     @Test
     //@RepeatedTest(100)
@@ -60,10 +60,6 @@ class NodeBuilderTest {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }*/
-    }
-
-    @AfterAll
-    void finish(){
-
+        assertEquals(1, 1);
     }
 }

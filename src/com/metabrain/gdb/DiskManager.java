@@ -50,7 +50,7 @@ public class DiskManager {
             Thread thread = new Thread(mainThread);
             thread.start();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

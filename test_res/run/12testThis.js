@@ -1,3 +1,4 @@
+
 var obj = {
     param: 1 + 1,
     func: function (){
