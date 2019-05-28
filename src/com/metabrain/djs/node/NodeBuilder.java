@@ -387,7 +387,11 @@ public class NodeBuilder {
         if (list != null && index >= 0 && index < list.size()) {
             Object object = list.get(index);
             if (object instanceof Node) return (Node) object;
-            if (object instanceof Long) return storage.get((Long) object);
+            if (object instanceof Long) {
+                Node readedNode = storage.get((Long) object);
+                list.set(index, readedNode);
+                return readedNode;
+            }
         }
         return null;
     }
@@ -723,5 +727,63 @@ public class NodeBuilder {
     protected void finalize() throws Throwable {
         super.finalize();
         storage.transactionCommit();
+    }
+
+    public int getType() {
+        return node.type;
+    }
+
+    public boolean isData() {
+        return node.type < NodeType.VAR;
+    }
+
+    public boolean isString() {
+        return node.type == NodeType.STRING;
+    }
+
+    public boolean isNumber() {
+        return node.type == NodeType.NUMBER;
+    }
+
+    public boolean isBoolean() {
+        return node.type == NodeType.BOOL;
+    }
+
+    public boolean isVar() {
+        return node.type == NodeType.VAR;
+    }
+
+    public boolean isArray() {
+        return node.type == NodeType.ARRAY;
+    }
+
+    public boolean isObject() {
+        return node.type == NodeType.OBJECT;
+    }
+
+    public boolean isFunction() {
+        return node.type == NodeType.FUNCTION;
+    }
+
+    public boolean isNativeFunction() {
+        return node.type == NodeType.NATIVE_FUNCTION;
+    }
+
+    public boolean isThread() {
+        return node.type == NodeType.THREAD;
+    }
+
+    public String getTitleString() {
+        Node title = getTitleNode();
+        if (title != null && title.data != null)
+            return title.data.readString();
+        return null;
+    }
+
+    public Node[] getLocalNodes() {
+        Node[] nodes = new Node[getLocalCount()];
+        for (int i = 0; i < getLocalCount(); i++)
+            nodes[i] = getLocalNode(i);
+        return nodes;
     }
 }

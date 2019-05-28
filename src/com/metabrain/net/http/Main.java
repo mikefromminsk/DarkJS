@@ -1,6 +1,4 @@
-package com.metabrain.gui;
-
-import com.metabrain.gui.server.Server;
+package com.metabrain.net.http;
 
 import java.awt.*;
 import java.net.URI;

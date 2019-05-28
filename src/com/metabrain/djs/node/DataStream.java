@@ -5,9 +5,10 @@ import com.metabrain.gdb.DiskManager;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
-public class DataStream {
+public class DataStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
     private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
@@ -87,5 +88,42 @@ public class DataStream {
             default:
                 return string;
         }
+    }
+
+    @Override
+    public int read() throws IOException {
+        // TODO !!!! rewrite
+        long oldPosition = currentPosition;
+        int _char = readChars()[(int) oldPosition];
+        currentPosition = oldPosition + 1;
+        return _char;
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        // TODO !!!! rewrite
+        long oldPosition = currentPosition;
+        byte[] data = Bytes.fromString(readString());
+        System.arraycopy(data, (int) oldPosition, b, 0, b.length);
+        currentPosition = oldPosition + b.length;
+        if (currentPosition > length)
+            currentPosition = length;
+        return (int) (currentPosition - oldPosition);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        // TODO !!!! rewrite
+        long oldPosition = currentPosition;
+        byte[] data = Bytes.fromString(readString());
+        System.arraycopy(data, off, b, 0, len);
+        currentPosition = oldPosition;
+        return len;
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        currentPosition += n;
+        return n;
     }
 }

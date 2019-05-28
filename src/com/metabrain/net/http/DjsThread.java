@@ -1,4 +1,4 @@
-package com.metabrain.gui.server;
+package com.metabrain.net.http;
 
 import com.metabrain.djs.Formatter;
 import com.metabrain.djs.Parser;
@@ -7,7 +7,7 @@ import com.metabrain.djs.node.LinkType;
 import com.metabrain.djs.node.Node;
 import com.metabrain.djs.node.NodeBuilder;
 import com.metabrain.djs.node.NodeType;
-import com.metabrain.gui.server.model.GetNodeBody;
+import com.metabrain.net.http.model.GetNodeBody;
 import jdk.nashorn.internal.runtime.ParserException;
 
 import java.util.ArrayList;

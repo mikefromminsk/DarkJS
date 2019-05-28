@@ -1,22 +1,19 @@
-package com.metabrain.gui.server;
+package com.metabrain.net.http;
 
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.metabrain.djs.Formatter;
 import com.metabrain.djs.node.Node;
-import com.metabrain.djs.node.NodeStorage;
 import com.metabrain.djs.node.NodeStorageTest;
-import com.metabrain.gui.client.WebGuiRoot;
-import com.metabrain.gui.server.model.GetNodeBody;
+import com.metabrain.gui.WebGuiRoot;
+import com.metabrain.net.http.model.GetNodeBody;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

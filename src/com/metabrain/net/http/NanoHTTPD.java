@@ -1,4 +1,4 @@
-package com.metabrain.gui.server;
+package com.metabrain.net.http;
 
 /*
  * #%L

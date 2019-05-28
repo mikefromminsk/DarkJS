@@ -1,4 +1,4 @@
-package com.metabrain.gui.server.model;
+package com.metabrain.net.http.model;
 
 import java.util.List;
 import java.util.Map;
