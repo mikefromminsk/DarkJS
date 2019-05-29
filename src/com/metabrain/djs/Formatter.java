@@ -3,7 +3,6 @@ package com.metabrain.djs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.metabrain.djs.node.*;
-import com.metabrain.djs.node.*;
 
 import java.util.*;
 /*
@@ -55,14 +54,14 @@ public class Formatter {
     public static final String FALSE = "false";
 
     private static Object dataSimplification(NodeBuilder builder, Node node) {
-        DataStream dataStream = builder.set(node).getData();
+        DataInputStream dataInputStream = builder.set(node).getData();
         if (node.type == NodeType.STRING) {
-            if (dataStream.length > NodeStorage.MAX_STORAGE_DATA_IN_DB)
+            if (dataInputStream.length > NodeStorage.MAX_STORAGE_DATA_IN_DB)
                 return LINK_PREFIX + node.id;
             else
-                return STRING_PREFIX + String.valueOf(dataStream.readChars());
+                return STRING_PREFIX + String.valueOf(dataInputStream.readChars());
         } else {
-            return dataStream.getObject();
+            return dataInputStream.getObject();
         }
     }
 

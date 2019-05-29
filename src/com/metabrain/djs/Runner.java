@@ -1,7 +1,7 @@
 package com.metabrain.djs;
 
 
-import com.metabrain.djs.node.DataStream;
+import com.metabrain.djs.node.DataInputStream;
 import com.metabrain.djs.node.Node;
 import com.metabrain.djs.node.NodeBuilder;
 import com.metabrain.djs.node.NodeType;
@@ -244,8 +244,8 @@ public class Runner{
             Node ifNode = builder.set(node).getIfNode();
             run(ifNode, calledNodeId);
             Node ifNodeData = builder.set(ifNode).getValueNode();
-            DataStream dataStream = builder.set(ifNodeData).getData();
-            if (ifNode.type == NodeType.BOOL && (Boolean) dataStream.getObject())
+            DataInputStream dataInputStream = builder.set(ifNodeData).getData();
+            if (ifNode.type == NodeType.BOOL && (Boolean) dataInputStream.getObject())
                 run(builder.set(node).getTrueNode(), calledNodeId);
             else if (builder.set(node).getElse() != null)
                 run(builder.set(node).getElseNode(), calledNodeId);
@@ -256,8 +256,8 @@ public class Runner{
             Node ifNode = builder.set(node).getIfNode();
             run(ifNode, calledNodeId);
             Node ifNodeData = builder.set(ifNode).getValueNode();
-            DataStream dataStream = builder.set(ifNodeData).getData();
-            while (ifNodeData.type == NodeType.BOOL && (Boolean) dataStream.getObject()) {
+            DataInputStream dataInputStream = builder.set(ifNodeData).getData();
+            while (ifNodeData.type == NodeType.BOOL && (Boolean) dataInputStream.getObject()) {
                 run(builder.set(node).getWhileNode(), calledNodeId);
                 if (exitNode != null) {
                     if (exitNode.equals(node))
@@ -266,7 +266,7 @@ public class Runner{
                 }
                 run(ifNode, calledNodeId);
                 ifNodeData = builder.set(ifNode).getValueNode();
-                dataStream = builder.set(ifNodeData).getData();
+                dataInputStream = builder.set(ifNodeData).getData();
             }
         }
 

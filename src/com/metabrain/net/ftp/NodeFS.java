@@ -1,8 +1,10 @@
 package com.metabrain.net.ftp;
 
 import com.guichaguri.minimalftp.api.IFileSystem;
+import com.metabrain.djs.node.DataOutputStream;
 import com.metabrain.djs.node.Node;
 import com.metabrain.djs.node.NodeBuilder;
+import com.metabrain.djs.node.NodeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,14 +22,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public String getPath(Node file) {
-        builder.set(file);
-        String path = "";
-        while (builder.getLocalParent() != null) {
-            path += "/" + builder.getTitleString();
-            Node localParent = builder.getLocalParentNode();
-            builder.set(localParent);
-        }
-        return path;
+        return NodeUtils.getPath(file);
     }
 
     @Override
@@ -131,7 +126,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public OutputStream writeFile(Node file, long start) throws IOException {
-        return null;
+        return new DataOutputStream(file);
     }
 
     @Override

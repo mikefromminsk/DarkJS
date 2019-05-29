@@ -45,7 +45,7 @@ public class NodeBuilder {
         return node.id;
     }
 
-    public DataStream getData() {
+    public DataInputStream getData() {
         return node.data;
     }
 

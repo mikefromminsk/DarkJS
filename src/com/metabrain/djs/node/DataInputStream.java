@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class DataStream extends InputStream {
+public class DataInputStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
     private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
@@ -19,7 +19,7 @@ public class DataStream extends InputStream {
     private NodeStorage storage = NodeStorage.getInstance();
     private FileReader fileReader;
 
-    public DataStream(byte type, long start, long length) {
+    public DataInputStream(byte type, long start, long length) {
         this.type = type;
         this.start = start;
         this.length = length;

@@ -49,7 +49,7 @@ class NodeBuilderTest {
             Node fileNodeId = builder.create(NodeType.STRING)
                     .setData(new FileInputStream("test_res/data_stream/testData.txt"))
                     .commit();
-            DataStream dataStream = builder.set(fileNodeId).getData();
+            DataInputStream dataStream = builder.set(fileNodeId).getData();
 
             StringBuilder stringBuilder = new StringBuilder();
             while (dataStream.hasNext())

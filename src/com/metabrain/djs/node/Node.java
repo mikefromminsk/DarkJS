@@ -10,7 +10,7 @@ public class Node implements InfinityStringArrayCell {
 
     public boolean isSaved;
     public Long id;
-    public DataStream data;
+    public DataInputStream data;
     // TODO read external data in another thread
     public InputStream externalData;
     public byte type;

@@ -83,7 +83,7 @@ public class NodeStorage extends InfinityStringArray {
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.VAR) {
-                node.data = new DataStream(metaCell.type, metaCell.start, metaCell.length);
+                node.data = new DataInputStream(metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
@@ -148,7 +148,7 @@ public class NodeStorage extends InfinityStringArray {
                             nodeMetaCell.start = dataStorage.add(bytes);
                         }
                         node.id = meta.add(nodeMetaCell);
-                        node.data = new DataStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                        node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
                         node.externalData = null;
                         dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                     }else{
@@ -156,9 +156,10 @@ public class NodeStorage extends InfinityStringArray {
                             file.delete(); // delete read file buffer
                         nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
                         node.id = prevNodeId;
-                        node.data = new DataStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                        node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
                         node.externalData = null;
                     }
+                    in.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
