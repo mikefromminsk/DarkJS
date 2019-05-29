@@ -157,6 +157,14 @@ public class NodeBuilder {
         return null;
     }
 
+    public Long getLocalParent() {
+        if (node.localParent instanceof Long)
+            return (Long) node.localParent;
+        else if (node.localParent instanceof Node)
+            return node.id;
+        return null;
+    }
+
     public Node getValueNode() {
         if (node.value instanceof Node)
             return (Node) node.value;
@@ -245,6 +253,14 @@ public class NodeBuilder {
         return null;
     }
 
+    public Node getLocalParentNode() {
+        if (node.localParent instanceof Node)
+            return (Node) node.localParent;
+        else if (node.localParent instanceof Long)
+            return (Node) (node.localParent = storage.get((Long) node.localParent));
+        return null;
+    }
+
     public NodeBuilder setValue(Long value) {
         node.value = value;
         return this;
@@ -300,6 +316,11 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder setLocalParent(Long localParent) {
+        node.localParent = localParent;
+        return this;
+    }
+
     public NodeBuilder setValue(Node value) {
         node.value = value;
         return this;
@@ -352,6 +373,11 @@ public class NodeBuilder {
 
     public NodeBuilder setBody(Node body) {
         node.body = body;
+        return this;
+    }
+
+    public NodeBuilder setLocalParent(Node localParent) {
+        node.localParent = localParent;
         return this;
     }
 
@@ -677,6 +703,8 @@ public class NodeBuilder {
             case LinkType.PROTOTYPE:
                 setPrototype(linkValueNode);
                 break;
+            case LinkType.LOCAL_PARENT:
+                setLocalParent(linkValueNode);
             case LinkType.BODY:
                 setBody(linkValueNode);
                 break;
@@ -710,6 +738,7 @@ public class NodeBuilder {
         node._if = null;
         node.prototype = null;
         node.body = null;
+        node.localParent = null;
         node.local = null;
         node.param = null;
         node.next = null;

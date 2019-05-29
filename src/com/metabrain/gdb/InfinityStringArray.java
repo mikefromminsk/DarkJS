@@ -98,6 +98,7 @@ public class InfinityStringArray extends InfinityFile {
             byte[] sectorWithData = new byte[lastSectorLength];
             System.arraycopy(data, 0, sectorWithData, 0, data.length);
             metaCell.accessKey = encodeData(sectorWithData);
+            metaCell.length = data.length;
             meta.set(index, metaCell);
             write(metaCell.start, sectorWithData);
         }

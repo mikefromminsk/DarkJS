@@ -26,6 +26,7 @@ public class Node implements InfinityStringArrayCell {
     public Object _if;
     public Object prototype;
     public Object body;
+    public Object localParent;
 
     public ArrayList<Object> local;
     public ArrayList<Object> param;
@@ -77,6 +78,8 @@ public class Node implements InfinityStringArrayCell {
             linkListener.get(LinkType.PROTOTYPE, prototype, true);
         if (body != null)
             linkListener.get(LinkType.BODY, body, true);
+        if (localParent != null)
+            linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
         if (local != null)
             for (Object item : local)
                 linkListener.get(LinkType.LOCAL, item, false);
@@ -136,6 +139,9 @@ public class Node implements InfinityStringArrayCell {
                     break;
                 case LinkType.BODY:
                     body = linkId;
+                    break;
+                case LinkType.LOCAL_PARENT:
+                    localParent = linkId;
                     break;
                 case LinkType.LOCAL:
                     if (local == null)

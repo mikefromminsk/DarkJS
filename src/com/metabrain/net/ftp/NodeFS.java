@@ -1,17 +1,15 @@
 package com.metabrain.net.ftp;
 
 import com.guichaguri.minimalftp.api.IFileSystem;
-import com.metabrain.djs.node.DataStream;
 import com.metabrain.djs.node.Node;
 import com.metabrain.djs.node.NodeBuilder;
-import com.metabrain.djs.node.NodeType;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 
-public class NodeFileSystem implements IFileSystem<Node> {
+public class NodeFS implements IFileSystem<Node> {
 
     private NodeBuilder builder = new NodeBuilder();
 
@@ -22,7 +20,14 @@ public class NodeFileSystem implements IFileSystem<Node> {
 
     @Override
     public String getPath(Node file) {
-        return "" + builder.set(file).getId();
+        builder.set(file);
+        String path = "";
+        while (builder.getLocalParent() != null) {
+            path += "/" + builder.getTitleString();
+            Node localParent = builder.getLocalParentNode();
+            builder.set(localParent);
+        }
+        return path;
     }
 
     @Override
@@ -32,7 +37,7 @@ public class NodeFileSystem implements IFileSystem<Node> {
 
     @Override
     public boolean isDirectory(Node file) {
-        return (file == null || builder.set(file).isVar());
+        return (file == null || builder.set(file).getValueNode() == null);
     }
 
     @Override
@@ -46,11 +51,12 @@ public class NodeFileSystem implements IFileSystem<Node> {
 
     @Override
     public long getSize(Node file) {
-        if (file != null && builder.set(file).isData()) {
-            return builder.getData().length;
-        } else {
-            return 0;
+        if (file != null) {
+            Node value = builder.set(file).getValueNode();
+            if (value != null && builder.set(value).isData())
+                return builder.getData().length;
         }
+        return 0;
     }
 
     @Override
@@ -97,27 +103,29 @@ public class NodeFileSystem implements IFileSystem<Node> {
 
     @Override
     public Node findFile(String path) throws IOException {
-        //return findFile(getRoot(), path);
-        return builder.get(Long.parseLong(path)).getNode();
+        return findFile(getRoot(), path);
     }
 
     @Override
     public Node findFile(Node cwd, String path) throws IOException {
-        /*Node[] local = builder.set(cwd).getLocalNodes();
-        for (Node node : local)
-            if (path.equals(builder.set(node).getTitleString()))
-                return node;*/
-        try {
-            return builder.get(Long.parseLong(path.replace("/", ""))).getNode();
-        } catch (NumberFormatException e) {
-            return null;
+        builder.set(cwd);
+        NodeBuilder builder2 = new NodeBuilder();
+        // TODO add escape characters /
+        for (String name : path.split("/")) {
+            for (Node node : builder.getLocalNodes()) {
+                if (name.equals(builder2.set(node).getTitleString())) {
+                    builder.set(node);
+                    break;
+                }
+            }
         }
+        return builder.getNode();
     }
 
     @Override
     public InputStream readFile(Node file, long start) throws IOException {
-        if (builder.set(file).isData())
-            return builder.getData();
+        if (!isDirectory(file))
+            return builder.set(builder.set(file).getValueNode()).getData();
         return null;
     }
 

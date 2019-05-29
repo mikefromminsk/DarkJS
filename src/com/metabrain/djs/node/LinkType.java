@@ -35,6 +35,8 @@ public class LinkType {
     private static final String CELL_NAME = "cell";
     public static final byte STYLE = 16;
     private static final String STYLE_NAME = "style";
+    public static final byte LOCAL_PARENT = 17;
+    private static final String LOCAL_PARENT_NAME = "parent";
 
     public static String toString(byte linkType) {
         switch (linkType){
@@ -55,6 +57,7 @@ public class LinkType {
             case NEXT: return NEXT_NAME;
             case CELL: return CELL_NAME;
             case STYLE: return STYLE_NAME;
+            case LOCAL_PARENT: return LOCAL_PARENT_NAME;
         }
         return null;
     }
@@ -78,6 +81,7 @@ public class LinkType {
             case NEXT_NAME: return NEXT;
             case CELL_NAME: return CELL;
             case STYLE_NAME: return STYLE;
+            case LOCAL_PARENT_NAME: return LOCAL_PARENT;
             default: return -1;
         }
     }

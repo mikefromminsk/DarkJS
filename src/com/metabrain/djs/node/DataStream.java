@@ -102,13 +102,20 @@ public class DataStream extends InputStream {
     @Override
     public int read(byte[] b) throws IOException {
         // TODO !!!! rewrite
+        // Multithreading read
+        if (currentPosition == length){
+            currentPosition = 0;
+            return -1;
+        }
         long oldPosition = currentPosition;
         byte[] data = Bytes.fromString(readString());
-        System.arraycopy(data, (int) oldPosition, b, 0, b.length);
-        currentPosition = oldPosition + b.length;
-        if (currentPosition > length)
+        int minLength = Math.min(data.length, b.length);
+        System.arraycopy(data, (int) oldPosition, b, 0, minLength);
+        currentPosition = oldPosition + minLength;
+        if (currentPosition > length){
             currentPosition = length;
-        return (int) (currentPosition - oldPosition);
+        }
+        return minLength;
     }
 
     @Override

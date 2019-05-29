@@ -1,10 +1,10 @@
-package com.metabrain.net.ftp;
+package com.metabrain.net.auth;
 
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.guichaguri.minimalftp.api.IUserAuthenticator;
-import com.guichaguri.minimalftp.impl.NativeFileSystem;
-import java.io.File;
+import com.metabrain.net.ftp.NodeFS;
+
 import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -60,6 +60,6 @@ public class UserbaseAuthenticator implements IUserAuthenticator {
             throw new AuthException();
         }
 
-        return new NodeFileSystem();
+        return new NodeFS();
     }
 }
