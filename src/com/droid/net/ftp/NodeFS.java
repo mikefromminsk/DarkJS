@@ -19,7 +19,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public String getPath(Node file) {
-        return NodeUtils.getPath(file);
+        return NodeUtils.getNode(file);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public Node findFile(Node cwd, String path) throws IOException {
-        return NodeUtils.putPath(cwd, path);
+        return NodeUtils.putNode(cwd, path);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public void mkdirs(Node file) throws IOException {
-        // mkdirs exec by NodeUtils.putPath
+        // mkdirs exec by NodeUtils.putNode
     }
 
     @Override

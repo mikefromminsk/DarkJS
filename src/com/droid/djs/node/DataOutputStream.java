@@ -1,7 +1,7 @@
 package com.droid.djs.node;
 
 import com.droid.djs.Parser;
-import com.droid.net.http.Server;
+import com.droid.net.http.HttpServer;
 import jdk.nashorn.internal.runtime.ParserException;
 
 import java.io.*;
@@ -51,12 +51,12 @@ public class DataOutputStream extends OutputStream {
         boolean isCode = false;
         if (tempFile.length() <= 1024 * 1024) {
             try {
-                new Parser().parse(node, Server.convertStreamToString(new FileInputStream(tempFile)));
+                new Parser().parse(node, HttpServer.convertStreamToString(new FileInputStream(tempFile)));
                 isCode = true;
             } catch (ParserException e) {
             }
         }
-        Node styleValue = NodeUtils.setStyle(node, "source_code", new FileInputStream(tempFile));
+        Node styleValue = NodeUtils.setStyle(node, NodeStyle.SOURCE_CODE, new FileInputStream(tempFile));
 
         if (!isCode)
             new NodeBuilder().set(node).setValue(styleValue).commit();

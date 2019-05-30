@@ -1200,7 +1200,7 @@ public abstract class NanoHTTPD {
             REQUEST_TIMEOUT(408, "Request Timeout"),
             CONFLICT(409, "Conflict"),
             RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
-            INTERNAL_ERROR(500, "Internal Server Error"),
+            INTERNAL_ERROR(500, "Internal HttpServer Error"),
             NOT_IMPLEMENTED(501, "Not Implemented"),
             UNSUPPORTED_HTTP_VERSION(505, "HTTP Version Not Supported");
 
@@ -1784,7 +1784,7 @@ public abstract class NanoHTTPD {
 
     private NanoHTTPD.ServerSocketFactory serverSocketFactory = new NanoHTTPD.DefaultServerSocketFactory();
 
-    protected Thread myThread;
+    private Thread myThread;
 
     /**
      * Pluggable strategy for asynchronously executing requests.
@@ -2076,17 +2076,26 @@ public abstract class NanoHTTPD {
      * @throws IOException
      *             if the socket is in use.
      */
-    public void start() throws IOException {
-        start(NanoHTTPD.SOCKET_READ_TIMEOUT);
+    public NanoHTTPD start() throws IOException {
+        return start(NanoHTTPD.SOCKET_READ_TIMEOUT);
     }
 
     /**
      * Starts the server (in setDaemon(true) mode).
      */
-    public void start(final int timeout) throws IOException {
+    public NanoHTTPD start(final int timeout) throws IOException {
         start(timeout, true);
+        return this;
     }
 
+
+    /**
+     * Starts the server (in setDaemon(true) mode).
+     */
+    public NanoHTTPD join() throws InterruptedException {
+        myThread.join();
+        return this;
+    }
     /**
      * Start the server.
      *

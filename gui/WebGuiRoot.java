@@ -1,4 +1,4 @@
-package com.droid.gui;
+package com.droid.net;
 
 public class WebGuiRoot {
 }

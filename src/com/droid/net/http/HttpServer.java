@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.droid.djs.Formatter;
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeStorageTest;
-import com.droid.gui.WebGuiRoot;
 import com.droid.net.http.model.GetNodeBody;
 import org.apache.commons.io.FilenameUtils;
 
@@ -18,18 +17,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Server extends NanoHTTPD {
+public class HttpServer extends NanoHTTPD {
 
     static private Gson json = new GsonBuilder().setPrettyPrinting().create();
     private DjsThread thread = new DjsThread();
     private static final String APPLICATION_JSON = "application/json";
 
-    public Server(int port) {
-        super(port);
+    public static int defaultPort = 80;
+    public static int debugPort = 9080;
+
+    public HttpServer() {
+        this(defaultPort);
     }
 
-    public void join() throws InterruptedException {
-        myThread.join();
+    public HttpServer(int port) {
+        super(port);
     }
 
     public static String convertStreamToString(java.io.InputStream is) {
@@ -98,7 +100,7 @@ public class Server extends NanoHTTPD {
         } else if (session.getMethod() == Method.GET) {
             try {
                 URI uri = new URI(session.getUri());
-                String dirPath = WebGuiRoot.class.getPackage().getName().replace('.', '/');
+                String dirPath = new File("net").getAbsolutePath();
                 String fileName = (uri.getPath().equals("/") ? "/index.html" : uri.getPath());
                 String filePath = dirPath + fileName;
                 InputStream fileStream = getClass().getClassLoader().getResourceAsStream(filePath);
@@ -122,6 +124,4 @@ public class Server extends NanoHTTPD {
                     Response.Status.INTERNAL_ERROR.getDescription());
         return response;
     }
-
-
 }

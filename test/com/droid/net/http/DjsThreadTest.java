@@ -1,12 +1,13 @@
-package com.droid.gui.server;
+package com.droid.net.http;
 
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-class DjsThreadTest {
+import static org.junit.jupiter.api.Assertions.*;
 
+class DjsThreadTest {
     private static Gson json = new Gson();
 
     @Test

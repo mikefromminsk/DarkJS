@@ -27,7 +27,7 @@ public class NodeUtils {
         return valueNode;
     }
 
-    public static String getPath(Node file) {
+    public static String getNode(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
         String path = "";
         while (builder.getLocalParent() != null) {
@@ -38,7 +38,7 @@ public class NodeUtils {
         return path;
     }
 
-    public static Node putPath(Node root, String path) {
+    public static Node putNode(Node root, String path) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
@@ -60,5 +60,34 @@ public class NodeUtils {
                 }
             }
         return builder.getNode();
+    }
+
+    public static Node putNode(String path) {
+        return putNode(new NodeBuilder().get(0L).getNode(), path);
+    }
+
+    public static Node putFile(String path, String data) {
+        return putFile(0L, path, data);
+    }
+
+    public static Node putFile(String path, InputStream data) {
+        return putFile(new NodeBuilder().get(0L).getNode(), path, data);
+    }
+
+    public static Node putFile(Long nodeId, String path, String data) {
+        return putFile(new NodeBuilder().get(nodeId).getNode(), path, new ByteArrayInputStream(data.getBytes()));
+    }
+
+    public static Node putFile(Node node, String path, String data) {
+        return putFile(node, path, new ByteArrayInputStream(data.getBytes()));
+    }
+
+    public static Node putFile(Node node, String path, InputStream stream) {
+        Node fileNode = putNode(node, path);
+        NodeBuilder builder = new NodeBuilder();
+        Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
+        builder.set(fileNode).setValue(dataNode).commit();
+        setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
+        return fileNode;
     }
 }
