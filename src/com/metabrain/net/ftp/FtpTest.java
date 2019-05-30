@@ -12,7 +12,7 @@ import com.metabrain.net.auth.UserbaseAuthenticator;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class FTPTest implements IFTPListener {
+public class FtpTest implements IFTPListener {
 
     public static NodeBuilder builder = new NodeBuilder();
 
@@ -46,6 +46,10 @@ public class FTPTest implements IFTPListener {
     }
 
     public static void main(String[] args) throws IOException {
+        start();
+    }
+
+    public static void start() {
         FTPServer server = new FTPServer();
 
         UserbaseAuthenticator auth = new UserbaseAuthenticator();
@@ -56,10 +60,14 @@ public class FTPTest implements IFTPListener {
         auth.registerUser("hannah", "98765");
 
         server.setAuthenticator(auth);
-        server.addListener(new FTPTest());
+        server.addListener(new FtpTest());
         server.setTimeout(10 * 60 * 1000); // 10 minutes
         server.setBufferSize(1024 * 5); // 5 kilobytes
-        server.listenSync(InetAddress.getByName("localhost"), 21);
+        try {
+            server.listenSync(InetAddress.getByName("localhost"), 21);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

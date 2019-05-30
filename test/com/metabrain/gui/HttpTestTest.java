@@ -1,14 +1,14 @@
 package com.metabrain.gui;
 
-import com.metabrain.net.http.Main;
+import com.metabrain.net.http.HttpTest;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
-class MainTest {
+class HttpTestTest {
 
     @Test
     void openWebpage() {
-        Main.openWebpage(URI.create("http://localhost:8090"));
+        HttpTest.openWebpage(URI.create("http://localhost:8090"));
     }
 }
