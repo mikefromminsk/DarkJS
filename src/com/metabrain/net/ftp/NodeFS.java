@@ -1,10 +1,7 @@
 package com.metabrain.net.ftp;
 
 import com.guichaguri.minimalftp.api.IFileSystem;
-import com.metabrain.djs.node.DataOutputStream;
-import com.metabrain.djs.node.Node;
-import com.metabrain.djs.node.NodeBuilder;
-import com.metabrain.djs.node.NodeUtils;
+import com.metabrain.djs.node.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,18 +100,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public Node findFile(Node cwd, String path) throws IOException {
-        builder.set(cwd);
-        NodeBuilder builder2 = new NodeBuilder();
-        // TODO add escape characters /
-        for (String name : path.split("/")) {
-            for (Node node : builder.getLocalNodes()) {
-                if (name.equals(builder2.set(node).getTitleString())) {
-                    builder.set(node);
-                    break;
-                }
-            }
-        }
-        return builder.getNode();
+        return NodeUtils.putPath(cwd, path);
     }
 
     @Override
@@ -131,26 +117,27 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public void mkdirs(Node file) throws IOException {
-
+        // mkdirs exec by NodeUtils.putPath
     }
 
     @Override
     public void delete(Node file) throws IOException {
         // don`t exist
+        System.out.println(1);
     }
 
     @Override
     public void rename(Node from, Node to) throws IOException {
-
+        System.out.println(1);
     }
 
     @Override
     public void chmod(Node file, int perms) throws IOException {
-
+        System.out.println(1);
     }
 
     @Override
     public void touch(Node file, long time) throws IOException {
-
+        System.out.println(1);
     }
 }

@@ -1,5 +1,9 @@
 package com.metabrain.djs.node;
 
+import com.metabrain.djs.Parser;
+import com.metabrain.net.http.Server;
+import jdk.nashorn.internal.runtime.ParserException;
+
 import java.io.*;
 import java.util.Random;
 
@@ -44,10 +48,19 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         out.close();
-        NodeBuilder builder = new NodeBuilder();
-        InputStream in = new FileInputStream(tempFile);
-        Node data = builder.create(NodeType.STRING).setData(in).commit();
-        builder.set(node).setValue(data).commit();
+        boolean isCode = false;
+        if (tempFile.length() <= 1024 * 1024) {
+            try {
+                new Parser().parse(node, Server.convertStreamToString(new FileInputStream(tempFile)));
+                isCode = true;
+            } catch (ParserException e) {
+            }
+        }
+        Node styleValue = NodeUtils.setStyle(node, "source_code", new FileInputStream(tempFile));
+
+        if (!isCode)
+            new NodeBuilder().set(node).setValue(styleValue).commit();
+
         tempFile.delete();
     }
 }

@@ -1,9 +1,7 @@
 package com.metabrain.djs;
 
-import com.metabrain.djs.node.NodeStorage;
-import com.metabrain.djs.node.NodeType;
+import com.metabrain.djs.node.*;
 import com.metabrain.djs.node.Node;
-import com.metabrain.djs.node.NodeBuilder;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 import jdk.nashorn.internal.runtime.Context;
@@ -12,6 +10,7 @@ import jdk.nashorn.internal.runtime.ParserException;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
 public class Parser {
@@ -339,20 +338,7 @@ public class Parser {
         } else {
             if (module == null)
                 module = builder.create().commit();
-
-            Node node = jsLine(module, rootParserNode);
-
-            Node sourceCodeDataNode = builder.create(NodeType.STRING).setData(sourceString).commit();
-
-            Node sourceCodeTitle = builder.create(NodeType.STRING).setData("source_code").commit();
-            Node sourceCode = builder.set(module).findStyle(sourceCodeTitle.id);
-            if (sourceCode == null) {
-                Node sourceCodeNode = builder.create(NodeType.VAR).setTitle(sourceCodeTitle).setValue(sourceCodeDataNode).commit();
-                builder.set(module).addStyle(sourceCodeNode).commit();
-            } else {
-                builder.set(sourceCode).setValue(sourceCodeDataNode).commit();
-            }
-            return node;
+            return jsLine(module, rootParserNode);
         }
     }
 
