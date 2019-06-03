@@ -61,6 +61,15 @@ public class DataOutputStream extends OutputStream {
         if (!isCode)
             new NodeBuilder().set(node).setValue(styleValue).commit();
 
+        addToHistory();
+
         tempFile.delete();
+    }
+
+    private void addToHistory() {
+        NodeBuilder builder = new NodeBuilder();
+        builder.create().getNode().parse(node.build());
+        Node newNode = builder.commit();
+        builder.set(node).setHistory(builder.getId());
     }
 }
