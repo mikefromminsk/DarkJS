@@ -21,6 +21,7 @@ public class Branch {
         NodeUtils.forEach(root, branchNode -> {
             String path = NodeUtils.getPath(branchNode);
             Node masterNode = NodeUtils.putNode(master, path);
+            // TODO stop threads and start in new branch
             builder.set(masterNode).addToHistory();
             masterNode.parse(branchNode.build());
             builder.commit();
