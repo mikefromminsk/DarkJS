@@ -1,4 +1,4 @@
-package com.droid.djs;
+package com.droid.api;
 
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeBuilder;

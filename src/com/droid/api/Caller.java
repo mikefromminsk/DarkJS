@@ -1,5 +1,6 @@
-package com.droid.djs;
+package com.droid.api;
 
+import com.droid.djs.Formatter;
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeBuilder;
 import com.droid.djs.node.NodeType;
@@ -25,7 +26,7 @@ public class Caller {
     public final static String STRING_TRIM_NAME = "trim";
     private static NodeBuilder builder = new NodeBuilder();
 
-    static int fromTokenType(TokenType tokenType) {
+    public static int fromTokenType(TokenType tokenType) {
         switch (tokenType) {
             case EQ:
                 return EQ;
