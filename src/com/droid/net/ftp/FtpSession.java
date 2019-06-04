@@ -9,7 +9,6 @@ import java.io.OutputStream;
 public class FtpSession implements IFileSystem<Node> {
 
     private Branch branch = new Branch();
-    private Node branchRoot = branch.create();
     private NodeBuilder builder = new NodeBuilder();
 
     @Override
@@ -112,7 +111,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public OutputStream writeFile(Node file, long start) {
-        Node node = NodeUtils.putNode(branchRoot, NodeUtils.getPath(file));
+        Node node = NodeUtils.putNode(branch.getRoot(), NodeUtils.getPath(file));
         return new DataOutputStream(node);
     }
 

@@ -3,6 +3,7 @@ package com.droid.djs.node;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
+import com.droid.net.ftp.Master;
 
 import java.io.*;
 import java.util.*;
@@ -37,6 +38,7 @@ public class NodeStorage extends InfinityStringArray {
         root.type = NodeType.THREAD;
         add(root);
         transactionCommit();
+        Master.getInstance();
     }
 
     public static NodeStorage getInstance() {

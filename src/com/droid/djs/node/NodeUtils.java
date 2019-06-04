@@ -1,5 +1,7 @@
 package com.droid.djs.node;
 
+import com.droid.net.ftp.Master;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -63,7 +65,7 @@ public class NodeUtils {
     }
 
     public static Node putNode(String path) {
-        return putNode(new NodeBuilder().get(0L).getNode(), path);
+        return putNode(Master.getInstance(), path);
     }
 
     public static Node putFile(String path, String data) {
@@ -71,7 +73,7 @@ public class NodeUtils {
     }
 
     public static Node putFile(String path, InputStream data) {
-        return putFile(new NodeBuilder().get(0L).getNode(), path, data);
+        return putFile(Master.getInstance(), path, data);
     }
 
     public static Node putFile(Long nodeId, String path, String data) {
