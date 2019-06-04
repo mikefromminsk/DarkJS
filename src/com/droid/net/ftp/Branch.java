@@ -6,8 +6,8 @@ import com.droid.djs.node.NodeUtils;
 
 public class Branch {
 
-    NodeBuilder builder = new NodeBuilder();
-    Node newBranch = null;
+    private NodeBuilder builder = new NodeBuilder();
+    private Node newBranch = null;
 
     public Node create() {
         newBranch = builder.create().commit();
@@ -18,9 +18,12 @@ public class Branch {
 
     public void mergeWithMaster() {
         Node master = Master.getInstance();
-        NodeUtils.forEach(newBranch, node -> {
-            String path = NodeUtils.getPath(node);
-
+        NodeUtils.forEach(newBranch, branchNode -> {
+            String path = NodeUtils.getPath(branchNode);
+            Node masterNode = NodeUtils.putNode(master, path);
+            builder.set(masterNode).addToHistory();
+            masterNode.parse(branchNode.build());
+            builder.commit();
         });
         deleteBranch();
     }

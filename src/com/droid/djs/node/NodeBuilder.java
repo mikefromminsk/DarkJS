@@ -847,7 +847,7 @@ public class NodeBuilder {
         return nodes;
     }
 
-    public void saveToHistory(){
+    public NodeBuilder addToHistory(){
         Node prev = node;
         create();
         node.parse(prev.build());
@@ -855,5 +855,6 @@ public class NodeBuilder {
         node = prev;
         setHistory(history);
         commit();
+        return this;
     }
 }
