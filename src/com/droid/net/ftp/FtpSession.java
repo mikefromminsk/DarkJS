@@ -14,7 +14,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public Node getRoot() {
-        return builder.get(0L).getNode();
+        return Master.getInstance();
     }
 
     @Override

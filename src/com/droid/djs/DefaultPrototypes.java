@@ -3,6 +3,7 @@ package com.droid.djs;
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeBuilder;
 import com.droid.djs.node.NodeType;
+import com.droid.net.ftp.Master;
 
 public class DefaultPrototypes {
 
@@ -13,7 +14,7 @@ public class DefaultPrototypes {
     public static Node getInstance() {
         if (defaultPrototypes == null) {
             defaultPrototypes = initPrototypes();
-            builder.get(0L).putObject("defaultPrototypes", defaultPrototypes);
+            new NodeBuilder().set(Master.getInstance()).putObject("defaultPrototypes", defaultPrototypes);
         }
         return defaultPrototypes;
     }

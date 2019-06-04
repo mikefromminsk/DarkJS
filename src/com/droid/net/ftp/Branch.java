@@ -11,13 +11,15 @@ public class Branch {
 
     public Node create() {
         newBranch = builder.create().commit();
-        builder.get(0L);
+        Master.getInstance();
         builder.addLocal(newBranch);
         return newBranch;
     }
 
     public void mergeWithMaster() {
+        Node master = Master.getInstance();
         NodeUtils.forEach(newBranch, node -> {
+            String path = NodeUtils.getPath(node);
 
         });
         deleteBranch();
