@@ -65,7 +65,7 @@ public class Caller {
     private static Node trueValue = builder.create(NodeType.BOOL).setData(Formatter.TRUE).commit();
     private static Node falseValue = builder.create(NodeType.BOOL).setData(Formatter.FALSE).commit();
 
-    static void invoke(Node node, Node ths) {
+    public static void invoke(Node node, Node ths) {
         builder.set(node);
 
         Node left = builder.getParamNode(0);

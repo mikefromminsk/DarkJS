@@ -40,7 +40,7 @@ public class NodeUtils {
         return path;
     }
 
-    public static Node putNode(Node root, String path) {
+    public static Node getNode(Node root, String path) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
@@ -64,8 +64,8 @@ public class NodeUtils {
         return builder.getNode();
     }
 
-    public static Node putNode(String path) {
-        return putNode(Master.getInstance(), path);
+    public static Node getNode(String path) {
+        return getNode(Master.getInstance(), path);
     }
 
     public static Node putFile(String path, String data) {
@@ -85,12 +85,19 @@ public class NodeUtils {
     }
 
     public static Node putFile(Node node, String path, InputStream stream) {
-        Node fileNode = putNode(node, path);
+        Node fileNode = getNode(node, path);
         NodeBuilder builder = new NodeBuilder();
         Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
         builder.set(fileNode).setValue(dataNode).commit();
         setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
         return fileNode;
+    }
+
+    public static String getFileString(Node node, String path){
+        Node fileNode = getNode(node, path);
+        NodeBuilder builder = new NodeBuilder();
+        Node value = builder.set(fileNode).getValueNode();
+        return builder.set(value).getData().readString();
     }
 
     public interface FindFile {

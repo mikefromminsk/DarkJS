@@ -99,7 +99,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public Node findFile(Node cwd, String path) {
-        return NodeUtils.putNode(cwd, path);
+        return NodeUtils.getNode(cwd, path);
     }
 
     @Override
@@ -111,13 +111,13 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public OutputStream writeFile(Node file, long start) {
-        Node node = NodeUtils.putNode(branch.getRoot(), NodeUtils.getPath(file));
+        Node node = NodeUtils.getNode(branch.getRoot(), NodeUtils.getPath(file));
         return new DataOutputStream(node);
     }
 
     @Override
     public void mkdirs(Node file) {
-        // mkdirs exec by NodeUtils.putNode
+        // mkdirs exec by NodeUtils.getNode
     }
 
     @Override

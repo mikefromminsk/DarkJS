@@ -7,20 +7,19 @@ import com.droid.djs.node.NodeUtils;
 public class Branch {
 
     private NodeBuilder builder = new NodeBuilder();
-    private Node root = null;
+    private Node root;
 
-    public Node createBranch() {
+    public Branch() {
         root = builder.create().commit();
         Master.getInstance();
         builder.addLocal(root);
-        return root;
     }
 
     public void mergeWithMaster() {
         Node master = Master.getInstance();
         NodeUtils.forEach(root, branchNode -> {
             String path = NodeUtils.getPath(branchNode);
-            Node masterNode = NodeUtils.putNode(master, path);
+            Node masterNode = NodeUtils.getNode(master, path);
             // TODO stop threads and start in new branch
             builder.set(masterNode).addToHistory();
             masterNode.parse(branchNode.build());
