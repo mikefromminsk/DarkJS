@@ -846,4 +846,14 @@ public class NodeBuilder {
             nodes[i] = getLocalNode(i);
         return nodes;
     }
+
+    public void saveToHistory(){
+        Node prev = node;
+        create();
+        node.parse(prev.build());
+        Node history = commit();
+        node = prev;
+        setHistory(history);
+        commit();
+    }
 }

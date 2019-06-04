@@ -27,7 +27,7 @@ public class NodeUtils {
         return valueNode;
     }
 
-    public static String getNode(Node file) {
+    public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
         String path = "";
         while (builder.getLocalParent() != null) {
@@ -89,5 +89,16 @@ public class NodeUtils {
         builder.set(fileNode).setValue(dataNode).commit();
         setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
         return fileNode;
+    }
+
+    public interface FindFile {
+        void find(Node node);
+    }
+
+    public static void forEach(Node node, FindFile func) {
+        NodeBuilder builder = new NodeBuilder().set(node);
+        func.find(node);
+        for (Node local: builder.getLocalNodes())
+            forEach(local, func);
     }
 }

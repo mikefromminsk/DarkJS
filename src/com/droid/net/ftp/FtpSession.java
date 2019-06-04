@@ -3,13 +3,13 @@ package com.droid.net.ftp;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.node.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 
-public class NodeFS implements IFileSystem<Node> {
+public class FtpSession implements IFileSystem<Node> {
 
+    private Branch branch = new Branch();
+    private Node branchRoot = branch.create();
     private NodeBuilder builder = new NodeBuilder();
 
     @Override
@@ -19,7 +19,7 @@ public class NodeFS implements IFileSystem<Node> {
 
     @Override
     public String getPath(Node file) {
-        return NodeUtils.getNode(file);
+        return NodeUtils.getPath(file);
     }
 
     @Override
@@ -77,67 +77,68 @@ public class NodeFS implements IFileSystem<Node> {
     }
 
     @Override
-    public byte[] getDigest(Node file, String algorithm) throws IOException, NoSuchAlgorithmException {
+    public byte[] getDigest(Node file, String algorithm) {
         return new byte[0];
     }
 
     @Override
-    public Node getParent(Node file) throws IOException {
+    public Node getParent(Node file) {
         return null;
     }
 
     @Override
-    public Node[] listFiles(Node dir) throws IOException {
+    public Node[] listFiles(Node dir) {
         if (dir != null)
             return builder.set(dir).getLocalNodes();
         return new Node[0];
     }
 
     @Override
-    public Node findFile(String path) throws IOException {
+    public Node findFile(String path) {
         return findFile(getRoot(), path);
     }
 
     @Override
-    public Node findFile(Node cwd, String path) throws IOException {
+    public Node findFile(Node cwd, String path) {
         return NodeUtils.putNode(cwd, path);
     }
 
     @Override
-    public InputStream readFile(Node file, long start) throws IOException {
+    public InputStream readFile(Node file, long start) {
         if (!isDirectory(file))
             return builder.set(builder.set(file).getValueNode()).getData();
         return null;
     }
 
     @Override
-    public OutputStream writeFile(Node file, long start) throws IOException {
-        return new DataOutputStream(file);
+    public OutputStream writeFile(Node file, long start) {
+        Node node = NodeUtils.putNode(branchRoot, NodeUtils.getPath(file));
+        return new DataOutputStream(node);
     }
 
     @Override
-    public void mkdirs(Node file) throws IOException {
+    public void mkdirs(Node file) {
         // mkdirs exec by NodeUtils.putNode
     }
 
     @Override
-    public void delete(Node file) throws IOException {
+    public void delete(Node file) {
         // don`t exist
-        System.out.println(1);
     }
 
     @Override
-    public void rename(Node from, Node to) throws IOException {
-        System.out.println(1);
+    public void rename(Node from, Node to) {
     }
 
     @Override
-    public void chmod(Node file, int perms) throws IOException {
-        System.out.println(1);
+    public void chmod(Node file, int perms) {
     }
 
     @Override
-    public void touch(Node file, long time) throws IOException {
-        System.out.println(1);
+    public void touch(Node file, long time) {
+    }
+
+    public void finish() {
+        branch.mergeWithMaster();
     }
 }

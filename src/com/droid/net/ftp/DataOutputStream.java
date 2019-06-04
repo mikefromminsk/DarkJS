@@ -1,6 +1,10 @@
-package com.droid.djs.node;
+package com.droid.net.ftp;
 
 import com.droid.djs.Parser;
+import com.droid.djs.node.Node;
+import com.droid.djs.node.NodeBuilder;
+import com.droid.djs.node.NodeStyle;
+import com.droid.djs.node.NodeUtils;
 import com.droid.net.http.HttpServer;
 import jdk.nashorn.internal.runtime.ParserException;
 
@@ -61,15 +65,6 @@ public class DataOutputStream extends OutputStream {
         if (!isCode)
             new NodeBuilder().set(node).setValue(styleValue).commit();
 
-        addToHistory();
-
         tempFile.delete();
-    }
-
-    private void addToHistory() {
-        NodeBuilder builder = new NodeBuilder();
-        builder.create().getNode().parse(node.build());
-        Node newNode = builder.commit();
-        builder.set(node).setHistory(builder.getId());
     }
 }

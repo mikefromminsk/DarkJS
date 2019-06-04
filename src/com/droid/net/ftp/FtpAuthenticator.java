@@ -1,9 +1,8 @@
-package com.droid.net.auth;
+package com.droid.net.ftp;
 
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.guichaguri.minimalftp.api.IUserAuthenticator;
-import com.droid.net.ftp.NodeFS;
 
 import java.net.InetAddress;
 import java.security.MessageDigest;
@@ -15,9 +14,10 @@ import java.util.Map;
  * A simple user base which encodes passwords in MD5 (not really for security, it's just as an example)
  * @author Guilherme Chaguri
  */
-public class UserbaseAuthenticator implements IUserAuthenticator {
+public class FtpAuthenticator implements IUserAuthenticator {
 
     private final Map<String, byte[]> userbase = new HashMap<>();
+    public static Map<FTPConnection, FtpSession> sessions = new HashMap<>();
 
     private byte[] toMD5(String pass) {
         try {
@@ -44,22 +44,17 @@ public class UserbaseAuthenticator implements IUserAuthenticator {
 
     @Override
     public IFileSystem authenticate(FTPConnection con, InetAddress address, String username, String password) throws AuthException {
-        // Check for a user with that username in the database
-        if(!userbase.containsKey(username)) {
+
+        if(!userbase.containsKey(username) || !Arrays.equals(userbase.get(username), toMD5(password))) {
             throw new AuthException();
         }
 
-        // Gets the correct, original password
-        byte[] originalPass = userbase.get(username);
-
-        // Calculates the MD5 for the given password
-        byte[] inputPass = toMD5(password);
-
-        // Check for wrong password
-        if(!Arrays.equals(originalPass, inputPass)) {
-            throw new AuthException();
+        FtpSession nodeBranch = sessions.get(con);
+        if (nodeBranch == null){
+            nodeBranch = new FtpSession();
+            sessions.put(con, nodeBranch);
         }
 
-        return new NodeFS();
+        return nodeBranch;
     }
 }
