@@ -43,14 +43,12 @@ public class FtpServer implements IFTPListener {
 
     @Override
     public void onConnected(FTPConnection con) {
-        FtpSession ftpSession = new FtpSession();
-        FtpAuthenticator.sessions.put(con, ftpSession);
+
     }
 
     @Override
     public void onDisconnected(FTPConnection con) {
-        FtpSession ftpSession = FtpAuthenticator.sessions.get(con);
-        ftpSession.finish();
-        FtpAuthenticator.sessions.remove(con);
+        if (con.getFileSystem() != null)
+            ((FtpSession) con.getFileSystem()).finish();
     }
 }

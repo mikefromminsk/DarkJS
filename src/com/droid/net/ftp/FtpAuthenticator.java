@@ -17,7 +17,6 @@ import java.util.Map;
 public class FtpAuthenticator implements IUserAuthenticator {
 
     private final Map<String, byte[]> userbase = new HashMap<>();
-    public static Map<FTPConnection, FtpSession> sessions = new HashMap<>();
 
     private byte[] toMD5(String pass) {
         try {
@@ -48,13 +47,7 @@ public class FtpAuthenticator implements IUserAuthenticator {
         if(!userbase.containsKey(username) || !Arrays.equals(userbase.get(username), toMD5(password))) {
             throw new AuthException();
         }
-
-        FtpSession nodeBranch = sessions.get(con);
-        if (nodeBranch == null){
-            nodeBranch = new FtpSession();
-            sessions.put(con, nodeBranch);
-        }
-
-        return nodeBranch;
+        con.setFileSystem(new FtpSession());
+        return con.getFileSystem();
     }
 }

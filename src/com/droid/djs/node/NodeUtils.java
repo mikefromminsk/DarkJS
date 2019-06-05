@@ -29,9 +29,18 @@ public class NodeUtils {
         return valueNode;
     }
 
+    public static Node getStyle(Node node, String styleKey) {
+        NodeBuilder builder = new NodeBuilder();
+        for (Node style: builder.set(node).getStyleNodes()){
+            if (builder.set(style).getTitleString().equals(styleKey))
+                return builder.getValueNode();
+        }
+        return null;
+    }
+
     public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
-        String path = "";
+        String path = "/";
         while (builder.getLocalParent() != null) {
             path += "/" + builder.getTitleString();
             Node localParent = builder.getLocalParentNode();
@@ -46,6 +55,7 @@ public class NodeUtils {
         // TODO add escape characters /
         if (!"".equals(path))
             for (String name : path.split("/")) {
+                if (name.equals("")) continue;
                 boolean find = false;
                 for (Node node : builder.getLocalNodes()) {
                     if (name.equals(builder2.set(node).getTitleString())) {
@@ -104,10 +114,11 @@ public class NodeUtils {
         void find(Node node);
     }
 
-    public static void forEach(Node node, FindFile func) {
+    public static void forEachFiles(Node node, FindFile func) {
         NodeBuilder builder = new NodeBuilder().set(node);
-        func.find(node);
+        if (getStyle(node, NodeStyle.SOURCE_CODE) != null)
+            func.find(node);
         for (Node local: builder.getLocalNodes())
-            forEach(local, func);
+            forEachFiles(local, func);
     }
 }

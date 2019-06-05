@@ -157,6 +157,7 @@ public class NodeStorage extends InfinityStringArray {
                         } else {
                             if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
                                 file.delete(); // delete read file buffer
+                            // TODO return instance from nodes cache
                             nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
                             node.id = prevNodeId;
                             node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);

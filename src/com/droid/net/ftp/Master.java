@@ -12,7 +12,7 @@ public class Master {
             instance = builder.getLocalNode(0);
             if (instance == null){
                 Node master = builder.create().commit();
-                builder.get(0L).addLocal(master);
+                builder.get(0L).addLocal(master).commit();
                 instance = master;
             }
         }

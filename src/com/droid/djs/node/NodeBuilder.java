@@ -332,7 +332,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setLocalParent(Long localParent) {
+    private NodeBuilder setLocalParent(Long localParent) {
         node.localParent = localParent;
         return this;
     }
@@ -511,6 +511,7 @@ public class NodeBuilder {
         if (node.local == null)
             node.local = new ArrayList<>();
         node.local.add(item);
+        item.localParent = node;
         return this;
     }
 
@@ -666,6 +667,7 @@ public class NodeBuilder {
     }
 
     public Node findStyle(Long titleId) {
+        // TODO refactor to get title
         if (titleId != null) {
             for (int i = 0; i < getStylesCount(); i++) {
                 Node node = getStyleNode(i);
@@ -847,6 +849,13 @@ public class NodeBuilder {
         return nodes;
     }
 
+    public Node[] getStyleNodes() {
+        Node[] nodes = new Node[getStylesCount()];
+        for (int i = 0; i < getStylesCount(); i++)
+            nodes[i] = getStyleNode(i);
+        return nodes;
+    }
+
     public NodeBuilder addToHistory(){
         Node prev = node;
         create();
@@ -855,6 +864,11 @@ public class NodeBuilder {
         node = prev;
         setHistory(history);
         commit();
+        return this;
+    }
+
+    public NodeBuilder setLocalNode(int index, Node item){
+        node.local.set(index, item);
         return this;
     }
 }

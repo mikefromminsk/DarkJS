@@ -52,19 +52,8 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         out.close();
-        boolean isCode = false;
-        if (tempFile.length() <= 1024 * 1024) {
-            try {
-                new Parser().parse(node, HttpServer.convertStreamToString(new FileInputStream(tempFile)));
-                isCode = true;
-            } catch (ParserException e) {
-            }
-        }
         Node styleValue = NodeUtils.setStyle(node, NodeStyle.SOURCE_CODE, new FileInputStream(tempFile));
-
-        if (!isCode)
-            new NodeBuilder().set(node).setValue(styleValue).commit();
-
+        new NodeBuilder().set(node).setValue(styleValue).commit();
         tempFile.delete();
     }
 }
