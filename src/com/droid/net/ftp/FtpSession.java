@@ -33,10 +33,6 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public int getPermissions(Node file) {
-        // Intended Format
-        // -rw-rw-rw-
-        // -rwxrwxrwx
-        // drwxrwxrwx
         return 0;
     }
 
@@ -112,7 +108,7 @@ public class FtpSession implements IFileSystem<Node> {
     @Override
     public OutputStream writeFile(Node file, long start) {
         Node node = NodeUtils.getNode(branch.getRoot(), NodeUtils.getPath(file));
-        return new DataOutputStream(node);
+        return new DataOutputStream(branch, node);
     }
 
     @Override

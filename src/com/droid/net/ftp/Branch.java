@@ -6,15 +6,44 @@ import com.droid.djs.node.NodeStyle;
 import com.droid.djs.node.NodeUtils;
 
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Branch {
 
     private NodeBuilder builder = new NodeBuilder();
     private Node root;
+    private Timer timer = new Timer();
+    private int mergeTimer;
 
     public Branch() {
-        root = builder.create().commit();
-        builder.get(0L).addLocal(root);
+        this(2000);
+    }
+
+    public Branch(int mergeTimer) {
+        this.mergeTimer = mergeTimer;
+    }
+
+    private TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            mergeWithMaster();
+        }
+    };
+
+    public Node getRoot() {
+        if (root == null) {
+            root = builder.create().commit();
+            builder.get(0L).addLocal(root);
+            updateTimer();
+        }
+        return root;
+    }
+
+    public void updateTimer(){
+        timer.cancel();
+        timer = new Timer();
+        timer.schedule(timerTask, 2000);
     }
 
     public Node findPackage(Node node) {
@@ -31,23 +60,18 @@ public class Branch {
     }
 
     public void mergeWithMaster() {
-        Node branchPackage = findPackage(root);
-        if (branchPackage != null){
-            Node masterPackage = NodeUtils.getNode(Master.getInstance(), NodeUtils.getPath(branchPackage));
-            Node localParent = builder.set(masterPackage).getLocalParentNode();
-            Node[] locals = builder.set(localParent).getLocalNodes();
-            int localIndex = Arrays.asList(locals).indexOf(masterPackage);
-            builder.set(localParent).setLocalNode(localIndex, branchPackage).commit();
-            builder.set(branchPackage).setHistory(masterPackage).commit();
+        if (root != null){
+            Node branchPackage = findPackage(root);
+            if (branchPackage != null){
+                Node masterPackage = NodeUtils.getNode(Master.getInstance(), NodeUtils.getPath(branchPackage));
+                Node localParent = builder.set(masterPackage).getLocalParentNode();
+                Node[] locals = builder.set(localParent).getLocalNodes();
+                int localIndex = Arrays.asList(locals).indexOf(masterPackage);
+                builder.set(localParent).setLocalNode(localIndex, branchPackage).commit();
+                builder.set(branchPackage).setHistory(masterPackage).commit();
+            }
+            builder.get(0L).removeLocal(root).commit();
+            root = null;
         }
-        deleteBranch();
-    }
-
-    public void deleteBranch() {
-        builder.get(0L).removeLocal(root).commit();
-    }
-
-    public Node getRoot() {
-        return root;
     }
 }

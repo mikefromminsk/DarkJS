@@ -18,18 +18,16 @@ public class FtpServer implements IFTPListener {
         FtpAuthenticator auth = new FtpAuthenticator();
 
         auth.registerUser("john", "1234");
-        auth.registerUser("alex", "abcd123");
-        auth.registerUser("hannah", "98765");
 
         server.setAuthenticator(auth);
         server.addListener(new FtpServer());
-        server.setTimeout(10 * 60 * 1000); // 10 minutes
+        server.setTimeout(3000); // 10 minutes
         server.setBufferSize(1024 * 5); // 5 kilobytes
         try {
             server.listen(InetAddress.getByName("localhost"), 21);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+       }
         return this;
     }
 
@@ -48,7 +46,6 @@ public class FtpServer implements IFTPListener {
 
     @Override
     public void onDisconnected(FTPConnection con) {
-        if (con.getFileSystem() != null)
-            ((FtpSession) con.getFileSystem()).finish();
+
     }
 }

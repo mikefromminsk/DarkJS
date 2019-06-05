@@ -16,10 +16,12 @@ public class DataOutputStream extends OutputStream {
     public final static File ftpTempDir = new File("out/FtpTemp");
     public final static Random random = new Random();
     private Node node;
-    File tempFile = new File(ftpTempDir, "" + random.nextInt());
-    FileOutputStream out;
+    private File tempFile = new File(ftpTempDir, "" + random.nextInt());
+    private FileOutputStream out;
+    private Branch branch;
 
-    public DataOutputStream(Node node) {
+    public DataOutputStream(Branch branch, Node node) {
+        this.branch = branch;
         this.node = node;
         if (!ftpTempDir.exists())
             ftpTempDir.mkdirs();
@@ -32,6 +34,7 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void write(byte[] b) throws IOException {
         out.write(b);
+        branch.updateTimer();
     }
 
     @Override
