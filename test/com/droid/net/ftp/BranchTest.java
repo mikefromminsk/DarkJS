@@ -14,8 +14,10 @@ class BranchTest {
         Branch branch = new Branch();
         String testPath = "tests/BranchTest";
         String branchData = "" + new Random().nextInt();
-        NodeUtils.putFile(Master.getInstance(), testPath, "sdf");
+        String masterStartData = "sdf";
+        NodeUtils.putFile(Master.getInstance(), testPath, masterStartData);
         String str = NodeUtils.getFileString(Master.getInstance(), testPath);
+        assertEquals(masterStartData, str);
         NodeUtils.putFile(branch.getRoot(), testPath, branchData);
         branch.mergeWithMaster();
         String masterData = NodeUtils.getFileString(Master.getInstance(), testPath);
