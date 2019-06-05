@@ -89,7 +89,7 @@ public class NodeUtils {
         NodeBuilder builder = new NodeBuilder();
         Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
         builder.set(fileNode).setValue(dataNode).commit();
-        setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
+        setStyle(fileNode, NodeStyle.SOURCE_CODE, dataNode);
         return fileNode;
     }
 

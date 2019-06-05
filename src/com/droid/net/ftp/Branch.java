@@ -11,8 +11,7 @@ public class Branch {
 
     public Branch() {
         root = builder.create().commit();
-        Master.getInstance();
-        builder.addLocal(root);
+        builder.get(0L).addLocal(root);
     }
 
     public void mergeWithMaster() {
@@ -29,8 +28,7 @@ public class Branch {
     }
 
     public void deleteBranch() {
-        builder.removeLocal(root);
-        builder.commit();
+        builder.get(0L).removeLocal(root).commit();
     }
 
     public Node getRoot() {

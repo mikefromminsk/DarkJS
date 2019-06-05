@@ -144,22 +144,26 @@ public class NodeStorage extends InfinityStringArray {
                     }
                     if (outStream != null)
                         outStream.close();
-                    long prevNodeId = dataHashTree.get(hashKey, Crc16.hashToBytes(hash));
-                    if (prevNodeId == Long.MAX_VALUE) {
-                        if (nodeMetaCell.length < MAX_STORAGE_DATA_IN_DB) {
-                            nodeMetaCell.start = dataStorage.add(bytes);
+                    if (hashKey != null) {
+                        long prevNodeId = dataHashTree.get(hashKey, Crc16.hashToBytes(hash));
+                        if (prevNodeId == Long.MAX_VALUE) {
+                            if (nodeMetaCell.length < MAX_STORAGE_DATA_IN_DB) {
+                                nodeMetaCell.start = dataStorage.add(bytes);
+                            }
+                            node.id = meta.add(nodeMetaCell);
+                            node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.externalData = null;
+                            dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
+                        } else {
+                            if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
+                                file.delete(); // delete read file buffer
+                            nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
+                            node.id = prevNodeId;
+                            node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.externalData = null;
                         }
-                        node.id = meta.add(nodeMetaCell);
-                        node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
-                        node.externalData = null;
-                        dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
-                    }else{
-                        if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
-                            file.delete(); // delete read file buffer
-                        nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
-                        node.id = prevNodeId;
-                        node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
-                        node.externalData = null;
+                    } else {
+                        // TODO when inputData.length == 0
                     }
                     in.close();
                 }

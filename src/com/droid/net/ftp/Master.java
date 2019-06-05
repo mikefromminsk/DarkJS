@@ -8,7 +8,13 @@ public class Master {
     private static Node instance = null;
     public static Node getInstance() {
         if (instance == null){
-            instance = new NodeBuilder().get(0L).getLocalNode(0);
+            NodeBuilder builder = new NodeBuilder().get(0L);
+            instance = builder.getLocalNode(0);
+            if (instance == null){
+                Node master = builder.create().commit();
+                builder.get(0L).addLocal(master);
+                instance = master;
+            }
         }
         return instance;
     }
