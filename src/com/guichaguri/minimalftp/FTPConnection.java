@@ -527,7 +527,7 @@ public class FTPConnection implements Closeable {
         }
 
         responseSent = false;
-
+        System.out.println(info.help + " " + args);
         try {
             info.command.run(info, args);
         } catch(ResponseException ex) {

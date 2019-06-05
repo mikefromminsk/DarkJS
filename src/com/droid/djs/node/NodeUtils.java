@@ -40,9 +40,9 @@ public class NodeUtils {
 
     public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
-        String path = "/";
-        while (builder.getLocalParent() != null) {
-            path += "/" + builder.getTitleString();
+        String path = "";
+        while (builder.getLocalParentNode().id != 0L) {
+            path = "/" + builder.getTitleString() + path;
             Node localParent = builder.getLocalParentNode();
             builder.set(localParent);
         }

@@ -1,5 +1,6 @@
 package com.droid.net.ftp;
 
+import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.node.*;
 
@@ -33,7 +34,17 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public int getPermissions(Node file) {
-        return 0;
+        int perms = 0;
+        perms = Utils.setPermission(perms, Utils.CAT_OWNER + Utils.TYPE_READ, true);
+        perms = Utils.setPermission(perms, Utils.CAT_OWNER + Utils.TYPE_WRITE, true);
+        perms = Utils.setPermission(perms, Utils.CAT_OWNER + Utils.TYPE_EXECUTE, true);
+        perms = Utils.setPermission(perms, Utils.CAT_PUBLIC + Utils.TYPE_READ, true);
+        perms = Utils.setPermission(perms, Utils.CAT_PUBLIC + Utils.TYPE_WRITE, true);
+        perms = Utils.setPermission(perms, Utils.CAT_PUBLIC + Utils.TYPE_EXECUTE, true);
+        perms = Utils.setPermission(perms, Utils.CAT_GROUP + Utils.TYPE_READ, true);
+        perms = Utils.setPermission(perms, Utils.CAT_GROUP + Utils.TYPE_WRITE, true);
+        perms = Utils.setPermission(perms, Utils.CAT_GROUP + Utils.TYPE_EXECUTE, true);
+        return perms;
     }
 
     @Override

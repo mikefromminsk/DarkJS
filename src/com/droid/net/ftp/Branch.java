@@ -24,13 +24,6 @@ public class Branch {
         this.mergeTimer = mergeTimer;
     }
 
-    private TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            mergeWithMaster();
-        }
-    };
-
     public Node getRoot() {
         if (root == null) {
             root = builder.create().commit();
@@ -43,7 +36,12 @@ public class Branch {
     public void updateTimer(){
         timer.cancel();
         timer = new Timer();
-        timer.schedule(timerTask, 2000);
+        timer.schedule( new TimerTask() {
+            @Override
+            public void run() {
+                mergeWithMaster();
+            }
+        }, 2000);
     }
 
     public Node findPackage(Node node) {
@@ -67,6 +65,8 @@ public class Branch {
                 Node localParent = builder.set(masterPackage).getLocalParentNode();
                 Node[] locals = builder.set(localParent).getLocalNodes();
                 int localIndex = Arrays.asList(locals).indexOf(masterPackage);
+                String title = builder
+                        .set(branchPackage).getTitleString();
                 builder.set(localParent).setLocalNode(localIndex, branchPackage).commit();
                 builder.set(branchPackage).setHistory(masterPackage).commit();
             }

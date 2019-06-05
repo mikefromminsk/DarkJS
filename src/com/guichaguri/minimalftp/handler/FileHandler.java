@@ -246,6 +246,8 @@ public class FileHandler {
             data.append(Utils.format(fs, file));
         }
 
+        System.out.println(data.toString());
+
         con.sendData(data.toString().getBytes("UTF-8"));
         con.sendResponse(226, "The list was sent");
     }
