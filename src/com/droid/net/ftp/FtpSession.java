@@ -89,6 +89,8 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public Node getParent(Node file) {
+        if (file != null)
+            return builder.set(file).getLocalParentNode();
         return null;
     }
 
@@ -124,12 +126,10 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public void mkdirs(Node file) {
-        // mkdirs exec by NodeUtils.getNode
     }
 
     @Override
     public void delete(Node file) {
-        // don`t exist
     }
 
     @Override
@@ -142,9 +142,5 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public void touch(Node file, long time) {
-    }
-
-    public void finish() {
-        branch.mergeWithMaster();
     }
 }

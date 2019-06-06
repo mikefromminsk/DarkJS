@@ -33,11 +33,11 @@ public class Branch {
         return root;
     }
 
-    public void updateTimer(){
+    public void updateTimer() {
         // TODO restart timer if after schedule event time is not up
         timer.cancel();
         timer = new Timer();
-        timer.schedule( new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 mergeWithMaster();
@@ -59,17 +59,20 @@ public class Branch {
     }
 
     public void mergeWithMaster() {
-        if (root != null){
+        if (root != null) {
             Node branchPackage = findPackage(root);
-            if (branchPackage != null){
+            if (branchPackage != null) {
                 Node masterPackage = NodeUtils.getNode(Master.getInstance(), NodeUtils.getPath(branchPackage));
                 Node localParent = builder.set(masterPackage).getLocalParentNode();
                 Node[] locals = builder.set(localParent).getLocalNodes();
                 int localIndex = Arrays.asList(locals).indexOf(masterPackage);
                 builder.set(localParent).setLocalNode(localIndex, branchPackage).commit();
-                builder.set(branchPackage).setHistory(masterPackage).commit();
+                if (masterPackage == Master.getInstance())
+                    Master.removeInstance();
+                //builder.set(branchPackage).setHistory(masterPackage).commit();
             }
-            builder.get(0L).removeLocal(root).commit();
+            if (root != Master.getInstance())
+                builder.get(0L).removeLocal(root).commit();
             root = null;
         }
     }

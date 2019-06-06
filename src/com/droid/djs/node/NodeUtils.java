@@ -31,7 +31,7 @@ public class NodeUtils {
 
     public static Node getStyle(Node node, String styleKey) {
         NodeBuilder builder = new NodeBuilder();
-        for (Node style: builder.set(node).getStyleNodes()){
+        for (Node style : builder.set(node).getStyleNodes()) {
             if (builder.set(style).getTitleString().equals(styleKey))
                 return builder.getValueNode();
         }
@@ -46,10 +46,14 @@ public class NodeUtils {
             Node localParent = builder.getLocalParentNode();
             builder.set(localParent);
         }
-        return path;
+        return "".equals(path) ? "/" : path;
     }
 
     public static Node getNode(Node root, String path) {
+        return getNode(root, path, true);
+    }
+
+    public static Node getNode(Node root, String path, Boolean makeDirs) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
@@ -65,17 +69,25 @@ public class NodeUtils {
                     }
                 }
                 if (!find) {
-                    Node title = builder2.create(NodeType.STRING).setData(name).commit();
-                    Node node = builder2.create().setTitle(title).commit();
-                    builder.addLocal(node).commit();
-                    builder.set(node);
+                    if (makeDirs) {
+                        Node title = builder2.create(NodeType.STRING).setData(name).commit();
+                        Node node = builder2.create().setTitle(title).commit();
+                        builder.addLocal(node).commit();
+                        builder.set(node);
+                    } else {
+                        return null;
+                    }
                 }
             }
         return builder.getNode();
     }
 
     public static Node getNode(String path) {
-        return getNode(Master.getInstance(), path);
+        return getNode(path, true);
+    }
+
+    public static Node getNode(String path, Boolean makeDir) {
+        return getNode(Master.getInstance(), path, makeDir);
     }
 
     public static Node putFile(String path, String data) {
@@ -103,7 +115,7 @@ public class NodeUtils {
         return fileNode;
     }
 
-    public static String getFileString(Node node, String path){
+    public static String getFileString(Node node, String path) {
         Node fileNode = getNode(node, path);
         NodeBuilder builder = new NodeBuilder();
         Node value = builder.set(fileNode).getValueNode();
@@ -118,7 +130,7 @@ public class NodeUtils {
         NodeBuilder builder = new NodeBuilder().set(node);
         if (getStyle(node, NodeStyle.SOURCE_CODE) != null)
             func.find(node);
-        for (Node local: builder.getLocalNodes())
+        for (Node local : builder.getLocalNodes())
             forEachFiles(local, func);
     }
 }
