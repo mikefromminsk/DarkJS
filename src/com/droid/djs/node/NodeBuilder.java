@@ -856,6 +856,13 @@ public class NodeBuilder {
         return nodes;
     }
 
+    public Node[] getParams() {
+        Node[] nodes = new Node[getParamCount()];
+        for (int i = 0; i < getParamCount(); i++)
+            nodes[i] = getParamNode(i);
+        return nodes;
+    }
+
     public NodeBuilder addToHistory(){
         Node prev = node;
         create();
@@ -870,5 +877,9 @@ public class NodeBuilder {
     public NodeBuilder setLocalNode(int index, Node item){
         node.local.set(index, item);
         return this;
+    }
+
+    public void clearCells() {
+        node.cell = null;
     }
 }

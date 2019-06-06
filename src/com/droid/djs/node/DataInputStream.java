@@ -133,4 +133,8 @@ public class DataInputStream extends InputStream {
         currentPosition += n;
         return n;
     }
+
+    public long length(){
+        return length;
+    }
 }
