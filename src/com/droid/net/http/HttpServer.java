@@ -1,19 +1,17 @@
 package com.droid.net.http;
 
 
-import com.droid.djs.Formatter;
 import com.droid.djs.node.*;
-import com.droid.djs.node.DataInputStream;
-import com.droid.net.http.model.GetNodeBody;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class HttpServer extends NanoHTTPD {
 
@@ -35,9 +33,11 @@ public class HttpServer extends NanoHTTPD {
         Response response = null;
 
         try {
-            String requestContentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE).toLowerCase();
+            String requestContentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE);
+            if (requestContentType != null)
+                requestContentType = requestContentType.toLowerCase();
             if (session.getMethod() == Method.GET
-                    || session.getMethod() == Method.POST && requestContentType.equals(ContentType.FORM_DATA)) {
+                    || session.getMethod() == Method.POST && ContentType.FORM_DATA.equals(requestContentType)) {
                 // run
                 Map<String, String> args = null;
                 if (session.getMethod() == Method.POST) {
@@ -45,29 +45,39 @@ public class HttpServer extends NanoHTTPD {
                 } else if (session.getMethod() == Method.GET) {
                     args = parseArguments(session.getQueryParameterString());
                 }
+                Node node = null;
+                for (String nodePath : getFileNames(session.getUri())) {
+                    node = NodeUtils.getNode(nodePath, false);
+                    if (node != null)
+                        break;
+                }
+                if (node == null) {
+                    response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not Found");
+                } else {
+                    ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
+                    for (String argsKey : argsKeys)
+                        setParam(node, argsKey, args.get(argsKey));
 
-                Node node = NodeUtils.getNode(session.getUri());
+                    DataInputStream resultStream = (DataInputStream) getResult(node);
+                    String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
 
-                ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
-                for (int i = 0; i < argsKeys.size(); i++)
-                    setParam(node, argsKeys.get(i), args.get(argsKeys.get(i)));
-
-                DataInputStream resultStream = (DataInputStream) getResult(node);
-                String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
-
-                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
+                    response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
+                }
             } else if (session.getMethod() == Method.POST) {
                 NodeUtils.putFile(session.getUri(), session.getInputStream());
             }
         } catch (Exception e) {
             e.printStackTrace();
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+        } finally {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
         }
-
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type");
         return response;
+    }
+
+    private String[] getFileNames(String filename) {
+        return new String[]{filename};
     }
 
     private InputStream getResult(Node resultNode) {
