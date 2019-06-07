@@ -37,16 +37,23 @@ public class HttpServer extends NanoHTTPD {
             String contentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE);
             if (session.getMethod() == Method.GET
                     || session.getMethod() == Method.POST && contentType.equals(ContentType.FORM_DATA)) {
-                // Rrn
+                // run
                 Map<String, String> args = null;
                 if (session.getMethod() == Method.POST) {
                     args = parseArguments(session.getInputStream());
                 } else if (session.getMethod() == Method.GET) {
                     args = parseArguments(session.getQueryParameterString());
                 }
-                Node result = execute(session.getUri(), args);
-                DataInputStream resultStream = (DataInputStream) getResult(result);
-                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, getContentType(result), resultStream, resultStream.length());
+
+                Node node = NodeUtils.getNode(session.getUri());
+
+                ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
+                for (int i = 0; i < argsKeys.size(); i++)
+                    setParam(node, i, argsKeys.get(i));
+
+                DataInputStream resultStream = (DataInputStream) getResult(node);
+
+                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, getContentType(node), resultStream, resultStream.length());
             } else if (session.getMethod() == Method.POST) {
                 NodeUtils.putFile(session.getUri(), session.getInputStream());
             }
@@ -115,18 +122,5 @@ public class HttpServer extends NanoHTTPD {
         } else if (param.type == NodeType.OBJECT) {
 
         }
-    }
-
-    Node execute(String path, Map<String, String> args) {
-
-        Node node = NodeUtils.getNode(path);
-
-        ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
-        for (int i = 0; i < argsKeys.size(); i++)
-            setParam(node, i, argsKeys.get(i));
-
-        thread.runNode(node);
-
-        return node;
     }
 }
