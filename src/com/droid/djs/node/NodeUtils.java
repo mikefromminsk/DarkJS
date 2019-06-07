@@ -122,6 +122,10 @@ public class NodeUtils {
         return builder.set(value).getData().readString();
     }
 
+    public static boolean isDirectory(Node node) {
+        return (node == null || NodeUtils.getStyle(node, NodeStyle.SOURCE_CODE) == null);
+    }
+
     public interface FindFile {
         void find(Node node);
     }

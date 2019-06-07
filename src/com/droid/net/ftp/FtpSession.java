@@ -29,7 +29,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public boolean isDirectory(Node file) {
-        return (file == null || NodeUtils.getStyle(file, NodeStyle.SOURCE_CODE) == null);
+        return NodeUtils.isDirectory(file);
     }
 
     @Override

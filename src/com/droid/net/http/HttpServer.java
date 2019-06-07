@@ -53,6 +53,8 @@ public class HttpServer extends NanoHTTPD {
                 }
                 if (node == null) {
                     response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not Found");
+                } else if (NodeUtils.isDirectory(node)) {
+                    response = newFixedLengthResponse(FileList.build(node));
                 } else {
                     ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
                     for (String argsKey : argsKeys)
@@ -70,8 +72,10 @@ public class HttpServer extends NanoHTTPD {
             e.printStackTrace();
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } finally {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+            if (response != null) {
+                response.addHeader("Access-Control-Allow-Origin", "*");
+                response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+            }
         }
         return response;
     }
@@ -87,6 +91,8 @@ public class HttpServer extends NanoHTTPD {
     }
 
     Map<String, String> parseArguments(String args) {
+        if (args == null)
+            return new LinkedHashMap<>();
         return parseArguments(new ByteArrayInputStream(args.getBytes()));
     }
 
