@@ -18,7 +18,6 @@ import java.util.*;
 public class HttpServer extends NanoHTTPD {
 
     static private Gson json = new GsonBuilder().setPrettyPrinting().create();
-    private DjsThread thread = new DjsThread();
 
     public static int defaultPort = 80;
     public static int debugPort = 8080;
@@ -34,9 +33,11 @@ public class HttpServer extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session) {
         Response response = null;
-            String contentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE);
+
+        try {
+            String requestContentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE).toLowerCase();
             if (session.getMethod() == Method.GET
-                    || session.getMethod() == Method.POST && contentType.equals(ContentType.FORM_DATA)) {
+                    || session.getMethod() == Method.POST && requestContentType.equals(ContentType.FORM_DATA)) {
                 // run
                 Map<String, String> args = null;
                 if (session.getMethod() == Method.POST) {
@@ -49,19 +50,20 @@ public class HttpServer extends NanoHTTPD {
 
                 ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
                 for (int i = 0; i < argsKeys.size(); i++)
-                    setParam(node, i, argsKeys.get(i));
+                    setParam(node, argsKeys.get(i), args.get(argsKeys.get(i)));
 
                 DataInputStream resultStream = (DataInputStream) getResult(node);
+                String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
 
-                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, getContentType(node), resultStream, resultStream.length());
+                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
             } else if (session.getMethod() == Method.POST) {
                 NodeUtils.putFile(session.getUri(), session.getInputStream());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+        }
 
-        if (response == null)
-            response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR,
-                    NanoHTTPD.MIME_PLAINTEXT,
-                    Response.Status.INTERNAL_ERROR.getDescription());
 
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -72,10 +74,6 @@ public class HttpServer extends NanoHTTPD {
         NodeBuilder builder = new NodeBuilder();
         Node nodeValue = builder.set(resultNode).getValueOrSelf();
         return builder.set(nodeValue).getData();
-    }
-
-    String getContentType(Node node) {
-        return URLConnection.guessContentTypeFromName(new NodeBuilder().set(node).getTitleString());
     }
 
     Map<String, String> parseArguments(String args) {
@@ -105,22 +103,29 @@ public class HttpServer extends NanoHTTPD {
         return new ArrayList();
     }
 
-    void setParam(Node node, int index, String value) {
+    void setParam(Node node, String key, String value) {
         NodeBuilder builder = new NodeBuilder();
-        Node param = builder.set(node).getParamNode(index);
-        if (param.type == NodeType.NUMBER) {
-            Node number = builder.create(NodeType.NUMBER).setData(value).commit();
-            builder.set(param).setValue(number).commit();
-        } else if (param.type == NodeType.STRING) {
-            Node number = builder.create(NodeType.STRING).setData(value).commit();
-            builder.set(param).setValue(number).commit();
-        } else if (param.type == NodeType.ARRAY) {
-            builder.set(param).clearCells();
-            for (Object obj : toList(value)) {
+        Node param = null;
+        for (Node paramNode : builder.set(node).getParams())
+            if (key.equals(builder.set(paramNode).getTitleString())) {
+                param = paramNode;
+                break;
+            }
+        if (param != null) {
+            if (param.type == NodeType.NUMBER) {
+                Node number = builder.create(NodeType.NUMBER).setData(value).commit();
+                builder.set(param).setValue(number).commit();
+            } else if (param.type == NodeType.STRING) {
+                Node number = builder.create(NodeType.STRING).setData(value).commit();
+                builder.set(param).setValue(number).commit();
+            } else if (param.type == NodeType.ARRAY) {
+                builder.set(param).clearCells();
+                for (Object obj : toList(value)) {
+
+                }
+            } else if (param.type == NodeType.OBJECT) {
 
             }
-        } else if (param.type == NodeType.OBJECT) {
-
         }
     }
 }
