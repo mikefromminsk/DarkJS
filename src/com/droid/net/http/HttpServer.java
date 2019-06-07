@@ -34,38 +34,22 @@ public class HttpServer extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session) {
         Response response = null;
-        try {
-            URI uri = new URI(session.getUri());
-            String contentType = session.getHeaders().get("ContentType");
-            if (session.getMethod() == Method.GET ||
-                    session.getMethod() == Method.POST && contentType.equals(ContentType.FORM_DATA)) {
+            String contentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE);
+            if (session.getMethod() == Method.GET
+                    || session.getMethod() == Method.POST && contentType.equals(ContentType.FORM_DATA)) {
                 // Rrn
                 Map<String, String> args = null;
                 if (session.getMethod() == Method.POST) {
-                    // TODO for post requests
-                /*Map<String, String> files = new HashMap<>();
-                session.parseBody(files);
-                String body = files.get("postData");*/
                     args = parseArguments(session.getInputStream());
                 } else if (session.getMethod() == Method.GET) {
-                    args = parseArguments(uri.getQuery());
+                    args = parseArguments(session.getQueryParameterString());
                 }
-                Node result = execute(uri.getPath(), args);
+                Node result = execute(session.getUri(), args);
                 DataInputStream resultStream = (DataInputStream) getResult(result);
                 response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, getContentType(result), resultStream, resultStream.length());
             } else if (session.getMethod() == Method.POST) {
-                NodeUtils.putFile(uri.getPath(), session.getInputStream());
+                NodeUtils.putFile(session.getUri(), session.getInputStream());
             }
-        } catch (Exception e) {
-           /* GetNodeBody request = new GetNodeBody();
-            request.error = e.getMessage();
-            StringWriter errors = new StringWriter();
-            e.printStackTrace(new PrintWriter(errors));
-            request.stack = Arrays.asList(errors.toString().split("\r\n\t"));
-            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, getContentType(result), resultStream, resultStream.length());
-            responseString = json.toJson(request);
-            System.out.println(responseString);*/
-        }
 
         if (response == null)
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR,
@@ -116,7 +100,7 @@ public class HttpServer extends NanoHTTPD {
 
     void setParam(Node node, int index, String value) {
         NodeBuilder builder = new NodeBuilder();
-        Node param = builder.getParamNode(index);
+        Node param = builder.set(node).getParamNode(index);
         if (param.type == NodeType.NUMBER) {
             Node number = builder.create(NodeType.NUMBER).setData(value).commit();
             builder.set(param).setValue(number).commit();
