@@ -3,10 +3,7 @@ package com.droid.net.ftp;
 import com.droid.djs.Parser;
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeStyle;
 import com.droid.djs.node.NodeUtils;
-import com.droid.net.http.HttpServer;
-import jdk.nashorn.internal.runtime.ParserException;
 
 import java.io.*;
 import java.util.Random;
@@ -55,8 +52,14 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         out.close();
-        Node styleValue = NodeUtils.setStyle(node, NodeStyle.SOURCE_CODE, new FileInputStream(tempFile));
-        new NodeBuilder().set(node).setValue(styleValue).commit();
+        // TODO error with uploading a empty file
+        Node res = NodeUtils.putFile(node, new FileInputStream(tempFile));
+        NodeBuilder builder = new NodeBuilder();
+        if (builder.set(res).getTitleString().toLowerCase().endsWith(".node.js")) {
+            String sourceCode = builder.getValueNode().data.readString();
+            builder.setValue(null);
+            new Parser().parse(res, sourceCode);
+        }
         tempFile.delete();
     }
 }

@@ -9,10 +9,10 @@ public class NodeBuilderTest {
 
     static void setValue(){
         NodeBuilder builder = new NodeBuilder();
-        Long valueNodeId = builder.create().getId();
-        Node nodeId = builder.create().setValue(valueNodeId).commit();
+        Node node =  builder.create().commit();
+        Node nodeId = builder.create().setValue(node).commit();
         Long valueId = builder.set(nodeId).getValue();
-        assertEquals(valueNodeId, valueId);
+        assertEquals(node.id, valueId);
     }
 
     public static void main(String[] args) {

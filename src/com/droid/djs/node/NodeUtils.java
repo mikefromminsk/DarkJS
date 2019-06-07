@@ -57,7 +57,7 @@ public class NodeUtils {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
-        if (!"".equals(path))
+        if (path != null && !path.equals(""))
             for (String name : path.split("/")) {
                 if (name.equals("")) continue;
                 boolean find = false;
@@ -106,12 +106,18 @@ public class NodeUtils {
         return putFile(node, path, new ByteArrayInputStream(data.getBytes()));
     }
 
+    public static Node putFile(Node node,String data) {
+        return putFile(node, new ByteArrayInputStream(data.getBytes()));
+    }
+
+    public static Node putFile(Node node, InputStream stream) {
+        return putFile(node, null, stream);
+    }
+
     public static Node putFile(Node node, String path, InputStream stream) {
         Node fileNode = getNode(node, path);
-        NodeBuilder builder = new NodeBuilder();
-        Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
-        builder.set(fileNode).setValue(dataNode).commit();
-        setStyle(fileNode, NodeStyle.SOURCE_CODE, dataNode);
+        Node dataNode = setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
+        new NodeBuilder().set(fileNode).setValue(dataNode).commit();
         return fileNode;
     }
 

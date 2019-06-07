@@ -8,14 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NodeBuilderTest {
 
-    @Test
-    static void setValue(){
-        NodeBuilder builder = new NodeBuilder();
-        Long valueNodeId = builder.create().getId();
-        Node nodeId = builder.create().setValue(valueNodeId).commit();
-        Long valueId = builder.set(nodeId).getValue();
-        assertEquals(valueNodeId, valueId);
-    }
 /*
     public static void main(String[] args) {
         System.out.println(1);

@@ -1,4 +1,4 @@
-package com.droid.net.http;
+package com.droid.net.http.model;
 
 import com.droid.djs.Formatter;
 import com.droid.djs.Parser;
@@ -7,7 +7,6 @@ import com.droid.djs.node.LinkType;
 import com.droid.djs.node.Node;
 import com.droid.djs.node.NodeBuilder;
 import com.droid.djs.node.NodeType;
-import com.droid.net.http.model.GetNodeBody;
 import jdk.nashorn.internal.runtime.ParserException;
 
 import java.util.ArrayList;
