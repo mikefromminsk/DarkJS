@@ -105,4 +105,7 @@ public class Bytes {
         return Arrays.equals(a, b);
     }
 
+    public static byte[] fromByte(byte type) {
+        return new byte[]{type};
+    }
 }

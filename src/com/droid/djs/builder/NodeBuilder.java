@@ -5,6 +5,7 @@ import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
+import com.droid.gdb.Bytes;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -700,25 +701,9 @@ public class NodeBuilder {
     }
 
     public void clearLinks() {
-        node.value = null;
-        node.source = null;
-        node.title = null;
-        node.set = null;
-        node._true = null;
-        node._else = null;
-        node.exit = null;
-        node._while = null;
-        node._if = null;
-        node.prototype = null;
-        node.body = null;
-        node.localParent = null;
-        node.history = null;
-        node.local = null;
-        node.param = null;
-        node.next = null;
-        node.cell = null;
-        node.prop = null;
-        node.style = null;
+        byte type = node.type;
+        node.parse(new byte[0]);
+        node.type = type;
     }
 
     public NodeBuilder removeAllNext() {

@@ -13,7 +13,7 @@ public class NodeUtils {
     public static Node setStyle(Node node, String key, String value) {
         return setStyle(node, key, new ByteArrayInputStream(value.getBytes()));
     }
-
+    // TODO remove style and add FileNode with source code link type
     public static Node setStyle(Node node, String key, InputStream value) {
         return setStyle(node, key, new NodeBuilder().create(NodeType.STRING).setData(value).commit());
     }

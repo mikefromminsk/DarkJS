@@ -1,6 +1,7 @@
 package com.droid.djs.consts;
 
 public class LinkType {
+    // TODO move it to node classes
     public static final byte VALUE = 0;
     private static final String VALUE_NAME = "value";
     public static final byte SOURCE = 1;

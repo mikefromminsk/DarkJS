@@ -18,7 +18,8 @@ public class  NodeType {
     public static final String NATIVE_FUNCTION_NAME = "native_function";
     public static final byte THREAD = 4;
     public static final String THREAD_NAME = "thread";
-    public static final byte FUNCTION = 5; // TODO delete
+    // TODO delete
+    public static final byte FUNCTION = 5;
     public static final String FUNCTION_NAME = "function";
 
     public static String toString(byte type) {
