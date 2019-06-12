@@ -1,5 +1,6 @@
-package com.droid.djs.node;
+package com.droid.djs.nodes;
 
+import com.droid.djs.consts.LinkType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.InfinityStringArrayCell;
 

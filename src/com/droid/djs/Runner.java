@@ -1,12 +1,12 @@
 package com.droid.djs;
 
 
-import com.droid.api.Caller;
-import com.droid.api.DefaultPrototypes;
-import com.droid.djs.node.DataInputStream;
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeType;
+import com.droid.djs.prototypes.Caller;
+import com.droid.djs.prototypes.DefaultPrototypes;
+import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
 
 public class Runner{
 
@@ -198,6 +198,10 @@ public class Runner{
     private Node exitNode = null;
 
     private void run(Node node, Node calledNodeId) {
+        if (node.type == NodeType.THREAD){
+            // TODO get from pool or startThread
+        }
+
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
             run(builder.set(node).getNextNode(i));
             if (exitNode != null) {

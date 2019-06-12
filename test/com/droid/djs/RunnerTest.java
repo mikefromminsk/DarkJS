@@ -1,8 +1,10 @@
 package com.droid.djs;
 
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeType;
+import com.droid.djs.serialization.links.Formatter;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
+import com.droid.djs.serialization.js.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

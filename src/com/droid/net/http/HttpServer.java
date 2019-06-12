@@ -1,9 +1,12 @@
 package com.droid.net.http;
 
 
-import com.droid.djs.node.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.*;
+import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.builder.NodeUtils;
+import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -14,8 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpServer extends NanoHTTPD {
-
-    static private Gson json = new GsonBuilder().setPrettyPrinting().create();
 
     public static int defaultPort = 80;
     public static int debugPort = 8080;
@@ -33,7 +34,7 @@ public class HttpServer extends NanoHTTPD {
         Response response = null;
 
         try {
-            String requestContentType = session.getHeaders().get(HttpHeader.CONTENT_TYPE);
+            String requestContentType = session.getHeaders().get(Headers.CONTENT_TYPE);
             if (requestContentType != null)
                 requestContentType = requestContentType.toLowerCase();
             if (session.getMethod() == Method.GET
@@ -53,8 +54,6 @@ public class HttpServer extends NanoHTTPD {
                 }
                 if (node == null) {
                     response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not Found");
-                } else if (NodeUtils.isDirectory(node)) {
-                    response = newFixedLengthResponse(FileList.build(node));
                 } else {
                     ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
                     for (String argsKey : argsKeys)

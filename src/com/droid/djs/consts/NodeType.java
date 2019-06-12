@@ -1,4 +1,4 @@
-package com.droid.djs.node;
+package com.droid.djs.consts;
 
 public class  NodeType {
     // todo change String to char[]

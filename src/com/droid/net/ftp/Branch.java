@@ -1,9 +1,9 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeStyle;
-import com.droid.djs.node.NodeUtils;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeStyle;
+import com.droid.djs.builder.NodeUtils;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -42,7 +42,7 @@ public class Branch {
             public void run() {
                 mergeWithMaster();
             }
-        }, 2000);
+        }, mergeTimer);
     }
 
     public Node findPackage(Node node) {

@@ -1,5 +1,6 @@
-package com.droid.net.ftp;
+package com.droid.net.auth;
 
+import com.droid.net.ftp.FtpSession;
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.guichaguri.minimalftp.api.IUserAuthenticator;
@@ -15,6 +16,8 @@ import java.util.Map;
  * @author Guilherme Chaguri
  */
 public class FtpAuthenticator implements IUserAuthenticator {
+    // TODO change using NodeStorage.authentificator storage
+    // TODO add html auth support
 
     private final Map<String, byte[]> userbase = new HashMap<>();
 

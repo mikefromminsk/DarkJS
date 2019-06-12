@@ -1,11 +1,10 @@
-package com.droid.gdb;
+package com.droid.djs.builder;
 
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
+import com.droid.djs.nodes.Node;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class NodeBuilderTest {
+class NodeBuilderTest {
 
     static void setValue(){
         NodeBuilder builder = new NodeBuilder();

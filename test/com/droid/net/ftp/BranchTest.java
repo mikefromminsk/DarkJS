@@ -1,6 +1,6 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.node.NodeUtils;
+import com.droid.djs.builder.NodeUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;

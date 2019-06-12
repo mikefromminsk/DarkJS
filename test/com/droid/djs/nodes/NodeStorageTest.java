@@ -1,11 +1,14 @@
-package com.droid.djs.node;
+package com.droid.djs.nodes;
 
+import com.droid.djs.NodeStorage;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
 import com.droid.gdb.DiskManager;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class NodeStorageTest implements Runnable {
+class NodeStorageTest implements Runnable {
 
     private static Integer count = 1000;
     public static ArrayList<String> out = new ArrayList<>();

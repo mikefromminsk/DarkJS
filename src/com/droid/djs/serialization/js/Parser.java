@@ -1,8 +1,10 @@
-package com.droid.djs;
+package com.droid.djs.serialization.js;
 
-import com.droid.api.Caller;
-import com.droid.djs.node.*;
-import com.droid.djs.node.Node;
+import com.droid.djs.NodeStorage;
+import com.droid.djs.prototypes.Caller;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.Node;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 import jdk.nashorn.internal.runtime.Context;

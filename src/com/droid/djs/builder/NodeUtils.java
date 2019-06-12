@@ -1,5 +1,8 @@
-package com.droid.djs.node;
+package com.droid.djs.builder;
 
+import com.droid.djs.nodes.Node;
+import com.droid.djs.consts.NodeStyle;
+import com.droid.djs.consts.NodeType;
 import com.droid.net.ftp.Master;
 
 import java.io.ByteArrayInputStream;

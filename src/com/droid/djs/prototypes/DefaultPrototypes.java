@@ -1,8 +1,8 @@
-package com.droid.api;
+package com.droid.djs.prototypes;
 
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeType;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
 import com.droid.net.ftp.Master;
 
 public class DefaultPrototypes {

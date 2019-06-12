@@ -1,7 +1,7 @@
 package com.droid;
 
-import com.droid.djs.node.NodeStorage;
-import com.droid.djs.node.NodeUtils;
+import com.droid.djs.NodeStorage;
+import com.droid.djs.builder.NodeUtils;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpServer;
 

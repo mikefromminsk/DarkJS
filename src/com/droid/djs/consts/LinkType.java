@@ -1,4 +1,4 @@
-package com.droid.djs.node;
+package com.droid.djs.consts;
 
 public class LinkType {
     public static final byte VALUE = 0;

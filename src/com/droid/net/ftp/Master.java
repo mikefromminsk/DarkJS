@@ -1,7 +1,7 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
 
 public class Master {
 

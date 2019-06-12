@@ -1,9 +1,9 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.Parser;
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeUtils;
+import com.droid.djs.serialization.js.Parser;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.builder.NodeUtils;
 
 import java.io.*;
 import java.util.Random;
@@ -57,7 +57,7 @@ public class DataOutputStream extends OutputStream {
         NodeBuilder builder = new NodeBuilder();
         if (builder.set(res).getTitleString().toLowerCase().endsWith(".node.js")) {
             String sourceCode = builder.getValueNode().data.readString();
-            builder.setValue(null);
+            builder.setValue(null).commit();
             new Parser().parse(res, sourceCode);
         }
         tempFile.delete();

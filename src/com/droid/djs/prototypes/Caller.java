@@ -1,9 +1,9 @@
-package com.droid.api;
+package com.droid.djs.prototypes;
 
-import com.droid.djs.Formatter;
-import com.droid.djs.node.Node;
-import com.droid.djs.node.NodeBuilder;
-import com.droid.djs.node.NodeType;
+import com.droid.djs.serialization.links.Formatter;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.consts.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
 public class Caller {

@@ -1,11 +1,15 @@
-package com.droid.djs.node;
+package com.droid.djs;
 
+import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.nodes.Node;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
 import com.droid.net.ftp.Master;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public class NodeStorage extends InfinityStringArray {
@@ -72,6 +76,36 @@ public class NodeStorage extends InfinityStringArray {
         transactionNodes.clear();
     }
 
+    class NodeMetaCell extends MetaCell {
+
+        private final static int META_CELL_SIZE = Byte.BYTES + 3 * Long.BYTES;
+        public byte type;
+
+        @Override
+        public void parse(byte[] data) {
+            ByteBuffer bytebuffer = ByteBuffer.wrap(data);
+            type = bytebuffer.get();
+            start = bytebuffer.getLong();
+            length =  bytebuffer.getLong();
+            accessKey = bytebuffer.getLong();
+        }
+
+        @Override
+        public byte[] build() {
+            ByteBuffer bytebuffer = ByteBuffer.allocate(META_CELL_SIZE);
+            bytebuffer.put(type);
+            bytebuffer.putLong(start);
+            bytebuffer.putLong(length);
+            bytebuffer.putLong(accessKey);
+            return bytebuffer.array();
+        }
+
+        @Override
+        public int getSize() {
+            return META_CELL_SIZE;
+        }
+    }
+
     @Override
     public MetaCell initMeta() {
         return new NodeMetaCell();
@@ -85,7 +119,7 @@ public class NodeStorage extends InfinityStringArray {
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.VAR) {
-                node.data = new DataInputStream(metaCell.type, metaCell.start, metaCell.length);
+                node.data = new com.droid.djs.nodes.DataInputStream(metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
@@ -151,7 +185,7 @@ public class NodeStorage extends InfinityStringArray {
                                 nodeMetaCell.start = dataStorage.add(bytes);
                             }
                             node.id = meta.add(nodeMetaCell);
-                            node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.data = new com.droid.djs.nodes.DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
                             node.externalData = null;
                             dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                         } else {
