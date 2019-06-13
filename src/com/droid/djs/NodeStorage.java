@@ -3,6 +3,7 @@ package com.droid.djs;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
@@ -38,8 +39,7 @@ public class NodeStorage extends InfinityStringArray {
     }
 
     private void initStorage() {
-        Node root = new Node();
-        root.type = NodeType.THREAD;
+        ThreadNode root = new ThreadNode();
         add(root);
         transactionCommit();
         Master.getInstance();
@@ -86,7 +86,7 @@ public class NodeStorage extends InfinityStringArray {
             ByteBuffer bytebuffer = ByteBuffer.wrap(data);
             type = bytebuffer.get();
             start = bytebuffer.getLong();
-            length =  bytebuffer.getLong();
+            length = bytebuffer.getLong();
             accessKey = bytebuffer.getLong();
         }
 
@@ -111,11 +111,20 @@ public class NodeStorage extends InfinityStringArray {
         return new NodeMetaCell();
     }
 
+    public Node newNode(byte nodeType) {
+        switch (nodeType) {
+            case NodeType.THREAD:
+                return new ThreadNode();
+            default:
+                return new Node(nodeType);
+        }
+    }
+
     public Node get(Long index) {
         Node node = nodesCache.get(index);
         if (node == null) {
             NodeMetaCell metaCell = (NodeMetaCell) getMeta(index);
-            node = new Node();
+            node = newNode(metaCell.type);
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.VAR) {

@@ -20,13 +20,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder create(byte nodeType) {
-        switch (nodeType) {
-            case NodeType.THREAD:
-                node = new ThreadNode();
-                break;
-            default:
-                node = new Node();
-        }
+        node = storage.newNode(nodeType);
         node.type = nodeType;
         return this;
     }

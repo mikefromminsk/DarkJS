@@ -1,11 +1,16 @@
 package com.droid.djs.nodes;
 
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.Runner;
 
 import java.util.LinkedList;
 import java.util.Map;
 
 public class ThreadNode extends Node implements Runnable {
+
+    public ThreadNode() {
+        super(NodeType.THREAD);
+    }
 
     private Thread thread = new Thread(this);
 

@@ -40,6 +40,10 @@ public class Node implements InfinityStringArrayCell {
     public ArrayList<Object> style;
     // after addObject new link you should addObject it to listLinks and parse function
 
+    public Node(byte type) {
+        this.type = type;
+    }
+
     @Override
     public byte[] build() {
         ArrayList<Long> links = new ArrayList<>();
