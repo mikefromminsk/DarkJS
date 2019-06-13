@@ -5,7 +5,6 @@ import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
-import com.droid.gdb.Bytes;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -21,7 +20,13 @@ public class NodeBuilder {
     }
 
     public NodeBuilder create(byte nodeType) {
-        node = new Node();
+        switch (nodeType) {
+            case NodeType.THREAD:
+                node = new ThreadNode();
+                break;
+            default:
+                node = new Node();
+        }
         node.type = nodeType;
         return this;
     }
@@ -792,7 +797,7 @@ public class NodeBuilder {
         return nodes;
     }
 
-    public NodeBuilder addToHistory(){
+    public NodeBuilder addToHistory() {
         Node prev = node;
         create();
         node.parse(prev.build());
@@ -803,7 +808,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setLocalNode(int index, Node item){
+    public NodeBuilder setLocalNode(int index, Node item) {
         node.local.set(index, item);
         return this;
     }

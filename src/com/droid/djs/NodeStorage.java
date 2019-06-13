@@ -119,7 +119,7 @@ public class NodeStorage extends InfinityStringArray {
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.VAR) {
-                node.data = new com.droid.djs.nodes.DataInputStream(metaCell.type, metaCell.start, metaCell.length);
+                node.data = new DataInputStream(metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)

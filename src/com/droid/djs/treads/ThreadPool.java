@@ -4,6 +4,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.fs.Files;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.serialization.js.Parser;
 
 import java.util.Map;
@@ -58,8 +59,11 @@ public class ThreadPool {
         threadNode.run(module);
     }
 
-    private ThreadNode findThread(Node module) {
-        return null;
+    private ThreadNode findThread(Node node) {
+        Node item = node;
+        while (item.type != NodeType.THREAD)
+            item = builder.set(item).getLocalParentNode();
+        return (ThreadNode) item;
     }
 
     // TODO delete autorun and start all thread children that is thread node

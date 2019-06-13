@@ -14,6 +14,8 @@ public class Node implements InfinityStringArrayCell {
     public DataInputStream data;
     // TODO read external data in another thread
     public InputStream externalData;
+    // TODO move type to node body in the storage
+    // TODO add flag isData into nodeMeta
     public byte type;
     public Integer functionId; // change to primitive long
     public Object value;
