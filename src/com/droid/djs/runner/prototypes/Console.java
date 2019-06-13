@@ -1,4 +1,4 @@
-package com.droid.djs.prototypes;
+package com.droid.djs.runner.prototypes;
 
 public class Console {
 

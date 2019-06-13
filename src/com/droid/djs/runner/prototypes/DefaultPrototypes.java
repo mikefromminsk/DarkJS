@@ -1,4 +1,4 @@
-package com.droid.djs.prototypes;
+package com.droid.djs.runner.prototypes;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;

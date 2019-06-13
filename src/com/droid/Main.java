@@ -19,17 +19,12 @@ public class Main {
             httpServer = (HttpServer) new HttpServer(HttpServer.debugPort).start();
             ftpServer = new FtpServer().start();
 
-            autorun();
+            ThreadPool.getInstance().autorun();
 
             httpServer.join();
         } catch (InterruptedException e) {
             httpServer.stop();
             ftpServer.stop();
         }
-    }
-
-    private static void autorun() {
-        // TODO delete autorun and start all thread children that is thread node
-        ThreadPool.getInstance().run(Master.getInstance());
     }
 }

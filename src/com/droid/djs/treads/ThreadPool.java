@@ -61,4 +61,11 @@ public class ThreadPool {
     private ThreadNode findThread(Node module) {
         return null;
     }
+
+    // TODO delete autorun and start all thread children that is thread node
+    public void autorun() {
+        Node[] autorunList = builder.set(Files.getNode(AUTOLOADING_DIR)).getLocalNodes();
+        for (Node autorunItem: autorunList)
+            run(autorunItem);
+    }
 }

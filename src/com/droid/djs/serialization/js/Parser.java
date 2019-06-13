@@ -1,7 +1,7 @@
 package com.droid.djs.serialization.js;
 
 import com.droid.djs.NodeStorage;
-import com.droid.djs.prototypes.Caller;
+import com.droid.djs.runner.prototypes.Caller;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;

@@ -20,6 +20,7 @@ public class Master {
         return instance;
     }
 
+    // TODO change to change instance
     public static void removeInstance(){
         instance = null;
     }

@@ -1,8 +1,8 @@
-package com.droid.djs;
+package com.droid.djs.runner;
 
 
-import com.droid.djs.prototypes.Caller;
-import com.droid.djs.prototypes.DefaultPrototypes;
+import com.droid.djs.runner.prototypes.Caller;
+import com.droid.djs.runner.prototypes.DefaultPrototypes;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
