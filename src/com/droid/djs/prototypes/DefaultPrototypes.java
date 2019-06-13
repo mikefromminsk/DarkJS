@@ -3,7 +3,7 @@ package com.droid.djs.prototypes;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
-import com.droid.net.ftp.Master;
+import com.droid.djs.fs.Master;
 
 public class DefaultPrototypes {
 
@@ -17,12 +17,6 @@ public class DefaultPrototypes {
             new NodeBuilder().set(Master.getInstance()).putObject("defaultPrototypes", defaultPrototypes);
         }
         return defaultPrototypes;
-    }
-
-    static Node initPrototypes(){
-        Node prototypes = builder.create().commit();
-        prototype(prototypes, NodeType.STRING_NAME, initStringPrototype());
-        return prototypes;
     }
 
     static void prototype(Node prototypes, String prototypeName, Node prototypeNode){
@@ -40,10 +34,29 @@ public class DefaultPrototypes {
         builder.set(prototypeParent).addLocal(function);
     }
 
+    static Node initPrototypes(){
+        Node prototypes = builder.create().commit();
+        prototype(prototypes, NodeType.STRING_NAME, initStringPrototype());
+        prototype(prototypes, Console.PROTOTYPE_NAME, initConsolePrototype());
+        return prototypes;
+    }
+
+    private static Node initConsolePrototype() {
+        Node console = builder.create().commit();
+        func(console, Console.LOG_NAME, Console.LOG);
+        return console;
+    }
+
     private static Node initStringPrototype() {
         Node string = builder.create().commit();
         func(string, Caller.STRING_TRIM_NAME, Caller.STRING_TRIM);
         func(string, Caller.STRING_REVERCE_NAME, Caller.STRING_REVERCE);
         return string;
+    }
+
+    private static Node initThreadPrototype() {
+        Node thread = builder.create().commit();
+        func(thread, Caller.STRING_TRIM_NAME, Caller.STRING_TRIM);
+        return null;
     }
 }

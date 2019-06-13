@@ -1,9 +1,10 @@
-package com.droid.net.ftp;
+package com.droid.djs.fs;
 
+import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeStyle;
-import com.droid.djs.builder.NodeUtils;
+import com.droid.djs.fs.Files;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -47,7 +48,7 @@ public class Branch {
 
     public Node findPackage(Node node) {
         // if file
-        if (NodeUtils.getStyle(node, NodeStyle.SOURCE_CODE) != null)
+        if (Files.getStyle(node, NodeStyle.SOURCE_CODE) != null)
             return node;
         // if package
         if (builder.set(node).getLocalCount() > 1)
@@ -62,7 +63,7 @@ public class Branch {
         if (root != null) {
             Node branchPackage = findPackage(root);
             if (branchPackage != null) {
-                Node masterPackage = NodeUtils.getNode(Master.getInstance(), NodeUtils.getPath(branchPackage));
+                Node masterPackage = Files.getNode(Master.getInstance(), Files.getPath(branchPackage));
                 Node localParent = builder.set(masterPackage).getLocalParentNode();
                 Node[] locals = builder.set(localParent).getLocalNodes();
                 int localIndex = Arrays.asList(locals).indexOf(masterPackage);

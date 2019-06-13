@@ -6,7 +6,7 @@ import com.droid.djs.nodes.Node;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
-import com.droid.net.ftp.Master;
+import com.droid.djs.fs.Master;
 
 import java.io.*;
 import java.nio.ByteBuffer;

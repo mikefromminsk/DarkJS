@@ -1,6 +1,8 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.builder.NodeUtils;
+import com.droid.djs.fs.Branch;
+import com.droid.djs.fs.Files;
+import com.droid.djs.fs.Master;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -15,12 +17,12 @@ class BranchTest {
         String testPath = "tests/BranchTest";
         String branchData = "" + new Random().nextInt();
         String masterStartData = "sdf";
-        NodeUtils.putFile(Master.getInstance(), testPath, masterStartData);
-        String str = NodeUtils.getFileString(Master.getInstance(), testPath);
+        Files.putFile(Master.getInstance(), testPath, masterStartData);
+        String str = Files.getFileString(Master.getInstance(), testPath);
         assertEquals(masterStartData, str);
-        NodeUtils.putFile(branch.getRoot(), testPath, branchData);
+        Files.putFile(branch.getRoot(), testPath, branchData);
         branch.mergeWithMaster();
-        String masterData = NodeUtils.getFileString(Master.getInstance(), testPath);
+        String masterData = Files.getFileString(Master.getInstance(), testPath);
         assertEquals(branchData, masterData);
     }
 }

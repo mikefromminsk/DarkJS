@@ -1,14 +1,14 @@
-package com.droid.djs.builder;
+package com.droid.djs.fs;
 
+import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.consts.NodeStyle;
 import com.droid.djs.consts.NodeType;
-import com.droid.net.ftp.Master;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class NodeUtils {
+public class Files {
 
     public static Node setStyle(Node node, String key, String value) {
         return setStyle(node, key, new ByteArrayInputStream(value.getBytes()));
@@ -52,11 +52,19 @@ public class NodeUtils {
         return "".equals(path) ? "/" : path;
     }
 
-    public static Node getNode(Node root, String path) {
-        return getNode(root, path, true);
+    public static Node getNode(String path) {
+        return getNode(path, NodeType.VAR);
     }
 
-    public static Node getNode(Node root, String path, Boolean makeDirs) {
+    public static Node getNode(String path, Byte nodeType) {
+        return getNode(Master.getInstance(), path, nodeType);
+    }
+
+    public static Node getNode(Node root, String path) {
+        return getNode(root, path, NodeType.VAR);
+    }
+
+    public static Node getNode(Node root, String path, Byte nodeType) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
@@ -72,9 +80,9 @@ public class NodeUtils {
                     }
                 }
                 if (!find) {
-                    if (makeDirs) {
+                    if (nodeType != null) {
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
-                        Node node = builder2.create().setTitle(title).commit();
+                        Node node = builder2.create(nodeType).setTitle(title).commit();
                         builder.addLocal(node).commit();
                         builder.set(node);
                     } else {
@@ -83,14 +91,6 @@ public class NodeUtils {
                 }
             }
         return builder.getNode();
-    }
-
-    public static Node getNode(String path) {
-        return getNode(path, true);
-    }
-
-    public static Node getNode(String path, Boolean makeDir) {
-        return getNode(Master.getInstance(), path, makeDir);
     }
 
     public static Node putFile(String path, String data) {
@@ -132,7 +132,7 @@ public class NodeUtils {
     }
 
     public static boolean isDirectory(Node node) {
-        return (node == null || NodeUtils.getStyle(node, NodeStyle.SOURCE_CODE) == null);
+        return (node == null || Files.getStyle(node, NodeStyle.SOURCE_CODE) == null);
     }
 
     public interface FindFile {

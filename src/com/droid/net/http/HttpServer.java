@@ -5,7 +5,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
-import com.droid.djs.builder.NodeUtils;
+import com.droid.djs.fs.Files;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
@@ -48,7 +48,7 @@ public class HttpServer extends NanoHTTPD {
                 }
                 Node node = null;
                 for (String nodePath : getFileNames(session.getUri())) {
-                    node = NodeUtils.getNode(nodePath, false);
+                    node = Files.getNode(nodePath, false);
                     if (node != null)
                         break;
                 }
@@ -65,7 +65,7 @@ public class HttpServer extends NanoHTTPD {
                     response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
                 }
             } else if (session.getMethod() == Method.POST) {
-                NodeUtils.putFile(session.getUri(), session.getInputStream());
+                Files.putFile(session.getUri(), session.getInputStream());
             }
         } catch (Exception e) {
             e.printStackTrace();

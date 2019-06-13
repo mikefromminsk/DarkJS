@@ -1,4 +1,4 @@
-package com.droid.net.ftp;
+package com.droid.djs.fs;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;

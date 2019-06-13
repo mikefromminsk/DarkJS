@@ -8,6 +8,7 @@ import jdk.nashorn.internal.parser.TokenType;
 
 public class Caller {
 
+    // TODO change const system to search tree system without funcID
     public final static int UNARY_MINUS = -1;
     public final static int EQ = 0; // ==
     public final static int ADD = 1; // +
@@ -24,6 +25,8 @@ public class Caller {
     public final static String STRING_REVERCE_NAME = "reverse";
     public static final int STRING_TRIM = 12;
     public final static String STRING_TRIM_NAME = "trim";
+
+
     private static NodeBuilder builder = new NodeBuilder();
 
     public static int fromTokenType(TokenType tokenType) {

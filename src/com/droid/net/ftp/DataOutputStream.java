@@ -1,9 +1,10 @@
 package com.droid.net.ftp;
 
+import com.droid.djs.fs.Branch;
 import com.droid.djs.serialization.js.Parser;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.builder.NodeUtils;
+import com.droid.djs.fs.Files;
 
 import java.io.*;
 import java.util.Random;
@@ -53,7 +54,7 @@ public class DataOutputStream extends OutputStream {
     public void close() throws IOException {
         out.close();
         // TODO error with uploading a empty file
-        Node res = NodeUtils.putFile(node, new FileInputStream(tempFile));
+        Node res = Files.putFile(node, new FileInputStream(tempFile));
         NodeBuilder builder = new NodeBuilder();
         if (builder.set(res).getTitleString().toLowerCase().endsWith(".node.js")) {
             String sourceCode = builder.getValueNode().data.readString();
