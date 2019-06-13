@@ -246,13 +246,21 @@ public class Parser {
 
             if (statement instanceof IdentNode) {
                 IdentNode identNode = (IdentNode) statement;
-
-                Node ident = findNodeInLocalStack(identNode.getName());
-                if (ident == null) {
-                    ident = builder.create().commit();
+                String name = identNode.getName();
+                Node ident = null;
+                if (name.startsWith("thread")) {
+                    ident = builder.create(NodeType.THREAD).commit();
                     Node titleData = builder.create(NodeType.STRING).setData(identNode.getName()).commit();
                     builder.set(ident).setTitle(titleData).commit();
                     builder.set(module).addLocal(ident).commit();
+                } else {
+                    ident = findNodeInLocalStack(name);
+                    if (ident == null) {
+                        ident = builder.create().commit();
+                        Node titleData = builder.create(NodeType.STRING).setData(identNode.getName()).commit();
+                        builder.set(ident).setTitle(titleData).commit();
+                        builder.set(module).addLocal(ident).commit();
+                    }
                 }
                 return ident;
             }

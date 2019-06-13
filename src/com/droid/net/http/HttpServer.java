@@ -48,7 +48,7 @@ public class HttpServer extends NanoHTTPD {
                 }
                 Node node = null;
                 for (String nodePath : getFileNames(session.getUri())) {
-                    node = Files.getNode(nodePath, false);
+                    node = Files.getNode(nodePath, null);
                     if (node != null)
                         break;
                 }

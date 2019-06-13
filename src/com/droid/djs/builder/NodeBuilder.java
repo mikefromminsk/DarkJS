@@ -52,6 +52,9 @@ public class NodeBuilder {
         return node.id;
     }
 
+    // This function should use because node type create only by NodeBuilder.create
+    //public Long setType() { }
+
     public DataInputStream getData() {
         return node.data;
     }
