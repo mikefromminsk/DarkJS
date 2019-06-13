@@ -33,8 +33,19 @@ public class ThreadPool {
                 .removeNext(thread)
                 .commit();
     }
+    public void run(String path) {
+        run(Files.getNode(path));
+    }
 
     public void run(String path, Map<String, String> args) {
+        run(Files.getNode(path), args);
+    }
+
+    public void run(Node node) {
+        run(node, null);
+    }
+
+    public void run(Node node, Map<String, String> args) {
 
     }
 

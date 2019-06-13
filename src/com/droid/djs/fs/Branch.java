@@ -1,5 +1,6 @@
 package com.droid.djs.fs;
 
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -27,7 +28,7 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = builder.create().commit();
+            root = builder.create(NodeType.THREAD).commit();
             builder.get(0L).addLocal(root);
             updateTimer();
         }

@@ -1,6 +1,7 @@
 package com.droid;
 
 import com.droid.djs.NodeStorage;
+import com.droid.djs.fs.Master;
 import com.droid.djs.treads.ThreadPool;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpServer;
@@ -18,7 +19,7 @@ public class Main {
             httpServer = (HttpServer) new HttpServer(HttpServer.debugPort).start();
             ftpServer = new FtpServer().start();
 
-            runRoot();
+            autorun();
 
             httpServer.join();
         } catch (InterruptedException e) {
@@ -27,7 +28,8 @@ public class Main {
         }
     }
 
-    private static void runRoot() {
-        ThreadPool.getInstance().run("/", null);
+    private static void autorun() {
+        // TODO delete autorun and start all thread children that is thread node
+        ThreadPool.getInstance().run(Master.getInstance());
     }
 }
