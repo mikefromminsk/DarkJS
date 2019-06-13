@@ -247,14 +247,12 @@ public class Parser {
             if (statement instanceof IdentNode) {
                 IdentNode identNode = (IdentNode) statement;
                 String name = identNode.getName();
-                Node ident = null;
-                if (name.startsWith("thread")) {
-                    ident = builder.create(NodeType.THREAD).commit();
-                } else {
-                    ident = findNodeInLocalStack(name);
-                    if (ident == null)
+                Node ident = findNodeInLocalStack(name);
+                if (ident == null)
+                    if (name.startsWith("thread"))
+                        ident = builder.create(NodeType.THREAD).commit();
+                    else
                         ident = builder.create().commit();
-                }
                 Node titleData = builder.create(NodeType.STRING).setData(identNode.getName()).commit();
                 builder.set(ident).setTitle(titleData).commit();
                 builder.set(module).addLocal(ident).commit();
