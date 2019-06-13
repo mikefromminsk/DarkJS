@@ -7,6 +7,7 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.serialization.js.Parser;
 
+import java.util.List;
 import java.util.Map;
 
 public class ThreadPool {
@@ -28,31 +29,15 @@ public class ThreadPool {
         return (ThreadNode) item;
     }
 
-    public void addToAutoloading(Node thread) {
-        builder.set(Files.getNode(AUTOLOADING_DIR))
-                .addNext(thread)
-                .commit();
-    }
-
-    public void removeFromAutoloading(Node thread) {
-        builder.set(Files.getNode(AUTOLOADING_DIR))
-                .removeNext(thread)
-                .commit();
-    }
-
-    public void run(String path) {
-        run(Files.getNode(path));
-    }
-
-    public void run(String path, Map<String, String> args) {
-        run(Files.getNode(path), args, false);
-    }
-
     public void run(Node node) {
         run(node, null, false);
     }
 
-    public void run(Node node, Map<String, String> args, boolean async) {
+    public void run(Node node, boolean async) {
+        run(node, null, async);
+    }
+
+    public void run(Node node, List<Node> args, boolean async) {
         findThread(node).run(node, async);
     }
 

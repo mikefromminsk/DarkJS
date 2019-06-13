@@ -7,6 +7,12 @@ import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.treads.ThreadPool;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Runner{
 
@@ -198,9 +204,6 @@ public class Runner{
     private Node exitNode = null;
 
     private void run(Node node, Node calledNodeId) {
-        if (node.type == NodeType.THREAD){
-            // TODO get from pool or startThread
-        }
 
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
             run(builder.set(node).getNextNode(i));
@@ -224,6 +227,21 @@ public class Runner{
         if (builder.set(node).getSource() != null) {
             propCalledNode = calledNodeId;
             Node sourceNode = getProps(builder.set(node).getSourceNode());
+
+            if (sourceNode.type == NodeType.THREAD){
+                //TODO params for threads
+                /*
+                List<Node> args  = new ArrayList<>();
+                for (int i = 0; i < builder.set(node).getParamCount(); i++) {
+                    Node nodeParam = builder.set(node).getParamNode(i);
+                    Node value = builder.set(nodeParam).getValueNode();
+                    args.add(value);
+                }*/
+
+                ThreadPool.getInstance().run(sourceNode, true);
+                return;
+            }
+
             Node calledObjectFromSource = propCalledNode;
             Node setNode = builder.set(node).getSetNode();
             if (setNode != null) {

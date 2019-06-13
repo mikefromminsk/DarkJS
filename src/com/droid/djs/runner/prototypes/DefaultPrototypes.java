@@ -7,6 +7,8 @@ import com.droid.djs.fs.Master;
 
 public class DefaultPrototypes {
 
+    // TODO change the system of prototypes. see DefaultPrototypes
+
     private static Node defaultPrototypes;// = builder.getObject(0L).getObject("defaultPrototypes"); // add version of prototypes
 
     private static NodeBuilder builder = new NodeBuilder();
@@ -38,6 +40,7 @@ public class DefaultPrototypes {
         Node prototypes = builder.create().commit();
         prototype(prototypes, NodeType.STRING_NAME, initStringPrototype());
         prototype(prototypes, Console.PROTOTYPE_NAME, initConsolePrototype());
+        prototype(prototypes, ThreadPrototype.PROTOTYPE_NAME, initThreadPrototype());
         return prototypes;
     }
 
@@ -56,7 +59,7 @@ public class DefaultPrototypes {
 
     private static Node initThreadPrototype() {
         Node thread = builder.create().commit();
-        func(thread, Caller.STRING_TRIM_NAME, Caller.STRING_TRIM);
+        func(thread, ThreadPrototype.SLEEP_NAME, ThreadPrototype.SLEEP);
         return null;
     }
 }
