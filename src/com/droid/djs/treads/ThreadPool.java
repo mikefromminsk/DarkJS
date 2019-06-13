@@ -11,6 +11,8 @@ import java.util.Map;
 
 public class ThreadPool {
 
+    private final static String AUTOLOADING_DIR = "start";
+    private NodeBuilder builder = new NodeBuilder();
     private static ThreadPool threadPool;
 
     public static ThreadPool getInstance() {
@@ -19,9 +21,12 @@ public class ThreadPool {
         return threadPool;
     }
 
-    private NodeBuilder builder = new NodeBuilder();
-
-    final static String AUTOLOADING_DIR = "start";
+    private ThreadNode findThread(Node node) {
+        Node item = node;
+        while (item.type != NodeType.THREAD)
+            item = builder.set(item).getLocalParentNode();
+        return (ThreadNode) item;
+    }
 
     public void addToAutoloading(Node thread) {
         builder.set(Files.getNode(AUTOLOADING_DIR))
@@ -34,36 +39,30 @@ public class ThreadPool {
                 .removeNext(thread)
                 .commit();
     }
+
     public void run(String path) {
         run(Files.getNode(path));
     }
 
     public void run(String path, Map<String, String> args) {
-        run(Files.getNode(path), args);
+        run(Files.getNode(path), args, false);
     }
 
     public void run(Node node) {
-        run(node, null);
+        run(node, null, false);
     }
 
-    public void run(Node node, Map<String, String> args) {
-
+    public void run(Node node, Map<String, String> args, boolean async) {
+        findThread(node).run(node, async);
     }
 
     private Parser parser = new Parser();
 
-    public void runScript(String path, String sourceCode) {
-        Node thread = Files.getNode(path, NodeType.THREAD);
-        Node module = parser.parse(thread, sourceCode);
-        ThreadNode threadNode = findThread(module);
-        threadNode.run(module);
-    }
-
-    private ThreadNode findThread(Node node) {
-        Node item = node;
-        while (item.type != NodeType.THREAD)
-            item = builder.set(item).getLocalParentNode();
-        return (ThreadNode) item;
+    public Node runScript(String path, String sourceCode) {
+        Node node = Files.getNode(path);
+        Node module = parser.parse(node, sourceCode);
+        run(module);
+        return node;
     }
 
     // TODO delete autorun and start all thread children that is thread node

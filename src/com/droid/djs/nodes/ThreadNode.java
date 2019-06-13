@@ -21,11 +21,17 @@ public class ThreadNode extends Node implements Runnable {
 
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
-    public void run(Node node) {
+    public void run(Node node, boolean async) {
         if (thread.isAlive()){
             runQueue.add(new RunData(node, null));
         } else {
             thread.start();
+        }
+        if (!async) {
+            try {
+                thread.join();
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 

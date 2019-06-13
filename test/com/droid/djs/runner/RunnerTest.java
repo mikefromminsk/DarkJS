@@ -26,7 +26,7 @@ class RunnerTest {
         File currentScript = null;
         String sourceCode = null;
         NodeBuilder builder = new NodeBuilder();
-        Node module = null;
+
         try {
             File nodesTestsDir = new File("test_res/run/");
             File[] tests = nodesTestsDir.listFiles();
@@ -36,10 +36,9 @@ class RunnerTest {
                 Collections.reverse(list);
                 for (File script : list) {
                     currentScript = script;
+
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    module = parser.parse(null, sourceCode);
-                    //System.out.println(Formatter.toJson(module));
-                    ThreadPool.getInstance().run(module);
+                    Node module = ThreadPool.getInstance().runScript("test", sourceCode);
 
                     Node testVar = builder.set(module).findLocal("test");
                     assertNotNull(testVar);
