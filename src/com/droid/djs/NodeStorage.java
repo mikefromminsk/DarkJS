@@ -151,7 +151,17 @@ public class NodeStorage extends InfinityStringArray {
 
     public void add(Node node) {
         if (node.type >= NodeType.VAR) {
-            node.id = super.addObject(node);
+            byte[] data = node.build();
+            NodeMetaCell metaCell = new NodeMetaCell();
+            if (data != null/* && data.length != 0*/) {
+                byte[] sector = dataToSector(data);
+                long newAccessKey = encodeData(sector);
+                metaCell.type = node.type;
+                metaCell.start = super.add(sector);
+                metaCell.length = data.length;
+                metaCell.accessKey = newAccessKey;
+            }
+            node.id = meta.add(metaCell);
         } else {
             try {
                 if (node.externalData != null) {

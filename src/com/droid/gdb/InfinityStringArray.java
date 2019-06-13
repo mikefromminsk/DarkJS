@@ -176,7 +176,7 @@ public class InfinityStringArray extends InfinityFile {
         return sectorSize;
     }
 
-    byte[] dataToSector(byte[] data) {
+    protected byte[] dataToSector(byte[] data) {
         byte[] result = new byte[getSectorLength(data.length)];
         System.arraycopy(data, 0, result, 0, data.length);
         return result;
