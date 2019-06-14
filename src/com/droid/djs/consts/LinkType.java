@@ -9,7 +9,7 @@ public class LinkType {
     public static final byte TITLE = 2;
     private static final String TITLE_NAME = "title";
     public static final byte SET = 3;
-    private static final String SET_NAME = "setString";
+    private static final String SET_NAME = "set";
     public static final byte TRUE = 4;
     private static final String TRUE_NAME = "true";
     public static final byte ELSE = 5;

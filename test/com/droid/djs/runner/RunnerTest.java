@@ -33,12 +33,14 @@ class RunnerTest {
             Parser parser = new Parser();
             if (tests != null) {
                 List<File> list = Arrays.asList(tests);
-                Collections.reverse(list);
+                //Collections.reverse(list);
                 for (File script : list) {
+                    System.out.println(script.getAbsolutePath());
                     currentScript = script;
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = ThreadPool.getInstance().runScript("test", sourceCode);
+                    Node module = ThreadPool.getInstance().runScript("tests", sourceCode);
+                    System.out.println(Formatter.toJson(module));
 
                     Node testVar = builder.set(module).findLocal("test");
                     assertNotNull(testVar);
@@ -49,7 +51,6 @@ class RunnerTest {
                     Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
                     if (testData != null && !testData && module != null) {
                         System.out.println(currentScript.getAbsolutePath());
-                        System.out.println(Formatter.toJson(module));
                     }
                     assertTrue(true);
                 }

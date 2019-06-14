@@ -12,7 +12,7 @@ public class ThreadNode extends Node implements Runnable {
         super(NodeType.THREAD);
     }
 
-    private Thread thread = new Thread(this);
+    private Thread thread;
 
     class RunData {
         Node node;
@@ -27,9 +27,9 @@ public class ThreadNode extends Node implements Runnable {
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
     public void run(Node node, boolean async) {
-        if (thread.isAlive()){
-            runQueue.add(new RunData(node, null));
-        } else {
+        runQueue.add(new RunData(node, null));
+        if (thread == null || !thread.isAlive()){
+            thread = new Thread(this);
             thread.start();
         }
         if (!async) {
