@@ -5,7 +5,7 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 
-public class DefaultPrototypes {
+public class Prototypes {
 
     private static Node defaultPrototypesDir;
 

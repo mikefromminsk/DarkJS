@@ -4,6 +4,9 @@ import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
+import com.droid.djs.runner.prototypes.Prototypes;
+import com.droid.djs.runner.utils.UtilList;
+import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
@@ -43,6 +46,8 @@ public class NodeStorage extends InfinityStringArray {
         add(root);
         transactionCommit();
         Master.getInstance();
+        Prototypes.getInstance();
+        UtilList.init();
     }
 
     public static NodeStorage getInstance() {

@@ -1,7 +1,7 @@
 package com.droid.djs.runner;
 
 
-import com.droid.djs.runner.prototypes.DefaultPrototypes;
+import com.droid.djs.runner.prototypes.Prototypes;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -45,7 +45,7 @@ public class Runner{
                         node = prototypeNode;
                     } else {// proto by node type
                         if (nodeType != null)
-                            prototypeNode = DefaultPrototypes.get(nodeType);
+                            prototypeNode = Prototypes.get(nodeType);
                         if (prototypeNode != null) {
                             node = prototypeNode;
                         } else { // create proto
@@ -68,7 +68,7 @@ public class Runner{
                         continue;
                     } else {
                         if (nodeType != null)
-                            prototypeNode = DefaultPrototypes.get(nodeType);
+                            prototypeNode = Prototypes.get(nodeType);
                         if (prototypeNode != null) {
                             findPropNode = builder.set(prototypeNode).findLocal(propName);
                             if (findPropNode != null) {
@@ -76,7 +76,7 @@ public class Runner{
                                 continue;
                             }
                         } else {
-                            Node varPrototype = DefaultPrototypes.get(NodeType.VAR);
+                            Node varPrototype = Prototypes.get(NodeType.VAR);
                             if (varPrototype != null)
                                 findPropNode = builder.set(varPrototype).findLocal(propName);
                             if (findPropNode != null) {
