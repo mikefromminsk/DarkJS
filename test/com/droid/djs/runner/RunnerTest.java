@@ -30,29 +30,28 @@ class RunnerTest {
         try {
             File nodesTestsDir = new File("test_res/run/");
             File[] tests = nodesTestsDir.listFiles();
-            Parser parser = new Parser();
             if (tests != null) {
                 List<File> list = Arrays.asList(tests);
-                //Collections.reverse(list);
+               // Collections.reverse(list);
                 for (File script : list) {
-                    System.out.println(script.getAbsolutePath());
                     currentScript = script;
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = ThreadPool.getInstance().runScript("tests", sourceCode);
-                    System.out.println(Formatter.toJson(module));
+                    Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode);
+
 
                     Node testVar = builder.set(module).findLocal("test");
-                    assertNotNull(testVar);
 
                     Node testValue = builder.set(testVar).getValueNode();
+                    Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
+
+                    if (testVar == null || testValue == null || testData == null || !testData) {
+                        System.out.println(currentScript.getAbsolutePath());
+                        System.out.println(Formatter.toJson(module));
+                    }
+                    assertNotNull(testVar);
                     assertNotNull(testValue);
                     Assertions.assertEquals(NodeType.BOOL, testValue.type);
-                    Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
-                    if (testData != null && !testData && module != null) {
-                        System.out.println(currentScript.getAbsolutePath());
-                    }
-                    assertTrue(true);
                 }
             } else {
                 fail("tests not found");

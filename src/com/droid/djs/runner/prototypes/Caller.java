@@ -86,6 +86,9 @@ public class Caller {
         if (left != null && left.type < NodeType.VAR) leftObject = builder.set(left).getData().getObject();
         if (right != null && right.type < NodeType.VAR) rightObject = builder.set(right).getData().getObject();
 
+        Object firstObject = leftObject;
+        Object secondObject = rightObject;
+
         Node resultNode = null;
         try {
             switch (node.functionId) {
@@ -166,6 +169,11 @@ public class Caller {
                 case STRING_TRIM:
                     if (thsObject instanceof String) {
                         resultNode = builder.create(NodeType.STRING).setData(((String) thsObject).trim()).commit();
+                    }
+                    break;
+                case ThreadPrototype.SLEEP:
+                    if (firstObject instanceof Double) {
+                        Thread.sleep(((Double) firstObject).longValue());
                     }
                     break;
             }

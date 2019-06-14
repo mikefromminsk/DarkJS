@@ -1,5 +1,6 @@
 package com.droid.djs.runner.prototypes;
 
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
@@ -15,8 +16,8 @@ public class DefaultPrototypes {
 
     public static Node getInstance() {
         if (defaultPrototypes == null) {
-            defaultPrototypes = initPrototypes();
-            new NodeBuilder().set(Master.getInstance()).putObject("defaultPrototypes", defaultPrototypes);
+            defaultPrototypes = Files.getNode("defaultPrototypes");
+            initPrototypes(defaultPrototypes);
         }
         return defaultPrototypes;
     }
@@ -36,12 +37,10 @@ public class DefaultPrototypes {
         builder.set(prototypeParent).addLocal(function);
     }
 
-    static Node initPrototypes(){
-        Node prototypes = builder.create().commit();
+    static void initPrototypes(Node prototypes){
         prototype(prototypes, NodeType.STRING_NAME, initStringPrototype());
         prototype(prototypes, Console.PROTOTYPE_NAME, initConsolePrototype());
         prototype(prototypes, ThreadPrototype.PROTOTYPE_NAME, initThreadPrototype());
-        return prototypes;
     }
 
     private static Node initConsolePrototype() {
@@ -60,6 +59,6 @@ public class DefaultPrototypes {
     private static Node initThreadPrototype() {
         Node thread = builder.create().commit();
         func(thread, ThreadPrototype.SLEEP_NAME, ThreadPrototype.SLEEP);
-        return null;
+        return thread;
     }
 }
