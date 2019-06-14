@@ -13,6 +13,7 @@ public class Files {
     public static Node setStyle(Node node, String key, String value) {
         return setStyle(node, key, new ByteArrayInputStream(value.getBytes()));
     }
+
     // TODO remove style and add FileNode with source code link type
     public static Node setStyle(Node node, String key, InputStream value) {
         return setStyle(node, key, new NodeBuilder().create(NodeType.STRING).setData(value).commit());
@@ -68,8 +69,10 @@ public class Files {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
-        if (path != null && !path.equals(""))
-            for (String name : path.split("/")) {
+        if (path != null && !path.equals("")) {
+            String[] names = path.split("/");
+            for (int i = 0; i < names.length; i++) {
+                String name = names[i];
                 if (name.equals("")) continue;
                 boolean find = false;
                 for (Node node : builder.getLocalNodes()) {
@@ -82,7 +85,7 @@ public class Files {
                 if (!find) {
                     if (nodeType != null) {
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
-                        Node node = builder2.create(nodeType).setTitle(title).commit();
+                        Node node = builder2.create(i == names.length - 1 ? nodeType : NodeType.VAR).setTitle(title).commit();
                         builder.addLocal(node).commit();
                         builder.set(node);
                     } else {
@@ -90,6 +93,7 @@ public class Files {
                     }
                 }
             }
+        }
         return builder.getNode();
     }
 
@@ -109,7 +113,7 @@ public class Files {
         return putFile(node, path, new ByteArrayInputStream(data.getBytes()));
     }
 
-    public static Node putFile(Node node,String data) {
+    public static Node putFile(Node node, String data) {
         return putFile(node, new ByteArrayInputStream(data.getBytes()));
     }
 
