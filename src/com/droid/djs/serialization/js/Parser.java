@@ -46,9 +46,13 @@ public class Parser {
             if (statement instanceof VarNode) {
                 VarNode varNode = (VarNode) statement;
                 Node node = jsLine(module, varNode.getName());
-                if (varNode.getInit() != null) {
-                    Node setLink = jsLine(node, varNode.getInit());
-                    node = builder.create().setSource(node).setSet(setLink).commit();
+                if (varNode.getInit() instanceof FunctionNode) {
+                    jsLine(node, varNode.getInit());
+                } else {
+                    if (varNode.getInit() != null) {
+                        Node setLink = jsLine(node, varNode.getInit());
+                        node = builder.create().setSource(node).setSet(setLink).commit();
+                    }
                 }
                 return node;
             }
@@ -166,17 +170,6 @@ public class Parser {
                 return base;
             }
 
-            if (statement instanceof Block) {
-                Block block = (Block) statement;
-                Node blockNode = builder.create().commit();
-                for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
-                    Node lineNode = jsLine(blockNode, line);
-                    //if (lineNode.next == null)
-                    builder.set(blockNode).addNext(lineNode);
-                }
-                return builder.set(blockNode).commit();
-            }
-
             if (statement instanceof IfNode) {
                 IfNode ifStatement = (IfNode) statement;
                 Node ifQuestionNode = jsLine(module, ifStatement.getTest());
@@ -192,6 +185,17 @@ public class Parser {
                 }
             }
 
+            if (statement instanceof Block) {
+                Block block = (Block) statement;
+                Node blockNode = builder.create().commit();
+                for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
+                    Node lineNode = jsLine(blockNode, line);
+                    if (builder.set(lineNode).getNextCount() == 0) // not a function. its a problem with parser.
+                        builder.set(blockNode).addNext(lineNode);
+                }
+                return builder.set(blockNode).commit();
+            }
+
             if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
                 Node functionNode = module;
@@ -204,7 +208,8 @@ public class Parser {
                 builder.set(functionNode).removeAllNext().commit();
                 for (jdk.nashorn.internal.ir.Node line : function.getBody().getStatements()) {
                     Node lineNode = jsLine(functionNode, line);
-                    builder.set(functionNode).addNext(lineNode);
+                    if (builder.set(lineNode).getNextCount() == 0) // not a function. its a problem with parser.
+                        builder.set(functionNode).addNext(lineNode);
                 }
                 return builder.set(functionNode).commit();
             }
@@ -248,7 +253,7 @@ public class Parser {
                 IdentNode identNode = (IdentNode) statement;
                 String name = identNode.getName();
                 Node ident = findNodeInLocalStack(name);
-                if (ident == null){
+                if (ident == null) {
                     if (name.startsWith("thread"))
                         ident = builder.create(NodeType.THREAD).commit();
                     else
@@ -349,7 +354,7 @@ public class Parser {
     }
 
     private void addParentsToLocalStack(Node module) {
-        if (module != null){
+        if (module != null) {
             Node parent = builder.set(module).getLocalParentNode();
             while (parent != null) {
                 localStack.add(parent);

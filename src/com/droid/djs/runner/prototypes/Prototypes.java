@@ -21,6 +21,7 @@ public class Prototypes {
         return defaultPrototypesDir;
     }
 
+    // TODO delete
     public static Node get(Byte nodeType) {
         return Files.getNode(getInstance(), NodeType.toString(nodeType), null);
     }
