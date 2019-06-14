@@ -207,6 +207,7 @@ public class Runner{
 
         if (node.type == NodeType.NATIVE_FUNCTION) {
             if (builder.set(node).getParamCount() != 0) {
+                // TODO change to getParams
                 for (int i = 0; i < builder.set(node).getParamCount(); i++) {
                     Node sourceParam = builder.set(node).getParamNode(i);
                     run(sourceParam, calledNodeId);
