@@ -53,7 +53,6 @@ class RunnerTest {
                     assertNotNull(testValue);
                     assertEquals(NodeType.BOOL, testValue.type);
                     assertTrue(testData);
-                    return;
                 }
             } else {
                 fail("tests not found");

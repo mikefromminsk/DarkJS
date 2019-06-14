@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
 
 import java.util.*;
+
 /*
 * {
   "node1": {
@@ -87,26 +88,32 @@ public class Formatter {
 
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
-            Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
-            String linkTypeStr = LinkType.toString(linkType);
-            if (singleValue) {
-                if (linkNode.type < NodeType.VAR)
-                    links.put(linkTypeStr, dataSimplification(builder, linkNode));
-                else if (depth > 0){
-                    links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
-                    toJsonRecursive(builder, data, depth - 1, linkNode);
-                }
-            } else {
-                Object linkObject = links.get(linkTypeStr);
-                if (linkObject == null)
-                    links.put(linkTypeStr, linkObject = new ArrayList<>());
-                ArrayList linkList = (ArrayList) linkObject;
 
-                if (linkNode.type < NodeType.VAR) // TODO exception
-                    linkList.add(dataSimplification(builder, linkNode));
-                else {
-                    linkList.add(NODE_PREFIX + linkNode.id);
-                    toJsonRecursive(builder, data, depth, linkNode);
+            if (link instanceof Integer) {
+                String linkTypeStr = LinkType.toString(linkType);
+                links.put(linkTypeStr, "" + link);
+            } else {
+                Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
+                String linkTypeStr = LinkType.toString(linkType);
+                if (singleValue) {
+                    if (linkNode.type < NodeType.VAR)
+                        links.put(linkTypeStr, dataSimplification(builder, linkNode));
+                    else if (depth > 0) {
+                        links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
+                        toJsonRecursive(builder, data, depth - 1, linkNode);
+                    }
+                } else {
+                    Object linkObject = links.get(linkTypeStr);
+                    if (linkObject == null)
+                        links.put(linkTypeStr, linkObject = new ArrayList<>());
+                    ArrayList linkList = (ArrayList) linkObject;
+
+                    if (linkNode.type < NodeType.VAR) // TODO exception
+                        linkList.add(dataSimplification(builder, linkNode));
+                    else {
+                        linkList.add(NODE_PREFIX + linkNode.id);
+                        toJsonRecursive(builder, data, depth, linkNode);
+                    }
                 }
             }
         });
@@ -120,6 +127,7 @@ public class Formatter {
 
     // TODO delete Gson object
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
+
     public static String toJson(Node node) {
         return json.toJson(toMap(node));
     }

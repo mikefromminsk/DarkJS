@@ -190,7 +190,7 @@ public class Parser {
                 Node blockNode = builder.create().commit();
                 for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
                     Node lineNode = jsLine(blockNode, line);
-                    if (builder.set(lineNode).getNextCount() == 0) // not a function. its a problem with parser.
+                    if (!(line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode)) // not a function. its a problem with nashorn parser.
                         builder.set(blockNode).addNext(lineNode);
                 }
                 return builder.set(blockNode).commit();
@@ -208,7 +208,7 @@ public class Parser {
                 builder.set(functionNode).removeAllNext().commit();
                 for (jdk.nashorn.internal.ir.Node line : function.getBody().getStatements()) {
                     Node lineNode = jsLine(functionNode, line);
-                    if (builder.set(lineNode).getNextCount() == 0) // not a function. its a problem with parser.
+                    if (!(line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode)) // not a function. its a problem with nashorn parser.
                         builder.set(functionNode).addNext(lineNode);
                 }
                 return builder.set(functionNode).commit();
