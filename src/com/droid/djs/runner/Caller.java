@@ -1,5 +1,6 @@
 package com.droid.djs.runner;
 
+import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.runner.utils.ThreadUtils;
 import com.droid.djs.serialization.links.Formatter;
 import com.droid.djs.nodes.Node;
@@ -92,7 +93,7 @@ public class Caller {
 
         Node resultNode = null;
         try {
-            switch (node.functionId) {
+            switch (((NativeNode) node).functionId) {
                 case EQ:
                     resultNode = (leftObject != null && leftObject.equals(rightObject)) ? trueValue : falseValue;
                     break;

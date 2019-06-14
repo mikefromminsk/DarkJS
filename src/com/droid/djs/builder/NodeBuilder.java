@@ -565,7 +565,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder setFunctionId(int functionId) {
-        node.functionId = functionId;
+        ((NativeNode) node).functionId = functionId;
         return this;
     }
 

@@ -194,6 +194,7 @@ public class Runner{
     private Node exitNode = null;
 
     private void run(Node node, Node calledNodeId) {
+        System.out.println("n" + node.id);
 
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
             run(builder.set(node).getNextNode(i));

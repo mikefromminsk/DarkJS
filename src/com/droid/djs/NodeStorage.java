@@ -2,6 +2,7 @@ package com.droid.djs;
 
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.runner.prototypes.Prototypes;
@@ -118,6 +119,8 @@ public class NodeStorage extends InfinityStringArray {
 
     public Node newNode(byte nodeType) {
         switch (nodeType) {
+            case NodeType.NATIVE_FUNCTION:
+                return new NativeNode();
             case NodeType.THREAD:
                 return new ThreadNode();
             default:

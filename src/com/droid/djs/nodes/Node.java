@@ -7,7 +7,7 @@ import com.droid.gdb.InfinityStringArrayCell;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class Node implements InfinityStringArrayCell {
+public class Node extends SuperNode {
 
     public boolean isSaved;
     public Long id;
@@ -17,7 +17,6 @@ public class Node implements InfinityStringArrayCell {
     // TODO move type to node body in the storage
     // TODO add flag isData into nodeMeta
     public byte type;
-    public Integer functionId; // change to primitive long
     public Object value;
     public Object source;
     public Object title;
@@ -48,16 +47,17 @@ public class Node implements InfinityStringArrayCell {
     public byte[] build() {
         ArrayList<Long> links = new ArrayList<>();
         listLinks((linkType, link, singleValue) -> {
-                Long linkId = link instanceof Long ? (Long) link : ((Node) link).id;
-                long dataLink = linkId * 256L + (long) linkType;
-                links.add(dataLink);
+            Long linkId = null;
+            if (link instanceof Integer)
+                linkId = (long) (int) link;
+            else if (link instanceof Long)
+                linkId = (Long) link;
+            else if (link instanceof Node)
+                linkId = ((Node) link).id;
+            long dataLink = linkId * 256L + (long) linkType;
+            links.add(dataLink);
         });
         return Bytes.fromLongList(links);
-    }
-
-
-    public interface NodeLinkListener {
-        void get(byte linkType, Object link, boolean singleValue);
     }
 
     public void listLinks(NodeLinkListener linkListener) {
@@ -110,78 +110,74 @@ public class Node implements InfinityStringArrayCell {
                 linkListener.get(LinkType.STYLE, item, false);
     }
 
+
     @Override
-    public void parse(byte[] data) {
-        long[] links = Bytes.toLongArray(data);
-        for (long dataLink : links) {
-            byte linkType = (byte) (dataLink % 256);
-            long linkId = (dataLink - linkType) / 256;
-            switch (linkType) {
-                case LinkType.VALUE:
-                    value = linkId;
-                    break;
-                case LinkType.SOURCE:
-                    source = linkId;
-                    break;
-                case LinkType.TITLE:
-                    title = linkId;
-                    break;
-                case LinkType.SET:
-                    set = linkId;
-                    break;
-                case LinkType.TRUE:
-                    _true = linkId;
-                    break;
-                case LinkType.ELSE:
-                    _else = linkId;
-                    break;
-                case LinkType.EXIT:
-                    exit = linkId;
-                    break;
-                case LinkType.WHILE:
-                    _while = linkId;
-                    break;
-                case LinkType.IF:
-                    _if = linkId;
-                    break;
-                case LinkType.PROTOTYPE:
-                    prototype = linkId;
-                    break;
-                case LinkType.BODY:
-                    body = linkId;
-                    break;
-                case LinkType.LOCAL_PARENT:
-                    localParent = linkId;
-                    break;
-                case LinkType.HISTORY:
-                    history = linkId;
-                    break;
-                case LinkType.LOCAL:
-                    if (local == null)
-                        local = new ArrayList<>();
-                    local.add(linkId);
-                    break;
-                case LinkType.PARAM:
-                    if (param == null)
-                        param = new ArrayList<>();
-                    param.add(linkId);
-                    break;
-                case LinkType.NEXT:
-                    if (next == null)
-                        next = new ArrayList<>();
-                    next.add(linkId);
-                    break;
-                case LinkType.CELL:
-                    if (cell == null)
-                        cell = new ArrayList<>();
-                    cell.add(linkId);
-                    break;
-                case LinkType.STYLE:
-                    if (style == null)
-                        style = new ArrayList<>();
-                    style.add(linkId);
-                    break;
-            }
+    void restore(byte linkType, long linkId) {
+        switch (linkType) {
+            case LinkType.VALUE:
+                value = linkId;
+                break;
+            case LinkType.SOURCE:
+                source = linkId;
+                break;
+            case LinkType.TITLE:
+                title = linkId;
+                break;
+            case LinkType.SET:
+                set = linkId;
+                break;
+            case LinkType.TRUE:
+                _true = linkId;
+                break;
+            case LinkType.ELSE:
+                _else = linkId;
+                break;
+            case LinkType.EXIT:
+                exit = linkId;
+                break;
+            case LinkType.WHILE:
+                _while = linkId;
+                break;
+            case LinkType.IF:
+                _if = linkId;
+                break;
+            case LinkType.PROTOTYPE:
+                prototype = linkId;
+                break;
+            case LinkType.BODY:
+                body = linkId;
+                break;
+            case LinkType.LOCAL_PARENT:
+                localParent = linkId;
+                break;
+            case LinkType.HISTORY:
+                history = linkId;
+                break;
+            case LinkType.LOCAL:
+                if (local == null)
+                    local = new ArrayList<>();
+                local.add(linkId);
+                break;
+            case LinkType.PARAM:
+                if (param == null)
+                    param = new ArrayList<>();
+                param.add(linkId);
+                break;
+            case LinkType.NEXT:
+                if (next == null)
+                    next = new ArrayList<>();
+                next.add(linkId);
+                break;
+            case LinkType.CELL:
+                if (cell == null)
+                    cell = new ArrayList<>();
+                cell.add(linkId);
+                break;
+            case LinkType.STYLE:
+                if (style == null)
+                    style = new ArrayList<>();
+                style.add(linkId);
+                break;
         }
     }
 }

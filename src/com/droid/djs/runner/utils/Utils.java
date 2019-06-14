@@ -3,7 +3,7 @@ package com.droid.djs.runner.utils;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.Node;
+import com.droid.djs.nodes.NativeNode;
 
 abstract public class Utils {
 
@@ -11,7 +11,7 @@ abstract public class Utils {
     public static String DEFAULT_PROTOTYPES_DIR = "defaultPrototypes/";
 
     public void func(String functionName, int functionId) {
-        Node function = Files.getNode((root().endsWith("/") ? root() : root() + "/") + functionName, NodeType.NATIVE_FUNCTION);
+        NativeNode function = (NativeNode) Files.getNode((root().endsWith("/") ? root() : root() + "/") + functionName, NodeType.NATIVE_FUNCTION);
         builder.set(function).setFunctionId(functionId).commit();
     }
 

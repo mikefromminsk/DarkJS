@@ -85,9 +85,6 @@ public class Formatter {
         if (node.type < NodeType.VAR)
             links.put(DATA_PREFIX, dataSimplification(builder, node));
 
-        if (node.type == NodeType.NATIVE_FUNCTION)
-            links.put(FUNCTION_ID_PREFIX, node.functionId); // TODO Functions.toString
-
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
             Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
