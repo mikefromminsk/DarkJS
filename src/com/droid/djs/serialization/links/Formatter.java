@@ -89,31 +89,32 @@ public class Formatter {
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
 
-            if (link instanceof Integer) {
+            if (linkType == LinkType.NATIVE_FUNCTION_NUMBER) {
                 String linkTypeStr = LinkType.toString(linkType);
                 links.put(linkTypeStr, "" + link);
+                return;
+            }
+            // Nodes links
+            Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
+            String linkTypeStr = LinkType.toString(linkType);
+            if (singleValue) {
+                if (linkNode.type < NodeType.VAR)
+                    links.put(linkTypeStr, dataSimplification(builder, linkNode));
+                else if (depth > 0) {
+                    links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
+                    toJsonRecursive(builder, data, depth - 1, linkNode);
+                }
             } else {
-                Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
-                String linkTypeStr = LinkType.toString(linkType);
-                if (singleValue) {
-                    if (linkNode.type < NodeType.VAR)
-                        links.put(linkTypeStr, dataSimplification(builder, linkNode));
-                    else if (depth > 0) {
-                        links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
-                        toJsonRecursive(builder, data, depth - 1, linkNode);
-                    }
-                } else {
-                    Object linkObject = links.get(linkTypeStr);
-                    if (linkObject == null)
-                        links.put(linkTypeStr, linkObject = new ArrayList<>());
-                    ArrayList linkList = (ArrayList) linkObject;
+                Object linkObject = links.get(linkTypeStr);
+                if (linkObject == null)
+                    links.put(linkTypeStr, linkObject = new ArrayList<>());
+                ArrayList linkList = (ArrayList) linkObject;
 
-                    if (linkNode.type < NodeType.VAR) // TODO exception
-                        linkList.add(dataSimplification(builder, linkNode));
-                    else {
-                        linkList.add(NODE_PREFIX + linkNode.id);
-                        toJsonRecursive(builder, data, depth, linkNode);
-                    }
+                if (linkNode.type < NodeType.VAR) // TODO exception
+                    linkList.add(dataSimplification(builder, linkNode));
+                else {
+                    linkList.add(NODE_PREFIX + linkNode.id);
+                    toJsonRecursive(builder, data, depth, linkNode);
                 }
             }
         });
