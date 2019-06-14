@@ -1,7 +1,7 @@
 package com.droid.djs.serialization.js;
 
 import com.droid.djs.NodeStorage;
-import com.droid.djs.runner.prototypes.Caller;
+import com.droid.djs.runner.Caller;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
@@ -341,11 +341,21 @@ public class Parser {
         if (rootParserNode == null) {
             throw new ParserException("");
         } else {
+            addParentsToLocalStack(module);
             if (module == null)
                 module = builder.create().commit();
             return jsLine(module, rootParserNode);
         }
     }
 
+    private void addParentsToLocalStack(Node module) {
+        if (module != null){
+            Node parent = builder.set(module).getLocalParentNode();
+            while (parent != null) {
+                localStack.add(parent);
+                parent = builder.set(parent).getLocalParentNode();
+            }
+        }
+    }
 
 }

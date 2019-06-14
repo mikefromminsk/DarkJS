@@ -1,7 +1,6 @@
 package com.droid.djs.runner;
 
 
-import com.droid.djs.runner.prototypes.Caller;
 import com.droid.djs.runner.prototypes.DefaultPrototypes;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
@@ -9,20 +8,11 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.treads.ThreadPool;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Runner{
 
     private NodeBuilder builder = new NodeBuilder();
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
-
-    private Node getDefaultPrototype(Byte nodeType) {
-        return builder.set(DefaultPrototypes.getInstance()).findLocal(NodeType.toString(nodeType));
-    }
 
     private Node propCalledNode = null;
 
@@ -55,7 +45,7 @@ public class Runner{
                         node = prototypeNode;
                     } else {// proto by node type
                         if (nodeType != null)
-                            prototypeNode = getDefaultPrototype(nodeType);
+                            prototypeNode = DefaultPrototypes.get(nodeType);
                         if (prototypeNode != null) {
                             node = prototypeNode;
                         } else { // create proto
@@ -78,7 +68,7 @@ public class Runner{
                         continue;
                     } else {
                         if (nodeType != null)
-                            prototypeNode = getDefaultPrototype(nodeType);
+                            prototypeNode = DefaultPrototypes.get(nodeType);
                         if (prototypeNode != null) {
                             findPropNode = builder.set(prototypeNode).findLocal(propName);
                             if (findPropNode != null) {
@@ -86,7 +76,7 @@ public class Runner{
                                 continue;
                             }
                         } else {
-                            Node varPrototype = getDefaultPrototype(NodeType.VAR);
+                            Node varPrototype = DefaultPrototypes.get(NodeType.VAR);
                             if (varPrototype != null)
                                 findPropNode = builder.set(varPrototype).findLocal(propName);
                             if (findPropNode != null) {

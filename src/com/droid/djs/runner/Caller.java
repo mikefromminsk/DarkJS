@@ -1,5 +1,6 @@
-package com.droid.djs.runner.prototypes;
+package com.droid.djs.runner;
 
+import com.droid.djs.runner.utils.ThreadUtils;
 import com.droid.djs.serialization.links.Formatter;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -171,7 +172,7 @@ public class Caller {
                         resultNode = builder.create(NodeType.STRING).setData(((String) thsObject).trim()).commit();
                     }
                     break;
-                case ThreadPrototype.SLEEP:
+                case ThreadUtils.SLEEP:
                     if (firstObject instanceof Double) {
                         Thread.sleep(((Double) firstObject).longValue());
                     }

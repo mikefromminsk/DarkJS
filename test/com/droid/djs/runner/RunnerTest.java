@@ -32,7 +32,7 @@ class RunnerTest {
             File[] tests = nodesTestsDir.listFiles();
             if (tests != null) {
                 List<File> list = Arrays.asList(tests);
-               // Collections.reverse(list);
+                Collections.reverse(list);
                 for (File script : list) {
                     currentScript = script;
 
@@ -51,7 +51,8 @@ class RunnerTest {
                     }
                     assertNotNull(testVar);
                     assertNotNull(testValue);
-                    Assertions.assertEquals(NodeType.BOOL, testValue.type);
+                    assertEquals(NodeType.BOOL, testValue.type);
+                    assertTrue(testData);
                 }
             } else {
                 fail("tests not found");

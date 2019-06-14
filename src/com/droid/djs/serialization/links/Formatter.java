@@ -71,8 +71,10 @@ public class Formatter {
     }
 
     public static void toJsonRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int depth, Node node) {
+        if (node.id == 0) return;
         String nodeName = NODE_PREFIX + node.id;
         if (data.get(nodeName) != null) return;
+
 
         Map<String, Object> links = new LinkedHashMap<>();
         data.put(nodeName, links);
@@ -87,6 +89,7 @@ public class Formatter {
             links.put(FUNCTION_ID_PREFIX, node.functionId); // TODO Functions.toString
 
         node.listLinks((linkType, link, singleValue) -> {
+            if (linkType == LinkType.LOCAL_PARENT) return;
             Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
             String linkTypeStr = LinkType.toString(linkType);
             if (singleValue) {
