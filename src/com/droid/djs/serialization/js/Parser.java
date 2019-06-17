@@ -20,19 +20,6 @@ public class Parser {
     private NodeBuilder builder = new NodeBuilder();
     private ArrayList<Node> localStack = new ArrayList<>();
 
-    Node findNodeInLocalStack(String name) {
-        Long titleId = NodeStorage.getInstance().getDataId(name.getBytes());
-        for (int i = localStack.size() - 1; i >= 0; i--) {
-            Node node = localStack.get(i);
-            Node findNode = builder.set(node).findLocal(titleId);
-            if (findNode == null)
-                findNode = builder.set(node).findParam(titleId);
-            if (findNode != null)
-                return findNode;
-        }
-        return null;
-    }
-
     Node jsLine(Node module, jdk.nashorn.internal.ir.Node statement) {
         // TODO delete addToLocalStack true by default
         return jsLine(module, statement, true);
@@ -199,7 +186,8 @@ public class Parser {
             if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
                 Node functionNode = module;
-                functionNode.type = NodeType.FUNCTION;
+                if (functionNode.type != NodeType.THREAD)
+                    functionNode.type = NodeType.FUNCTION;
                 for (IdentNode param : function.getParameters()) {
                     Node titleData = builder.create(NodeType.STRING).setData(param.getName()).commit();
                     Node paramNode = builder.create().setTitle(titleData).commit();
@@ -252,7 +240,20 @@ public class Parser {
             if (statement instanceof IdentNode) {
                 IdentNode identNode = (IdentNode) statement;
                 String name = identNode.getName();
-                Node ident = findNodeInLocalStack(name);
+
+                Node ident = null;
+                Long titleId = NodeStorage.getInstance().getDataId(name.getBytes());
+                for (int i = localStack.size() - 1; i >= 0; i--) {
+                    Node node = localStack.get(i);
+                    Node findNode = builder.set(node).findLocal(titleId);
+                    if (findNode == null)
+                        findNode = builder.set(node).findParam(titleId);
+                    if (findNode != null) {
+                        ident = findNode;
+                        break;
+                    }
+                }
+
                 if (ident == null) {
                     if (name.startsWith("thread"))
                         ident = builder.create(NodeType.THREAD).commit();
