@@ -1,5 +1,7 @@
 package com.droid.djs.runner.utils;
 
+import com.droid.djs.consts.NodeType;
+
 public class ThreadUtils extends Utils {
 
     public static final String PROTOTYPE_NAME = "Thread";
@@ -13,6 +15,6 @@ public class ThreadUtils extends Utils {
 
     @Override
     public void init() {
-        func(SLEEP_NAME, SLEEP);
+        func(SLEEP_NAME, SLEEP, par("delay", NodeType.NUMBER));
     }
 }

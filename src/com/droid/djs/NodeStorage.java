@@ -71,6 +71,7 @@ public class NodeStorage extends InfinityStringArray {
     }
 
      public void transactionCommit() {
+        // TODO change transactionNodes to sync list
          synchronized (transactionNodes){
              for (Node commitNode : transactionNodes) {
                  if (commitNode.id == null)

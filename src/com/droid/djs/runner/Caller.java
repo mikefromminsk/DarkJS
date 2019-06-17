@@ -176,6 +176,7 @@ public class Caller {
                 case ThreadUtils.SLEEP:
                     if (firstObject instanceof Double) {
                         Thread.sleep(((Double) firstObject).longValue());
+                        System.out.println(firstObject);
                     }
                     break;
             }
