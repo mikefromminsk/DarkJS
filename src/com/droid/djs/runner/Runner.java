@@ -205,6 +205,12 @@ public class Runner{
             }
         }
 
+        if (node.type == NodeType.THREAD){
+            //TODO params for threads
+            ThreadPool.getInstance().run(node, true);
+            return;
+        }
+
         if (node.type == NodeType.NATIVE_FUNCTION) {
             if (builder.set(node).getParamCount() != 0) {
                 // TODO change to getParams
@@ -219,20 +225,6 @@ public class Runner{
         if (builder.set(node).getSource() != null) {
             propCalledNode = calledNodeId;
             Node sourceNode = getProps(builder.set(node).getSourceNode());
-
-            if (sourceNode.type == NodeType.THREAD){
-                //TODO params for threads
-                /*
-                List<Node> args  = new ArrayList<>();
-                for (int i = 0; i < builder.set(node).getParamCount(); i++) {
-                    Node nodeParam = builder.set(node).getParamNode(i);
-                    Node value = builder.set(nodeParam).getValueNode();
-                    args.add(value);
-                }*/
-
-                ThreadPool.getInstance().run(sourceNode, true);
-                return;
-            }
 
             Node calledObjectFromSource = propCalledNode;
             Node setNode = builder.set(node).getSetNode();

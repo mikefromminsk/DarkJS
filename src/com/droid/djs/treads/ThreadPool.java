@@ -38,7 +38,8 @@ public class ThreadPool {
     }
 
     public void run(Node node, List<Node> args, boolean async) {
-        findThread(node).run(node, async);
+        ThreadNode thread = findThread(node);
+        thread.run(node, async);
     }
 
     private Parser parser = new Parser();
