@@ -1,6 +1,7 @@
 package com.droid.djs.runner;
 
 
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.runner.prototypes.Prototypes;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
@@ -8,7 +9,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.treads.ThreadPool;
 
-public class Runner{
+public class Runner {
 
     private NodeBuilder builder = new NodeBuilder();
     private final static boolean SET_VALUE_FROM_VALUE = false;
@@ -193,8 +194,8 @@ public class Runner{
 
     private Node exitNode = null;
 
-    private void run(Node node, Node calledNodeId) {
-        //System.out.println("n" + node.id);
+    public void run(Node node, Node calledNodeId) {
+        System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
 
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
             run(builder.set(node).getNextNode(i));
@@ -205,9 +206,11 @@ public class Runner{
             }
         }
 
-        if (node.type == NodeType.THREAD){
-            //TODO params for threads
-            ThreadPool.getInstance().run(node, true);
+        if (node.type == NodeType.THREAD) {
+            ThreadNode threadNode = (ThreadNode) node;
+            if (Thread.currentThread() != threadNode.thread)
+                //TODO params for threads
+                ThreadPool.getInstance().run(node, true);
             return;
         }
 

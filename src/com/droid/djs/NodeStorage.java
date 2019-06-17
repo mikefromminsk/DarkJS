@@ -70,16 +70,17 @@ public class NodeStorage extends InfinityStringArray {
         nodesCache.put(node.id, node);
     }
 
-    public void transactionCommit() {
-        for (Iterator<Node> it = transactionNodes.iterator(); it.hasNext(); ) {
-            Node commitNode = it.next();
-            if (commitNode.id == null)
-                add(commitNode);
-            else
-                set(commitNode.id, commitNode);
-            commitNode.isSaved = false;
-        }
-        transactionNodes.clear();
+     public void transactionCommit() {
+         synchronized (transactionNodes){
+             for (Node commitNode : transactionNodes) {
+                 if (commitNode.id == null)
+                     add(commitNode);
+                 else
+                     set(commitNode.id, commitNode);
+                 commitNode.isSaved = false;
+             }
+             transactionNodes.clear();
+         }
     }
 
     class NodeMetaCell extends MetaCell {

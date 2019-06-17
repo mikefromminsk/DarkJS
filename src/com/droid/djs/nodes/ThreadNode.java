@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class ThreadNode extends Node implements Runnable {
 
+    public Thread thread;
+
     public ThreadNode() {
         super(NodeType.THREAD);
     }
-
-    private Thread thread;
 
     class RunData {
         Node node;
@@ -28,7 +28,7 @@ public class ThreadNode extends Node implements Runnable {
 
     public void run(Node node, boolean async) {
         runQueue.add(new RunData(node, null));
-        if (thread == null || !thread.isAlive()){
+        if (thread == null || !thread.isAlive()) {
             thread = new Thread(this);
             thread.start();
         }
@@ -45,8 +45,8 @@ public class ThreadNode extends Node implements Runnable {
         Runner runner = new Runner();
         while (runQueue.size() > 0) {
             RunData data = runQueue.pollFirst();
-            if (data != null){
-                runner.run(data.node);
+            if (data != null) {
+                runner.run(data.node, data.node);
             }
         }
     }
