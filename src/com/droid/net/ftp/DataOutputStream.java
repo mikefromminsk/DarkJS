@@ -56,10 +56,16 @@ public class DataOutputStream extends OutputStream {
         // TODO error with uploading a empty file
         Node res = Files.putFile(node, new FileInputStream(tempFile));
         NodeBuilder builder = new NodeBuilder();
-        if (builder.set(res).getTitleString().toLowerCase().endsWith(".node.js")) {
+        String newFileName = builder.set(res).getTitleString().toLowerCase();
+        if (newFileName.endsWith(".node.js")) {
             String sourceCode = builder.getValueNode().data.readString();
             builder.setValue(null).commit();
             new Parser().parse(res, sourceCode);
+        } else if (newFileName.equals("index.html")) {
+            Node parent = builder.set(node).getLocalParentNode();
+            parent.parse(node.build());
+            builder.set(parent).commit();
+            // TODO delete local from parent
         }
         tempFile.delete();
     }
