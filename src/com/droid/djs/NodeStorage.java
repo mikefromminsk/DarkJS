@@ -20,6 +20,7 @@ public class NodeStorage extends InfinityStringArray {
 
     private static NodeStorage instance;
 
+    private static final String passStorageID = "pass";
     private static final String nodeStorageID = "node";
     private static final String dataStorageID = "data";
     private static final String hashStorageID = "hash";
@@ -31,9 +32,12 @@ public class NodeStorage extends InfinityStringArray {
     private static ArrayList<Node> transactionNodes;
     private static Map<Long, Node> nodesCache = new TreeMap<>();
 
+    private static byte[] validPassHash;
+    private static InfinityHashMap passStorage;
 
-    public NodeStorage(String infinityFileID) {
-        super(infinityFileID);
+
+    public NodeStorage(String infinityFileID, byte[] passHash) {
+        super(infinityFileID, passHash);
         if (meta.fileData.sumFilesSize == 0)
             initStorage();
     }
@@ -47,13 +51,26 @@ public class NodeStorage extends InfinityStringArray {
         UtilList.init();
     }
 
-    public static NodeStorage getInstance() {
+    public static byte[] getToken(String login, String pass) {
+        return new byte[0] a;
+    }
+
+    public static boolean initInstance(String login, String pass) {
+        byte[] passHash = Crc16.getHashBytes(login + pass);
         if (instance == null) {
+            instance = new NodeStorage(nodeStorageID, passHash);
+
             transactionNodes = new ArrayList<>();
-            instance = new NodeStorage(nodeStorageID);
             dataStorage = new InfinityFile(dataStorageID);
             dataHashTree = new InfinityHashMap(hashStorageID);
+            passStorage = new InfinityHashMap(passStorageID);
         }
+        return true;
+    }
+
+    public static NodeStorage getInstance() {
+        if (instance == null)
+            throw new NullPointerException("first run NodeStorage.initInstance with login and password");
         return instance;
     }
 
@@ -65,18 +82,18 @@ public class NodeStorage extends InfinityStringArray {
         nodesCache.put(node.id, node);
     }
 
-     public void transactionCommit() {
+    public void transactionCommit() {
         // TODO change transactionNodes to sync list
-         synchronized (transactionNodes){
-             for (Node commitNode : transactionNodes) {
-                 if (commitNode.id == null)
-                     add(commitNode);
-                 else
-                     set(commitNode.id, commitNode);
-                 commitNode.isSaved = false;
-             }
-             transactionNodes.clear();
-         }
+        synchronized (transactionNodes) {
+            for (Node commitNode : transactionNodes) {
+                if (commitNode.id == null)
+                    add(commitNode);
+                else
+                    set(commitNode.id, commitNode);
+                commitNode.isSaved = false;
+            }
+            transactionNodes.clear();
+        }
     }
 
     class NodeMetaCell extends MetaCell {
@@ -133,7 +150,7 @@ public class NodeStorage extends InfinityStringArray {
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.VAR) {
-                node.data = new DataInputStream(metaCell.type, metaCell.start, metaCell.length);
+                node.data = new DataInputStream(this, metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
@@ -209,7 +226,7 @@ public class NodeStorage extends InfinityStringArray {
                                 nodeMetaCell.start = dataStorage.add(bytes);
                             }
                             node.id = meta.add(nodeMetaCell);
-                            node.data = new com.droid.djs.nodes.DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.data = new DataInputStream(this, nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
                             node.externalData = null;
                             dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                         } else {
@@ -218,7 +235,7 @@ public class NodeStorage extends InfinityStringArray {
                             // TODO return instance from nodes cache
                             nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
                             node.id = prevNodeId;
-                            node.data = new DataInputStream(nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.data = new DataInputStream(this, nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
                             node.externalData = null;
                         }
                     } else {
@@ -235,10 +252,6 @@ public class NodeStorage extends InfinityStringArray {
     // TODO change getData function name
     public byte[] getData(long start, long offset, int length) {
         return dataStorage.read(start + offset, length);
-    }
-
-    public void clearCache() {
-        nodesCache.clear();
     }
 
     public Long getDataId(byte[] title) {

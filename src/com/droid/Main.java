@@ -9,17 +9,20 @@ import com.droid.net.http.HttpServer;
 import java.io.IOException;
 
 public class Main {
+
+    public static final String login = "john";
+    public static String pass = "123";
+
+
     public static void main(String[] args) throws IOException {
 
         HttpServer httpServer = null;
         FtpServer ftpServer = null;
         try {
-            NodeStorage.getInstance();
+            NodeStorage.initInstance(login, pass);
 
             httpServer = (HttpServer) new HttpServer(HttpServer.debugPort).start();
             ftpServer = new FtpServer().start();
-
-            ThreadPool.getInstance().autorun();
 
             httpServer.join();
         } catch (InterruptedException e) {

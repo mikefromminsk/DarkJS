@@ -9,6 +9,7 @@ import java.util.Map;
 public class ThreadNode extends Node implements Runnable {
 
     public Thread thread;
+    private Runner runner = new Runner();
 
     public ThreadNode() {
         super(NodeType.THREAD);
@@ -17,17 +18,19 @@ public class ThreadNode extends Node implements Runnable {
     class RunData {
         Node node;
         Map<String, String> args;
+        byte[] token;
 
-        public RunData(Node node, Map<String, String> args) {
+        public RunData(Node node, Map<String, String> args, byte[] token) {
             this.node = node;
             this.args = args;
+            this.token = token;
         }
     }
 
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
-    public void run(Node node, boolean async) {
-        runQueue.add(new RunData(node, null));
+    public void run(Node node, boolean async, byte[] token) {
+        runQueue.add(new RunData(node, null, token));
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(this);
             thread.start();
@@ -42,12 +45,9 @@ public class ThreadNode extends Node implements Runnable {
 
     @Override
     public void run() {
-        Runner runner = new Runner();
         while (runQueue.size() > 0) {
             RunData data = runQueue.pollFirst();
-            if (data != null) {
-                runner.run(data.node, data.node);
-            }
+            runner.start(data.token, data.node);
         }
     }
 

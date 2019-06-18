@@ -1,5 +1,7 @@
 package com.droid.djs.runner;
 
+import com.droid.Main;
+import com.droid.djs.NodeStorage;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
@@ -37,7 +39,8 @@ class RunnerTest {
                 for (File script : list) {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode);
+                    Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode,
+                            NodeStorage.getToken(Main.login, Main.pass));
 
                     Node testVar = builder.set(module).findLocal("test");
                     if (testVar == null)

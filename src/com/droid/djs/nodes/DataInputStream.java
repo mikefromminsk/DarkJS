@@ -18,10 +18,11 @@ public class DataInputStream extends InputStream {
     public long start;
     public long length;
     private long currentPosition;
-    private NodeStorage storage = NodeStorage.getInstance();
+    private NodeStorage storage;
     private FileReader fileReader;
 
-    public DataInputStream(byte type, long start, long length) {
+    public DataInputStream(NodeStorage storage, byte type, long start, long length) {
+        this.storage = storage;
         this.type = type;
         this.start = start;
         this.length = length;

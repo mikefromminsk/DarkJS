@@ -14,6 +14,12 @@ public class Runner {
     private NodeBuilder builder = new NodeBuilder();
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
+    private byte[] token;
+
+    public void start(byte[] token, Node node) {
+        this.token = token;
+        run(node);
+    }
 
     private Node propCalledNode = null;
 
@@ -186,29 +192,26 @@ public class Runner {
         }
     }
 
-    public void run(Long nodeId) {
-        run(builder.get(nodeId).getNode());
-    }
-
-    public void run(Node node) {
+    private void run(Node node) {
         run(node, null);
     }
 
     private Node exitNode = null;
 
-    public void run(Node node, Node calledNodeId) {
+    private void run(Node node, Node calledNodeId) {
         //System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
 
         if (node.type == NodeType.THREAD) {
             ThreadNode threadNode = (ThreadNode) node;
             if (Thread.currentThread() != threadNode.thread){
                 //TODO params for threads
-                ThreadPool.getInstance().run(node, true);
+                ThreadPool.getInstance().run(node, null, true, token);
                 return;
             }
         }
 
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
+            // TODO test calledNodeId in the next line
             run(builder.set(node).getNextNode(i));
             if (exitNode != null) {
                 if (exitNode.equals(node))
