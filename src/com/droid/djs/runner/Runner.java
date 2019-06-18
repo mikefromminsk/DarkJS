@@ -197,7 +197,7 @@ public class Runner {
     private Node exitNode = null;
 
     public void run(Node node, Node calledNodeId) {
-        System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
+        //System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
 
         if (node.type == NodeType.THREAD) {
             ThreadNode threadNode = (ThreadNode) node;
