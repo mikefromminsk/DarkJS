@@ -1,6 +1,7 @@
 package com.droid.djs.runner;
 
 import com.droid.djs.nodes.NativeNode;
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.runner.utils.ThreadUtils;
 import com.droid.djs.serialization.links.Formatter;
 import com.droid.djs.nodes.Node;
@@ -175,8 +176,8 @@ public class Caller {
                     break;
                 case ThreadUtils.SLEEP:
                     if (firstObject instanceof Double) {
+                        System.out.println("t" + Thread.currentThread().getId() + " " + firstObject);
                         Thread.sleep(((Double) firstObject).longValue());
-                        System.out.println(firstObject);
                     }
                     break;
             }

@@ -1,7 +1,6 @@
 var i = 0;
 
 function thread(){
-    Thread.sleep(100);
     i = 1;
 }
 

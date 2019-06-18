@@ -8,6 +8,7 @@ import com.droid.djs.serialization.links.Formatter;
 import com.droid.djs.treads.ThreadPool;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -21,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RunnerTest {
 
-    void notNull(Node testVar, Node module) {
-    }
 
     @Test
     void run() {
@@ -34,7 +33,7 @@ class RunnerTest {
             File[] tests = nodesTestsDir.listFiles();
             if (tests != null) {
                 List<File> list = Arrays.asList(tests);
-                //Collections.reverse(list);
+                Collections.reverse(list);
                 for (File script : list) {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);

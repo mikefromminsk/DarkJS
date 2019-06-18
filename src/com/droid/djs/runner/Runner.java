@@ -177,6 +177,8 @@ public class Runner {
         } else if (setType == SET_VALUE_FROM_VALUE && value.type == NodeType.FUNCTION) {
             // TODO nodetype.FUNCTION change posistion in code
             builder.set(source).setBody(value).commit();
+        } else if (setType == SET_VALUE_FROM_RETURN && value.type == NodeType.THREAD) {
+            run(value, ths);
         } else {
             run(value, ths);
             value = builder.set(value).getValueNode();
@@ -195,7 +197,16 @@ public class Runner {
     private Node exitNode = null;
 
     public void run(Node node, Node calledNodeId) {
-        //System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
+        System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
+
+        if (node.type == NodeType.THREAD) {
+            ThreadNode threadNode = (ThreadNode) node;
+            if (Thread.currentThread() != threadNode.thread){
+                //TODO params for threads
+                ThreadPool.getInstance().run(node, true);
+                return;
+            }
+        }
 
         for (int i = 0; i < builder.set(node).getNextCount(); i++) {
             run(builder.set(node).getNextNode(i));
@@ -204,14 +215,6 @@ public class Runner {
                     exitNode = null;
                 break;
             }
-        }
-
-        if (node.type == NodeType.THREAD) {
-            ThreadNode threadNode = (ThreadNode) node;
-            if (Thread.currentThread() != threadNode.thread)
-                //TODO params for threads
-                ThreadPool.getInstance().run(node, true);
-            return;
         }
 
         if (node.type == NodeType.NATIVE_FUNCTION) {
