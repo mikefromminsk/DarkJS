@@ -18,20 +18,17 @@ import java.util.*;
 
 public class NodeStorage extends InfinityStringArray {
 
+    private static NodeStorage instance;
+
     private static final String nodeStorageID = "node";
     private static final String dataStorageID = "data";
     private static final String hashStorageID = "hash";
-    private static final String keyValueStorageID = "kvdb";
-    private static final String accountStorageID = "account";
 
     public static final int MAX_STORAGE_DATA_IN_DB = 2048;
     private static final int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
-    private static ArrayList<Node> transactionNodes;
     private static InfinityFile dataStorage;
-    private static NodeStorage instance;
     private static InfinityHashMap dataHashTree;
-    private static InfinityHashMap keyValueStorage;
-    private static InfinityHashMap accountStorage;
+    private static ArrayList<Node> transactionNodes;
     private static Map<Long, Node> nodesCache = new TreeMap<>();
 
 
@@ -51,13 +48,11 @@ public class NodeStorage extends InfinityStringArray {
     }
 
     public static NodeStorage getInstance() {
-        if (instance == null || dataStorage == null) {
+        if (instance == null) {
             transactionNodes = new ArrayList<>();
             instance = new NodeStorage(nodeStorageID);
             dataStorage = new InfinityFile(dataStorageID);
             dataHashTree = new InfinityHashMap(hashStorageID);
-            keyValueStorage = new InfinityHashMap(keyValueStorageID);
-            accountStorage = new InfinityHashMap(accountStorageID);
         }
         return instance;
     }
@@ -256,16 +251,5 @@ public class NodeStorage extends InfinityStringArray {
         if (title != null)
             return dataHashTree.get(title, Crc16.getHashBytes(title));
         return null;
-    }
-
-    public Node getObject(String key) {
-        long nodeId = keyValueStorage.get(key, Crc16.getHashBytes(key));
-        if (nodeId != Long.MAX_VALUE)
-            return get(nodeId);
-        return null;
-    }
-
-    public void putObject(String key, Node value) {
-        keyValueStorage.put(key, Crc16.getHashBytes(key), value.id);
     }
 }
