@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RunnerTest {
 
+    void notNull(Node testVar, Node module) {
+    }
+
     @Test
     void run() {
-        File currentScript = null;
         String sourceCode = null;
         NodeBuilder builder = new NodeBuilder();
 
@@ -32,28 +34,24 @@ class RunnerTest {
             File[] tests = nodesTestsDir.listFiles();
             if (tests != null) {
                 List<File> list = Arrays.asList(tests);
-                Collections.reverse(list);
+                //Collections.reverse(list);
                 for (File script : list) {
-                    currentScript = script;
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
                     Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode);
 
-
                     Node testVar = builder.set(module).findLocal("test");
-
-                    Node testValue = builder.set(testVar).getValueNode();
-                    Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
-
-                    if (testVar == null || testValue == null || testData == null || !testData) {
-                        System.out.println(currentScript.getAbsolutePath());
+                    if (testVar == null)
                         System.out.println(Formatter.toJson(module));
-                    }
                     assertNotNull(testVar);
+                    Node testValue = builder.set(testVar).getValueNode();
+                    if (testValue == null)
+                        System.out.println(Formatter.toJson(module));
                     assertNotNull(testValue);
-                    assertEquals(NodeType.BOOL, testValue.type);
+                    Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
+                    if (testData == null || !testData)
+                        System.out.println(Formatter.toJson(module));
                     assertTrue(testData);
-                    return;
                 }
             } else {
                 fail("tests not found");

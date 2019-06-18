@@ -27,9 +27,9 @@ public class Node extends SuperNode {
     public Object _while;
     public Object _if;
     public Object prototype;
-    public Object body;
+    public Object body; //TODO delete
     public Object localParent;
-    public Object history;
+    public Object history; //TODO delete
 
     public ArrayList<Object> local;
     public ArrayList<Object> param;
