@@ -48,9 +48,7 @@ public class Node extends SuperNode {
         ArrayList<Long> links = new ArrayList<>();
         listLinks((linkType, link, singleValue) -> {
             Long linkId = null;
-            if (link instanceof Integer)
-                linkId = (long) (int) link;
-            else if (link instanceof Long)
+            if (link instanceof Long)
                 linkId = (Long) link;
             else if (link instanceof Node)
                 linkId = ((Node) link).id;
@@ -112,71 +110,71 @@ public class Node extends SuperNode {
 
 
     @Override
-    void restore(byte linkType, long linkId) {
+    void restore(byte linkType, long linkData) {
         switch (linkType) {
             case LinkType.VALUE:
-                value = linkId;
+                value = linkData;
                 break;
             case LinkType.SOURCE:
-                source = linkId;
+                source = linkData;
                 break;
             case LinkType.TITLE:
-                title = linkId;
+                title = linkData;
                 break;
             case LinkType.SET:
-                set = linkId;
+                set = linkData;
                 break;
             case LinkType.TRUE:
-                _true = linkId;
+                _true = linkData;
                 break;
             case LinkType.ELSE:
-                _else = linkId;
+                _else = linkData;
                 break;
             case LinkType.EXIT:
-                exit = linkId;
+                exit = linkData;
                 break;
             case LinkType.WHILE:
-                _while = linkId;
+                _while = linkData;
                 break;
             case LinkType.IF:
-                _if = linkId;
+                _if = linkData;
                 break;
             case LinkType.PROTOTYPE:
-                prototype = linkId;
+                prototype = linkData;
                 break;
             case LinkType.BODY:
-                body = linkId;
+                body = linkData;
                 break;
             case LinkType.LOCAL_PARENT:
-                localParent = linkId;
+                localParent = linkData;
                 break;
             case LinkType.HISTORY:
-                history = linkId;
+                history = linkData;
                 break;
             case LinkType.LOCAL:
                 if (local == null)
                     local = new ArrayList<>();
-                local.add(linkId);
+                local.add(linkData);
                 break;
             case LinkType.PARAM:
                 if (param == null)
                     param = new ArrayList<>();
-                param.add(linkId);
+                param.add(linkData);
                 break;
             case LinkType.NEXT:
                 if (next == null)
                     next = new ArrayList<>();
-                next.add(linkId);
+                next.add(linkData);
                 break;
             case LinkType.CELL:
                 if (cell == null)
                     cell = new ArrayList<>();
-                cell.add(linkId);
+                cell.add(linkData);
                 break;
             case LinkType.STYLE:
                 if (style == null)
                     style = new ArrayList<>();
-                style.add(linkId);
+                style.add(linkData);
                 break;
         }
     }

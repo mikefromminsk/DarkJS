@@ -32,12 +32,9 @@ public class NodeStorage extends InfinityStringArray {
     private static ArrayList<Node> transactionNodes;
     private static Map<Long, Node> nodesCache = new TreeMap<>();
 
-    private static byte[] validPassHash;
-    private static InfinityHashMap passStorage;
 
-
-    public NodeStorage(String infinityFileID, byte[] passHash) {
-        super(infinityFileID, passHash);
+    public NodeStorage(String infinityFileID) {
+        super(infinityFileID);
         if (meta.fileData.sumFilesSize == 0)
             initStorage();
     }
@@ -52,18 +49,16 @@ public class NodeStorage extends InfinityStringArray {
     }
 
     public static byte[] getToken(String login, String pass) {
-        return new byte[0] a;
+        return Crc16.getHashBytes(login + pass);
     }
 
     public static boolean initInstance(String login, String pass) {
-        byte[] passHash = Crc16.getHashBytes(login + pass);
         if (instance == null) {
-            instance = new NodeStorage(nodeStorageID, passHash);
+            instance = new NodeStorage(nodeStorageID);
 
             transactionNodes = new ArrayList<>();
             dataStorage = new InfinityFile(dataStorageID);
             dataHashTree = new InfinityHashMap(hashStorageID);
-            passStorage = new InfinityHashMap(passStorageID);
         }
         return true;
     }

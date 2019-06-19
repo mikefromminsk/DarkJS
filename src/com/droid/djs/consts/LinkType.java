@@ -42,6 +42,10 @@ public class LinkType {
     private static final String HISTORY_NAME = "history";
     public static final byte NATIVE_FUNCTION_NUMBER = 20;
     private static final String NATIVE_FUNCTION_NUMBER_NAME = "native";
+    public static final byte ACCESS_OWNER = 21;
+    private static final String ACCESS_OWNER_NAME = "owner";
+    public static final byte ACCESS_USER = 22;
+    private static final String ACCESS_USER_NAME = "user";
 
     public static String toString(byte linkType) {
         switch (linkType){
@@ -65,6 +69,8 @@ public class LinkType {
             case LOCAL_PARENT: return LOCAL_PARENT_NAME;
             case HISTORY: return HISTORY_NAME;
             case NATIVE_FUNCTION_NUMBER: return NATIVE_FUNCTION_NUMBER_NAME;
+            case ACCESS_OWNER: return ACCESS_OWNER_NAME;
+            case ACCESS_USER: return ACCESS_USER_NAME;
         }
         return null;
     }
@@ -91,6 +97,8 @@ public class LinkType {
             case LOCAL_PARENT_NAME: return LOCAL_PARENT;
             case HISTORY_NAME: return HISTORY;
             case NATIVE_FUNCTION_NUMBER_NAME: return NATIVE_FUNCTION_NUMBER;
+            case ACCESS_OWNER_NAME: return ACCESS_OWNER;
+            case ACCESS_USER_NAME: return ACCESS_USER;
             default: return -1;
         }
     }

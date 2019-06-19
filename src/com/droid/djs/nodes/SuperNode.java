@@ -15,12 +15,12 @@ public abstract class SuperNode implements InfinityStringArrayCell {
         long[] links = Bytes.toLongArray(data);
         for (long dataLink : links) {
             byte linkType = (byte) (dataLink % 256);
-            long linkId = (dataLink - linkType) / 256;
-            restore(linkType, linkId);
+            long linkData = (dataLink - linkType) / 256;
+            restore(linkType, linkData);
         }
     }
 
-    abstract void restore(byte linkType, long linkId);
+    abstract void restore(byte linkType, long linkData);
 
     public interface NodeLinkListener {
         void get(byte linkType, Object link, boolean singleValue);

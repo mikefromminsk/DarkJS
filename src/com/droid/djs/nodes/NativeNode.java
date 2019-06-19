@@ -15,14 +15,14 @@ public class NativeNode extends Node {
     public void listLinks(NodeLinkListener linkListener) {
         super.listLinks(linkListener);
         if (functionId != null)
-            linkListener.get(LinkType.NATIVE_FUNCTION_NUMBER, functionId, true);
+            linkListener.get(LinkType.NATIVE_FUNCTION_NUMBER, (long) (int) functionId, true);
     }
 
 
     @Override
-    void restore(byte linkType, long linkId) {
-        super.restore(linkType, linkId);
+    void restore(byte linkType, long linkData) {
+        super.restore(linkType, linkData);
         if (linkType == LinkType.NATIVE_FUNCTION_NUMBER)
-            functionId = (int) linkId;
+            functionId = (int) linkData;
     }
 }

@@ -14,10 +14,8 @@ public class Runner {
     private NodeBuilder builder = new NodeBuilder();
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
-    private byte[] token;
 
-    public void start(byte[] token, Node node) {
-        this.token = token;
+    public void start(Node node) {
         run(node);
     }
 
@@ -205,7 +203,7 @@ public class Runner {
             ThreadNode threadNode = (ThreadNode) node;
             if (Thread.currentThread() != threadNode.thread){
                 //TODO params for threads
-                ThreadPool.getInstance().run(node, null, true, token);
+                ThreadPool.getInstance().run(node, null, true);
                 return;
             }
         }

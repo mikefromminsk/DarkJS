@@ -11,11 +11,6 @@ public class InfinityStringArray extends InfinityFile {
     protected InfinityConstArray meta;
     private Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
 
-
-    public InfinityStringArray(String infinityFileID, byte[] passHash) {
-        super(infinityFileID);
-    }
-
     public InfinityStringArray(String infinityFileID) {
         super(infinityFileID);
         meta = new InfinityConstArray(infinityFileID + ".meta");
