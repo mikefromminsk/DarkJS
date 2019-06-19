@@ -57,13 +57,13 @@ public class ThreadNode extends Node implements Runnable {
 
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
-    public void run(Node node, boolean async, Long access_code) {
+    public boolean run(Node node, boolean async, Long access_code) {
         boolean secure_enabled = access_owner != null || access_user != null;
         if (secure_enabled) {
             boolean access_granted = (access_owner != null && access_owner.equals(access_code))
                     || (access_user != null && access_user.indexOf(access_code) != -1);
             if (!access_granted)
-                return;
+                return false;
         }
         runQueue.add(new RunData(node, null));
         if (thread == null || !thread.isAlive()) {
@@ -76,6 +76,7 @@ public class ThreadNode extends Node implements Runnable {
             } catch (InterruptedException ignored) {
             }
         }
+        return true;
     }
 
     @Override

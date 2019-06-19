@@ -1,16 +1,12 @@
 package com.droid.djs.runner;
 
 import com.droid.Main;
-import com.droid.djs.NodeStorage;
 import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.js.Parser;
 import com.droid.djs.serialization.links.Formatter;
+import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.ThreadPool;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -40,7 +36,7 @@ class RunnerTest {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
                     Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode,
-                            NodeStorage.getToken(Main.login, Main.pass));
+                            Secure.getAccessCode(Main.login, Main.password));
 
                     Node testVar = builder.set(module).findLocal("test");
                     if (testVar == null)

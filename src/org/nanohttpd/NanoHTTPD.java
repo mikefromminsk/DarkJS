@@ -751,7 +751,7 @@ public abstract class NanoHTTPD {
 
         /**
          * Decodes parameters in percent-encoded URI-format ( e.g.
-         * "name=Jack%20Daniels&pass=Single%20Malt" ) and adds them to given
+         * "name=Jack%20Daniels&password=Single%20Malt" ) and adds them to given
          * Map. NOTE: this doesn't support multiple identical keys due to the
          * simplicity of Map.
          */

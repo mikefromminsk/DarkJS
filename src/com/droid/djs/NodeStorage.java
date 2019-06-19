@@ -20,7 +20,7 @@ public class NodeStorage extends InfinityStringArray {
 
     private static NodeStorage instance;
 
-    private static final String passStorageID = "pass";
+    private static final String passStorageID = "password";
     private static final String nodeStorageID = "node";
     private static final String dataStorageID = "data";
     private static final String hashStorageID = "hash";
@@ -48,11 +48,7 @@ public class NodeStorage extends InfinityStringArray {
         UtilList.init();
     }
 
-    public static byte[] getToken(String login, String pass) {
-        return Crc16.getHashBytes(login + pass);
-    }
-
-    public static boolean initInstance(String login, String pass) {
+    public static NodeStorage getInstance() {
         if (instance == null) {
             instance = new NodeStorage(nodeStorageID);
 
@@ -60,12 +56,6 @@ public class NodeStorage extends InfinityStringArray {
             dataStorage = new InfinityFile(dataStorageID);
             dataHashTree = new InfinityHashMap(hashStorageID);
         }
-        return true;
-    }
-
-    public static NodeStorage getInstance() {
-        if (instance == null)
-            throw new NullPointerException("first run NodeStorage.initInstance with login and password");
         return instance;
     }
 

@@ -29,17 +29,21 @@ public class ThreadPool {
     }
 
     //TODO add args to thread
-    public void run(Node node, List<Node> args, boolean async) {
+    public boolean run(Node node, List<Node> args, boolean async, Long code) {
         ThreadNode thread = findThread(node);
-        thread.run(node, async);
+        return thread.run(node, async, code);
     }
 
     private Parser parser = new Parser();
 
-    public Node runScript(String path, String sourceCode) {
+    public Node runScript(String path, String sourceCode, Long code) {
         Node node = Files.getNode(path);
         Node module = parser.parse(node, sourceCode);
-        run(module,  null, false);
+        run(module,  null, false, code);
         return node;
+    }
+
+    public void stop() {
+
     }
 }
