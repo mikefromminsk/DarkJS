@@ -5,7 +5,7 @@ import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.serialization.js.Parser;
+import com.droid.djs.serialization.js.JsParser;
 
 import java.util.List;
 
@@ -34,11 +34,11 @@ public class ThreadPool {
         return thread.run(node, async, access_code);
     }
 
-    private Parser parser = new Parser();
+    private JsParser jsParser = new JsParser();
 
     public Node runScript(String path, String sourceCode, Long code) {
         Node node = Files.getNode(path);
-        Node module = parser.parse(node, sourceCode);
+        Node module = jsParser.parse(node, sourceCode);
         run(module,  null, false, code);
         return node;
     }

@@ -3,7 +3,7 @@ package com.droid.djs.runner;
 import com.droid.Main;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.links.Formatter;
+import com.droid.djs.serialization.node.Formatter;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.ThreadPool;
 import org.apache.commons.io.FileUtils;

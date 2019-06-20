@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Parser {
+public class JsParser {
 
     private NodeBuilder builder = new NodeBuilder();
     private ArrayList<Node> localStack = new ArrayList<>();

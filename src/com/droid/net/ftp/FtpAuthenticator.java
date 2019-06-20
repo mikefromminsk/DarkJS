@@ -1,4 +1,4 @@
-package com.droid.net.auth;
+package com.droid.net.ftp;
 
 import com.droid.net.ftp.FtpSession;
 import com.guichaguri.minimalftp.FTPConnection;

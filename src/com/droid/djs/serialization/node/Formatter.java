@@ -1,4 +1,4 @@
-package com.droid.djs.serialization.links;
+package com.droid.djs.serialization.node;
 
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.LinkType;

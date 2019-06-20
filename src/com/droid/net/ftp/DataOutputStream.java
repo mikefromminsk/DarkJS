@@ -1,10 +1,11 @@
 package com.droid.net.ftp;
 
 import com.droid.djs.fs.Branch;
-import com.droid.djs.serialization.js.Parser;
+import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.fs.Files;
+import com.droid.djs.serialization.json.JsonParser;
 
 import java.io.*;
 import java.util.Random;
@@ -57,10 +58,12 @@ public class DataOutputStream extends OutputStream {
         Node res = Files.putFile(node, new FileInputStream(tempFile));
         NodeBuilder builder = new NodeBuilder();
         String newFileName = builder.set(res).getTitleString().toLowerCase();
-        if (newFileName.endsWith(".node.js")) {
+        if (newFileName.endsWith(".json")) {
+            new JsonParser().parse(res);
+        } else if (newFileName.endsWith(".node.js")) {
             String sourceCode = builder.getValueNode().data.readString();
             builder.setValue(null).commit();
-            new Parser().parse(res, sourceCode);
+            new JsParser().parse(res, sourceCode);
         } else if (newFileName.equals("index.html")) {
             Node parent = builder.set(node).getLocalParentNode();
             parent.parse(node.build());

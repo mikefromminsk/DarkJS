@@ -78,7 +78,7 @@ public class HttpServer extends NanoHTTPD {
                             for (String argsKey : argsKeys)
                                 setParam(node, argsKey, args.get(argsKey));
 
-                            ThreadPool.getInstance().run(node, null, false, Secure.getAccessCode(login, password));
+                            ThreadPool.getInstance().run(node, null, false, access_code);
 
                             DataInputStream resultStream = (DataInputStream) getResult(node);
                             if (resultStream != null) {

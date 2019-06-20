@@ -1,9 +1,8 @@
 package com.droid.djs.runner;
 
 import com.droid.djs.nodes.NativeNode;
-import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.runner.utils.ThreadUtils;
-import com.droid.djs.serialization.links.Formatter;
+import com.droid.djs.serialization.node.Formatter;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
