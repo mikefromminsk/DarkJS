@@ -12,7 +12,7 @@ abstract public class Utils {
     public static String DEFAULT_PROTOTYPES_DIR = "defaultPrototypes/";
 
     public void func(String name, int functionId, Node... args) {
-        NativeNode function = (NativeNode) Files.getNode((root().endsWith("/") ? root() : root() + "/") + name, NodeType.NATIVE_FUNCTION);
+        NativeNode function = (NativeNode) Files.getNode((name().endsWith("/") ? name() : name() + "/") + name, NodeType.NATIVE_FUNCTION);
         builder.set(function).setFunctionId(functionId);
         for (Node arg: args)
             builder.addParam(arg);
@@ -31,7 +31,7 @@ abstract public class Utils {
         return builder.create().setTitle(title).setValue(defValue).commit();
     }
 
-    public abstract String root();
+    public abstract String name();
 
-    public abstract void init();
+    public abstract void methods();
 }

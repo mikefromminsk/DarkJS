@@ -13,7 +13,7 @@ public class Prototypes {
         if (defaultPrototypesDir == null) {
             defaultPrototypesDir = Files.getNode(Utils.DEFAULT_PROTOTYPES_DIR, null);
             if (defaultPrototypesDir == null){
-                new StringPrototype().init();
+                new StringPrototype().methods();
                 // add into this pos other prototypes initialization
                 defaultPrototypesDir = Files.getNode(Utils.DEFAULT_PROTOTYPES_DIR);
             }

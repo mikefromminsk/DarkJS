@@ -7,12 +7,12 @@ import com.droid.djs.runner.utils.Utils;
 public class StringPrototype extends Utils {
 
     @Override
-    public String root() {
+    public String name() {
         return DEFAULT_PROTOTYPES_DIR + NodeType.toString(NodeType.STRING);
     }
 
     @Override
-    public void init() {
+    public void methods() {
         func(Caller.STRING_TRIM_NAME, Caller.STRING_TRIM);
         func(Caller.STRING_REVERCE_NAME, Caller.STRING_REVERCE);
     }

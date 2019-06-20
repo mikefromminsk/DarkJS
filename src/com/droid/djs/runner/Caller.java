@@ -1,6 +1,8 @@
 package com.droid.djs.runner;
 
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
+import com.droid.djs.runner.utils.NodeUtils;
 import com.droid.djs.runner.utils.ThreadUtils;
 import com.droid.djs.serialization.node.Formatter;
 import com.droid.djs.nodes.Node;
@@ -176,6 +178,17 @@ public class Caller {
                 case ThreadUtils.SLEEP:
                     if (firstObject instanceof Double) {
                         Thread.sleep(((Double) firstObject).longValue());
+                    }
+                    break;
+                case NodeUtils.GET:
+                    if (firstObject instanceof String && right instanceof Node) {
+
+                    }
+                    break;
+                case NodeUtils.PATH:
+                    if (left instanceof Node) {
+                        String path = Files.getPath(left);
+                        resultNode = builder.create(NodeType.STRING).setData(path).commit();
                     }
                     break;
             }
