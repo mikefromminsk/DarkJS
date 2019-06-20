@@ -4,6 +4,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.consts.NodeStyle;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.ThreadNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -66,6 +67,14 @@ public class Files {
     }
 
     public static Node getNode(Node root, String path, Byte nodeType) {
+        return getNode(root, path, nodeType, null);
+    }
+
+    public static Node getNode(String path, Byte nodeType, Long access_code) {
+        return getNode(Master.getInstance(), path, nodeType, access_code);
+    }
+
+    public static Node getNode(Node root, String path, Byte nodeType, Long access_code) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO add escape characters /
@@ -78,14 +87,19 @@ public class Files {
                 for (Node node : builder.getLocalNodes()) {
                     if (name.equals(builder2.set(node).getTitleString())) {
                         builder.set(node);
+                        if (builder.isThread() && access_code != null && !((ThreadNode) node).checkAccess(access_code))
+                                return null;
                         find = true;
                         break;
                     }
                 }
                 if (!find) {
                     if (nodeType != null) {
+                        boolean isTheLast = i == names.length - 1;
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
-                        Node node = builder2.create(i == names.length - 1 ? nodeType : NodeType.VAR).setTitle(title).commit();
+                        Node node = builder2.create(isTheLast ? nodeType : NodeType.VAR).setTitle(title).commit();
+                        if (isTheLast && nodeType == NodeType.THREAD)
+                            builder2.setOwnerAccessCode(access_code);
                         builder.addLocal(node).commit();
                         builder.set(node);
                     } else {

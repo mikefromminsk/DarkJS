@@ -3,9 +3,12 @@ package com.droid.net.http;
 
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.fs.Files;
+import com.droid.djs.treads.Secure;
+import com.droid.djs.treads.ThreadPool;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
@@ -13,6 +16,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,6 +24,7 @@ public class HttpServer extends NanoHTTPD {
 
     public static int defaultPort = 80;
     public static int debugPort = 8080;
+    public static String BASIC_AUTH_PREFIX = "Basic ";
 
     public HttpServer() {
         this(defaultPort);
@@ -39,30 +44,49 @@ public class HttpServer extends NanoHTTPD {
                 requestContentType = requestContentType.toLowerCase();
             if (session.getMethod() == Method.GET
                     || session.getMethod() == Method.POST && ContentType.FORM_DATA.equals(requestContentType)) {
-                // run
-                Map<String, String> args = null;
-                if (session.getMethod() == Method.POST) {
-                    args = parseArguments(session.getInputStream());
-                } else if (session.getMethod() == Method.GET) {
-                    args = parseArguments(session.getQueryParameterString());
-                }
-                Node node = null;
-                for (String nodePath : getFileNames(session.getUri())) {
-                    node = Files.getNode(nodePath, null);
-                    if (node != null)
-                        break;
-                }
-                if (node == null) {
-                    response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not Found");
+                //Authorization: Basic userid:password
+                String authorization = session.getHeaders().get(Headers.AUTHORIZATION);
+                if (authorization == null || !authorization.startsWith(BASIC_AUTH_PREFIX)) {
+                    response = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "Need basic auth");
+                    response.addHeader(Headers.AUTHENTICATE, "Basic realm=\"Access to the site\"");
                 } else {
-                    ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
-                    for (String argsKey : argsKeys)
-                        setParam(node, argsKey, args.get(argsKey));
+                    authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
+                    authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
+                    String login = authorization.substring(0, authorization.indexOf(":"));
+                    String password = authorization.substring(authorization.indexOf(":") + 1);
 
-                    DataInputStream resultStream = (DataInputStream) getResult(node);
-                    String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
+                    Node node = Files.getNode(session.getUri(), null);
 
-                    response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
+                    if (node == null) {
+                        response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
+                    } else {
+                        Long access_code = Secure.getAccessCode(login, password);
+
+                        node = Files.getNode(session.getUri(), null, access_code);
+
+                        if (node == null) {
+                            response = newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Access denied");
+                        } else {
+                            Map<String, String> args = null;
+                            if (session.getMethod() == Method.POST) {
+                                args = parseArguments(session.getInputStream());
+                            } else if (session.getMethod() == Method.GET) {
+                                args = parseArguments(session.getQueryParameterString());
+                            }
+
+                            ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
+                            for (String argsKey : argsKeys)
+                                setParam(node, argsKey, args.get(argsKey));
+
+                            ThreadPool.getInstance().run(node, null, false, Secure.getAccessCode(login, password));
+
+                            DataInputStream resultStream = (DataInputStream) getResult(node);
+                            if (resultStream != null) {
+                                String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
+                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
+                            }
+                        }
+                    }
                 }
             } else if (session.getMethod() == Method.POST) {
                 Files.putFile(session.getUri(), session.getInputStream());
@@ -76,6 +100,10 @@ public class HttpServer extends NanoHTTPD {
                 response.addHeader("Access-Control-Allow-Headers", "Content-Type");
             }
         }
+
+        if (response == null)
+            response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "response is empty");
+
         return response;
     }
 

@@ -33,4 +33,9 @@ public class Secure {
     public static Long getAccessCode(String login, String password) {
         return (long) Crc16.getHash(login + password);
     }
+
+    public static void join() throws InterruptedException {
+        if (httpServer != null)
+            httpServer.join();
+    }
 }

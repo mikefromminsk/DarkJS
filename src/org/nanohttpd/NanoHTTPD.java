@@ -146,6 +146,8 @@ public abstract class NanoHTTPD {
 
     public static class Headers {
         public final static String CONTENT_TYPE = "content-type";
+        public static final String AUTHORIZATION = "authorization";
+        public static final String AUTHENTICATE = "WWW-Authenticate";
     }
 
     public static class ContentType {
@@ -153,7 +155,7 @@ public abstract class NanoHTTPD {
         public static final String FORM_DATA = "application/x-www-form-urlencoded";
 
         public static String getContentTypeFromName(String filename){
-            if (filename.contains(".")){
+            if (filename != null && filename.contains(".")){
                 String extention =  filename.substring(filename.lastIndexOf('.'));
                 switch (extention){
                     case "json": return JSON;

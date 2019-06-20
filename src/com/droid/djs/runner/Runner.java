@@ -203,7 +203,7 @@ public class Runner {
             ThreadNode threadNode = (ThreadNode) node;
             if (Thread.currentThread() != threadNode.thread){
                 //TODO params for threads
-                ThreadPool.getInstance().run(node, null, true);
+                ThreadPool.getInstance().run(node, null, true, null);
                 return;
             }
         }

@@ -802,4 +802,11 @@ public class NodeBuilder {
     public void clearCells() {
         node.cell = null;
     }
+
+    public void setOwnerAccessCode(Long access_code) {
+        if (node instanceof ThreadNode){
+            ThreadNode threadNode = (ThreadNode) node;
+            threadNode.access_owner = access_code;
+        }
+    }
 }

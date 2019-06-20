@@ -15,12 +15,7 @@ public class FtpServer implements IFTPListener {
     private FTPServer server = new FTPServer();
 
     public FtpServer start() {
-
-        FtpAuthenticator auth = new FtpAuthenticator();
-
-        auth.registerUser("john", "1234");
-
-        server.setAuthenticator(auth);
+        server.setAuthenticator(new FtpAuthenticator());
         server.addListener(new FtpServer());
         server.setTimeout(3000); // 10 minutes
         server.setBufferSize(1024 * 5); // 5 kilobytes

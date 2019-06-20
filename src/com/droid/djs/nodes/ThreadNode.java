@@ -12,7 +12,7 @@ public class ThreadNode extends Node implements Runnable {
 
     public Thread thread;
     private Runner runner = new Runner();
-    private Long access_owner = null;
+    public Long access_owner = null;
     private ArrayList<Long> access_user = null;
 
 
@@ -55,9 +55,7 @@ public class ThreadNode extends Node implements Runnable {
         }
     }
 
-    private LinkedList<RunData> runQueue = new LinkedList<>();
-
-    public boolean run(Node node, boolean async, Long access_code) {
+    public boolean checkAccess(Long access_code) {
         boolean secure_enabled = access_owner != null || access_user != null;
         if (secure_enabled) {
             boolean access_granted = (access_owner != null && access_owner.equals(access_code))
@@ -65,6 +63,15 @@ public class ThreadNode extends Node implements Runnable {
             if (!access_granted)
                 return false;
         }
+        return true;
+    }
+
+    private LinkedList<RunData> runQueue = new LinkedList<>();
+
+    public boolean run(Node node, boolean async, Long access_code) {
+        if (!checkAccess(access_code))
+            return false;
+
         runQueue.add(new RunData(node, null));
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(this);

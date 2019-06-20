@@ -29,9 +29,9 @@ public class ThreadPool {
     }
 
     //TODO add args to thread
-    public boolean run(Node node, List<Node> args, boolean async, Long code) {
+    public boolean run(Node node, List<Node> args, boolean async, Long access_code) {
         ThreadNode thread = findThread(node);
-        return thread.run(node, async, code);
+        return thread.run(node, async, access_code);
     }
 
     private Parser parser = new Parser();
