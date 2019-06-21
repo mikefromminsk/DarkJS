@@ -4,6 +4,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.runner.utils.NodeUtils;
 import com.droid.djs.runner.utils.ThreadUtils;
+import com.droid.djs.runner.utils.UiUtils;
 import com.droid.djs.serialization.node.Formatter;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -189,6 +190,11 @@ public class Caller {
                     if (left instanceof Node) {
                         String path = Files.getPath(left);
                         resultNode = builder.create(NodeType.STRING).setData(path).commit();
+                    }
+                    break;
+                case UiUtils.SEND:
+                    if (leftObject instanceof String && right instanceof Node) {
+
                     }
                     break;
             }

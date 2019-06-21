@@ -4,7 +4,6 @@ import com.droid.djs.consts.NodeType;
 
 public class ThreadUtils extends Utils {
 
-    public static final String SLEEP_NAME = "sleep";
     public static final int SLEEP = 15;
 
     @Override
@@ -14,6 +13,6 @@ public class ThreadUtils extends Utils {
 
     @Override
     public void methods() {
-        func(SLEEP_NAME, SLEEP, par("delay", NodeType.NUMBER));
+        func("sleep", SLEEP, par("delay", NodeType.NUMBER));
     }
 }

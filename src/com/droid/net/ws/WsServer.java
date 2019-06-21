@@ -7,9 +7,10 @@ import org.java_websocket.server.WebSocketServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 public class WsServer extends WebSocketServer {
+
+    public static int defaultPort = 8887;
 
     public WsServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
@@ -35,15 +36,7 @@ public class WsServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         broadcast(message);
-        System.out.println(conn + ": " + message);
     }
-
-    @Override
-    public void onMessage(WebSocket conn, ByteBuffer message) {
-        broadcast(message.array());
-        System.out.println(conn + ": " + message);
-    }
-
 
     public static void main(String[] args) throws InterruptedException, IOException {
         int port = 8887; // 843 flash policy port
