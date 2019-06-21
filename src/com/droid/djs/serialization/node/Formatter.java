@@ -5,6 +5,7 @@ import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.DataInputStream;
+// TODO remove Gson library
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
