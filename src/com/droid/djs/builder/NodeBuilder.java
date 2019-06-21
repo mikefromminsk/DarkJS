@@ -351,6 +351,11 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder setParser(Node node) {
+        node.parser = node;
+        return this;
+    }
+
     private int linksCount(ArrayList links) {
         return links != null ? links.size() : 0;
     }

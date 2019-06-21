@@ -77,6 +77,7 @@ public class Files {
     public static Node getNode(Node root, String path, Byte nodeType, Long access_code) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
+        // TODO remove types from names
         // TODO access to root
         // TODO add escape characters /
         if (path != null && !path.equals("")) {
@@ -84,6 +85,14 @@ public class Files {
             for (int i = 0; i < names.length; i++) {
                 String name = names[i];
                 if (name.equals("")) continue;
+                String type = null;
+                if (name.contains(".")){
+                    int dotPos = name.indexOf('.');
+                    // TODO test
+                    type = name.substring(dotPos + 1);
+                    name = name.substring(0, dotPos - 1);
+                }
+
                 boolean find = false;
                 for (Node node : builder.getLocalNodes()) {
                     if (name.equals(builder2.set(node).getTitleString())) {
@@ -94,17 +103,24 @@ public class Files {
                         break;
                     }
                 }
+
                 if (!find) {
                     if (nodeType != null) {
                         boolean isTheLast = i == names.length - 1;
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
                         Node node = builder2.create(isTheLast ? nodeType : NodeType.VAR).setTitle(title).commit();
-                        if (isTheLast && nodeType == NodeType.THREAD)
-                            builder2.setOwnerAccessCode(access_code);
+                        if (isTheLast){
+                            if (nodeType == NodeType.THREAD)
+                                builder2.setOwnerAccessCode(access_code);
+                            if (type != null){
+                                Node typeTitle = builder2.create(NodeType.STRING).setData(type).commit();
+                                builder2.setParser(typeTitle);
+                            }
+                        }
                         builder.addLocal(node).commit();
                         builder.set(node);
                     } else {
-                        return null;
+                        builder.set(null);
                     }
                 }
             }

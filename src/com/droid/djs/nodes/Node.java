@@ -11,7 +11,7 @@ public class Node extends SuperNode {
 
     public boolean isSaved;
     public Long id;
-    public DataInputStream data;
+    public DataInputStream data; // TODO move to new node
     // TODO read external data in another thread
     public InputStream externalData;
     // TODO move type to node body in the storage
@@ -19,17 +19,18 @@ public class Node extends SuperNode {
     public byte type;
     public Object value;
     public Object source;
-    public Object title;
+    public Object title; // TODO maybe move to style
     public Object set;
-    public Object _true;
-    public Object _else;
-    public Object exit;
-    public Object _while;
-    public Object _if;
+    public Object _true; // TODO move to new node
+    public Object _else;// TODO move to new node
+    public Object exit; // TODO move to new node
+    public Object _while;// TODO move to new node
+    public Object _if;// TODO move to new node
     public Object prototype;
     public Object body; //TODO delete
     public Object localParent;
     public Object history; //TODO delete
+    public Object parser; // TODO move to styles
 
     public ArrayList<Object> local;
     public ArrayList<Object> param;
