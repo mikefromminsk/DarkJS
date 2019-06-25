@@ -8,8 +8,8 @@ public class  NodeType {
     public static final String NUMBER_NAME = "number";
     public static final byte BOOL = -1;
     public static final String BOOL_NAME = "bool";
-    public static final byte VAR = 0;
-    public static final String VAR_NAME = "var";
+    public static final byte NODE = 0;
+    public static final String NODE_NAME = "node";
     public static final byte ARRAY = 1;
     public static final String ARRAY_NAME = "array";
     public static final byte OBJECT = 2;
@@ -27,7 +27,7 @@ public class  NodeType {
             case STRING: return STRING_NAME;
             case NUMBER: return NUMBER_NAME;
             case BOOL: return BOOL_NAME;
-            case VAR: return VAR_NAME;
+            case NODE: return NODE_NAME;
             case ARRAY: return ARRAY_NAME;
             case OBJECT: return OBJECT_NAME;
             case NATIVE_FUNCTION: return NATIVE_FUNCTION_NAME;
@@ -42,7 +42,7 @@ public class  NodeType {
             case STRING_NAME: return STRING;
             case NUMBER_NAME: return NUMBER;
             case BOOL_NAME: return BOOL;
-            case VAR_NAME: return VAR;
+            case NODE_NAME: return NODE;
             case ARRAY_NAME: return ARRAY;
             case OBJECT_NAME: return OBJECT;
             case NATIVE_FUNCTION_NAME: return NATIVE_FUNCTION;

@@ -16,7 +16,7 @@ public class NodeBuilder {
     private Node node;
 
     public NodeBuilder create() {
-        return create(NodeType.VAR);
+        return create(NodeType.NODE);
     }
 
     public NodeBuilder create(byte nodeType) {
@@ -721,7 +721,7 @@ public class NodeBuilder {
     }
 
     public boolean isData() {
-        return node.type < NodeType.VAR;
+        return node.type < NodeType.NODE;
     }
 
     public boolean isString() {
@@ -737,7 +737,7 @@ public class NodeBuilder {
     }
 
     public boolean isVar() {
-        return node.type == NodeType.VAR;
+        return node.type == NodeType.NODE;
     }
 
     public boolean isArray() {

@@ -81,10 +81,10 @@ public class Formatter {
         Map<String, Object> links = new LinkedHashMap<>();
         data.put(nodeName, links);
 
-        if (node.type != NodeType.VAR)
+        if (node.type != NodeType.NODE)
             links.put(TYPE_PREFIX, NodeType.toString(node.type));
 
-        if (node.type < NodeType.VAR)
+        if (node.type < NodeType.NODE)
             links.put(DATA_PREFIX, dataSimplification(builder, node));
 
         node.listLinks((linkType, link, singleValue) -> {
@@ -99,7 +99,7 @@ public class Formatter {
             Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
             String linkTypeStr = LinkType.toString(linkType);
             if (singleValue) {
-                if (linkNode.type < NodeType.VAR)
+                if (linkNode.type < NodeType.NODE)
                     links.put(linkTypeStr, dataSimplification(builder, linkNode));
                 else if (depth > 0) {
                     links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
@@ -111,7 +111,7 @@ public class Formatter {
                     links.put(linkTypeStr, linkObject = new ArrayList<>());
                 ArrayList linkList = (ArrayList) linkObject;
 
-                if (linkNode.type < NodeType.VAR) // TODO exception
+                if (linkNode.type < NodeType.NODE) // TODO exception
                     linkList.add(dataSimplification(builder, linkNode));
                 else {
                     linkList.add(NODE_PREFIX + linkNode.id);

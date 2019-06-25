@@ -81,7 +81,7 @@ public class Runner {
                                 continue;
                             }
                         } else {
-                            Node varPrototype = Prototypes.get(NodeType.VAR);
+                            Node varPrototype = Prototypes.get(NodeType.NODE);
                             if (varPrototype != null)
                                 findPropNode = builder.set(varPrototype).findLocal(propName);
                             if (findPropNode != null) {
@@ -156,7 +156,7 @@ public class Runner {
     void setValue(Node source, Node value, boolean setType, Node ths) {
         if (value == null) {
             builder.set(source).setValue(value).commit();
-        } else if (value.type == NodeType.VAR) {
+        } else if (value.type == NodeType.NODE) {
             propCalledNode = ths;
             value = getProps(value);
             ths = propCalledNode;

@@ -134,7 +134,7 @@ public class NodeStorage extends InfinityStringArray {
             node = newNode(metaCell.type);
             node.id = index;
             node.type = metaCell.type;
-            if (metaCell.type < NodeType.VAR) {
+            if (metaCell.type < NodeType.NODE) {
                 node.data = new DataInputStream(this, metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
@@ -149,7 +149,7 @@ public class NodeStorage extends InfinityStringArray {
     }
 
     public void set(long index, Node node) {
-        if (node.type >= NodeType.VAR)
+        if (node.type >= NodeType.NODE)
             super.setObject(index, node);
         // else {data is not mutable}
     }
@@ -157,7 +157,7 @@ public class NodeStorage extends InfinityStringArray {
     private static Random random = new Random();
 
     public void add(Node node) {
-        if (node.type >= NodeType.VAR) {
+        if (node.type >= NodeType.NODE) {
             byte[] data = node.build();
             NodeMetaCell metaCell = new NodeMetaCell();
             if (data != null/* && data.length != 0*/) {

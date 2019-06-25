@@ -26,7 +26,7 @@ public class Files {
         Node keyNode = builder.create(NodeType.STRING).setData(key).commit();
         Node nodeStyle = builder.set(node).findStyle(keyNode.id);
         if (nodeStyle == null) {
-            Node sourceCodeNode = builder.create(NodeType.VAR).setTitle(keyNode).setValue(valueNode).commit();
+            Node sourceCodeNode = builder.create(NodeType.NODE).setTitle(keyNode).setValue(valueNode).commit();
             builder.set(node).addStyle(sourceCodeNode).commit();
         } else {
             builder.set(nodeStyle).setValue(valueNode).commit();
@@ -55,7 +55,7 @@ public class Files {
     }
 
     public static Node getNode(String path) {
-        return getNode(path, NodeType.VAR);
+        return getNode(path, NodeType.NODE);
     }
 
     public static Node getNode(String path, Byte nodeType) {
@@ -63,7 +63,7 @@ public class Files {
     }
 
     public static Node getNode(Node root, String path) {
-        return getNode(root, path, NodeType.VAR);
+        return getNode(root, path, NodeType.NODE);
     }
 
     public static Node getNode(Node root, String path, Byte nodeType) {
@@ -108,7 +108,7 @@ public class Files {
                     if (nodeType != null) {
                         boolean isTheLast = i == names.length - 1;
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
-                        Node node = builder2.create(isTheLast ? nodeType : NodeType.VAR).setTitle(title).commit();
+                        Node node = builder2.create(isTheLast ? nodeType : NodeType.NODE).setTitle(title).commit();
                         if (isTheLast){
                             if (nodeType == NodeType.THREAD)
                                 builder2.setOwnerAccessCode(access_code);

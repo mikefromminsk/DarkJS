@@ -13,6 +13,6 @@ public class UiUtils extends Utils {
 
     @Override
     public void methods() {
-        func("send", SEND, par("funcname", NodeType.STRING), par("arguments", NodeType.VAR));
+        func("send", SEND, par("funcname", NodeType.STRING), par("arguments", NodeType.NODE));
     }
 }
