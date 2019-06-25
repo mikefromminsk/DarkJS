@@ -11,7 +11,6 @@ public class Node extends SuperNode {
 
     public boolean isSaved;
     public Long id;
-    public DataInputStream data; // TODO move to new node
     // TODO read external data in another thread
     public InputStream externalData;
     // TODO move type to node body in the storage
