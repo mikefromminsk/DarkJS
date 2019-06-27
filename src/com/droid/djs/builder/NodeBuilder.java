@@ -174,14 +174,6 @@ public class NodeBuilder {
         return null;
     }
 
-    public Long getHistory() {
-        if (node.history instanceof Long)
-            return (Long) node.history;
-        else if (node.history instanceof Node)
-            return node.id;
-        return null;
-    }
-
     public Node getValueNode() {
         if (node.value instanceof Node)
             return (Node) node.value;
@@ -278,14 +270,6 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getHistoryNode() {
-        if (node.history instanceof Node)
-            return (Node) node.history;
-        else if (node.history instanceof Long)
-            return (Node) (node.history = storage.get((Long) node.history));
-        return null;
-    }
-
     public NodeBuilder setValue(Node value) {
         node.value = value;
         return this;
@@ -343,11 +327,6 @@ public class NodeBuilder {
 
     public NodeBuilder setLocalParent(Node localParent) {
         node.localParent = localParent;
-        return this;
-    }
-
-    public NodeBuilder setHistory(Node history) {
-        node.history = history;
         return this;
     }
 
@@ -675,9 +654,6 @@ public class NodeBuilder {
             case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
                 break;
-            case HISTORY:
-                setHistory(linkValueNode);
-                break;
             case BODY:
                 setBody(linkValueNode);
                 break;
@@ -786,17 +762,6 @@ public class NodeBuilder {
         for (int i = 0; i < getParamCount(); i++)
             nodes[i] = getParamNode(i);
         return nodes;
-    }
-
-    public NodeBuilder addToHistory() {
-        Node prev = node;
-        create();
-        node.parse(prev.build());
-        Node history = commit();
-        node = prev;
-        setHistory(history);
-        commit();
-        return this;
     }
 
     public NodeBuilder setLocalNode(int index, Node item) {

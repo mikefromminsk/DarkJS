@@ -30,7 +30,6 @@ public class Node extends SuperNode {
     public Object prototype;
     public Object body; //TODO delete
     public Object localParent;
-    public Object history; //TODO delete
     public Object parser; // TODO move to styles
 
     public ArrayList<Object> local;
@@ -88,8 +87,6 @@ public class Node extends SuperNode {
             linkListener.get(LinkType.BODY, body, true);
         if (localParent != null)
             linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
-        if (history != null)
-            linkListener.get(LinkType.HISTORY, history, true);
         if (local != null)
             for (Object item : local)
                 linkListener.get(LinkType.LOCAL, item, false);
@@ -149,9 +146,6 @@ public class Node extends SuperNode {
                 break;
             case LOCAL_PARENT:
                 localParent = linkData;
-                break;
-            case HISTORY:
-                history = linkData;
                 break;
             case LOCAL:
                 if (local == null)
