@@ -193,7 +193,7 @@ public class Serializer {
                 if (nodeType == NodeType.NATIVE_FUNCTION) {
                     Object functionIdObj = links.get(Serializer.FUNCTION_ID_PREFIX);
                     builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionId(Integer.valueOf(new String((char[]) functionIdObj)))
+                            .setFunctionIndex(Integer.valueOf(new String((char[]) functionIdObj)))
                             .commit();
                 } /* else if (nodeType != -1) {
                     node.type = nodeType;

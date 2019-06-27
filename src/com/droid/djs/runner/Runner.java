@@ -1,12 +1,14 @@
 package com.droid.djs.runner;
 
 
+import com.droid.djs.fs.Files;
+import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.runner.prototypes.Prototypes;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.treads.ThreadPool;
 
 public class Runner {
@@ -17,6 +19,10 @@ public class Runner {
 
     public void start(Node node) {
         run(node);
+    }
+
+    Node getNodePrototype(NodeType nodeType){
+        return Files.getNode(Utils.defaultPrototypesDir, Utils.capitalize(nodeType.toString()));
     }
 
     private Node propCalledNode = null;
@@ -50,7 +56,7 @@ public class Runner {
                         node = prototypeNode;
                     } else {// proto by node type
                         if (nodeType != null)
-                            prototypeNode = Prototypes.get(nodeType);
+                            prototypeNode = getNodePrototype(nodeType);
                         if (prototypeNode != null) {
                             node = prototypeNode;
                         } else { // create proto
@@ -73,7 +79,7 @@ public class Runner {
                         continue;
                     } else {
                         if (nodeType != null)
-                            prototypeNode = Prototypes.get(nodeType);
+                            prototypeNode = getNodePrototype(nodeType);
                         if (prototypeNode != null) {
                             findPropNode = builder.set(prototypeNode).findLocal(propName);
                             if (findPropNode != null) {
@@ -81,7 +87,7 @@ public class Runner {
                                 continue;
                             }
                         } else {
-                            Node varPrototype = Prototypes.get(NodeType.NODE);
+                            Node varPrototype = getNodePrototype(NodeType.NODE);
                             if (varPrototype != null)
                                 findPropNode = builder.set(varPrototype).findLocal(propName);
                             if (findPropNode != null) {
@@ -198,7 +204,7 @@ public class Runner {
 
         if (node.type == NodeType.THREAD) {
             ThreadNode threadNode = (ThreadNode) node;
-            if (Thread.currentThread() != threadNode.thread){
+            if (Thread.currentThread() != threadNode.thread) {
                 //TODO params for threads
                 ThreadPool.getInstance().run(node, null, true, null);
                 return;
@@ -216,14 +222,15 @@ public class Runner {
         }
 
         if (node.type == NodeType.NATIVE_FUNCTION) {
-            if (builder.set(node).getParamCount() != 0) {
+           if (builder.set(node).getParamCount() != 0) {
                 // TODO change to getParams
                 for (int i = 0; i < builder.set(node).getParamCount(); i++) {
                     Node sourceParam = builder.set(node).getParamNode(i);
                     run(sourceParam, calledNodeId);
                 }
             }
-            Caller.invoke(node, calledNodeId);
+            Node resultNode = ((NativeNode) node).func.invoke(builder, node, calledNodeId);
+            builder.set(node).setValue(resultNode).commit();
         }
 
         if (builder.set(node).getSource() != null) {

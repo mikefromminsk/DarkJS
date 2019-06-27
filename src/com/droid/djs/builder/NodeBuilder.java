@@ -520,8 +520,8 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setFunctionId(int functionId) {
-        ((NativeNode) node).functionId = functionId;
+    public NodeBuilder setFunctionIndex(int functionIndex) {
+        ((NativeNode) node).setFunctionIndex(functionIndex);
         return this;
     }
 

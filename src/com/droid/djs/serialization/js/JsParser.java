@@ -5,7 +5,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.runner.Caller;
+import com.droid.djs.runner.utils.MathUtils;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 import jdk.nashorn.internal.runtime.Context;
@@ -113,7 +113,7 @@ public class JsParser {
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = jsLine(module, unaryNode.getExpression());
                     Node func = builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionId(Caller.fromTokenType(tokenType))
+                            .setFunctionIndex(MathUtils.tokenToFunctionIndex(tokenType))
                             .addParam(variable)
                             .commit();
                     return builder.create()
@@ -124,7 +124,7 @@ public class JsParser {
                 } else if (tokenType.toString().equals("-")) {
                     Node expression = jsLine(module, unaryNode.getExpression());
                     return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionId(Caller.UNARY_MINUS)
+                            .setFunctionIndex(MathUtils.funcNameToFuncIndex(MathUtils.UNARY_MINUS))
                             .addParam(expression)
                             .commit();
                 } else {
@@ -147,7 +147,7 @@ public class JsParser {
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV)
                         right = builder.create(NodeType.NATIVE_FUNCTION)
-                                .setFunctionId(Caller.fromTokenType(binaryNode.tokenType()))
+                                .setFunctionIndex(MathUtils.tokenToFunctionIndex(binaryNode.tokenType()))
                                 .addParam(left)
                                 .addParam(right)
                                 .commit();
@@ -157,7 +157,7 @@ public class JsParser {
                             .commit();
                 } else {
                     return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionId(Caller.fromTokenType(binaryNode.tokenType()))
+                            .setFunctionIndex(MathUtils.tokenToFunctionIndex(binaryNode.tokenType()))
                             .addParam(left)
                             .addParam(right)
                             .commit();

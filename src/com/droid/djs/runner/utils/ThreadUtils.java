@@ -4,8 +4,6 @@ import com.droid.djs.consts.NodeType;
 
 public class ThreadUtils extends Utils {
 
-    public static final int SLEEP = 15;
-
     @Override
     public String name() {
         return "Thread";
@@ -13,6 +11,16 @@ public class ThreadUtils extends Utils {
 
     @Override
     public void methods() {
-        func("sleep", SLEEP, par("delay", NodeType.NUMBER));
+        func("sleep", (builder, node, ths) -> {
+            Object left = leftObject(builder, node);
+            if (left instanceof Double) {
+                try {
+                    Thread.sleep((long) (double) left);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }, par("delay", NodeType.NUMBER));
     }
 }
