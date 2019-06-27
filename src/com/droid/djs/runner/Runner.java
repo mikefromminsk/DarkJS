@@ -178,9 +178,6 @@ public class Runner {
                 cloneObject(source, value);
             }
 
-        } else if (setType == SET_VALUE_FROM_VALUE && value.type == NodeType.FUNCTION) {
-            // TODO nodetype.FUNCTION change posistion in code
-            builder.set(source).setBody(value).commit();
         } else if (setType == SET_VALUE_FROM_RETURN && value.type == NodeType.THREAD) {
             run(value, ths);
         } else {
@@ -238,9 +235,6 @@ public class Runner {
             if (setNode != null) {
                 setValue(sourceNode, setNode, SET_VALUE_FROM_VALUE, calledObjectFromSource);
             } else {
-                Node bodyNode = builder.set(sourceNode).getBodyNode();
-                if (bodyNode != null)
-                    sourceNode = bodyNode;
                 if (builder.set(node).getParamCount() != 0) {
                     // TODO execute market addObject to parser
                     boolean isExecute = builder.set(node).getParamNode(0).id == 0;

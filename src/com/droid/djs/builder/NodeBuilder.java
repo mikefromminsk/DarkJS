@@ -158,14 +158,6 @@ public class NodeBuilder {
         return null;
     }
 
-    public Long getBody() {
-        if (node.body instanceof Long)
-            return (Long) node.body;
-        else if (node.body instanceof Node)
-            return node.id;
-        return null;
-    }
-
     public Long getLocalParent() {
         if (node.localParent instanceof Long)
             return (Long) node.localParent;
@@ -254,14 +246,6 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getBodyNode() {
-        if (node.body instanceof Node)
-            return (Node) node.body;
-        else if (node.body instanceof Long)
-            return (Node) (node.body = storage.get((Long) node.body));
-        return null;
-    }
-
     public Node getLocalParentNode() {
         if (node.localParent instanceof Node)
             return (Node) node.localParent;
@@ -317,11 +301,6 @@ public class NodeBuilder {
 
     public NodeBuilder setPrototype(Node prototype) {
         node.prototype = prototype;
-        return this;
-    }
-
-    public NodeBuilder setBody(Node body) {
-        node.body = body;
         return this;
     }
 
@@ -654,9 +633,6 @@ public class NodeBuilder {
             case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
                 break;
-            case BODY:
-                setBody(linkValueNode);
-                break;
             case LOCAL:
                 addLocal(linkValueNode);
                 break;
@@ -722,10 +698,6 @@ public class NodeBuilder {
 
     public boolean isObject() {
         return node.type == NodeType.OBJECT;
-    }
-
-    public boolean isFunction() {
-        return node.type == NodeType.FUNCTION;
     }
 
     public boolean isNativeFunction() {

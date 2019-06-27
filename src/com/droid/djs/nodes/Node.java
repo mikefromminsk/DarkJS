@@ -28,7 +28,6 @@ public class Node extends SuperNode {
     public Object _while;// TODO move to new node
     public Object _if;// TODO move to new node
     public Object prototype;
-    public Object body; //TODO delete
     public Object localParent;
     public Object parser; // TODO move to styles
 
@@ -83,8 +82,6 @@ public class Node extends SuperNode {
             linkListener.get(LinkType.IF, _if, true);
         if (prototype != null)
             linkListener.get(LinkType.PROTOTYPE, prototype, true);
-        if (body != null)
-            linkListener.get(LinkType.BODY, body, true);
         if (localParent != null)
             linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
         if (local != null)
@@ -140,9 +137,6 @@ public class Node extends SuperNode {
                 break;
             case PROTOTYPE:
                 prototype = linkData;
-                break;
-            case BODY:
-                body = linkData;
                 break;
             case LOCAL_PARENT:
                 localParent = linkData;

@@ -70,7 +70,7 @@ public class JsParser {
             if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
                 Node func = Files.getNode(module, function.getName(),
-                        function.getName().startsWith("thread") ? NodeType.THREAD : NodeType.FUNCTION);
+                        function.getName().startsWith("thread") ? NodeType.THREAD : NodeType.NODE);
                 for (IdentNode param : function.getParameters()) {
                     Node titleData = builder.create(NodeType.STRING).setData(param.getName()).commit();
                     Node paramNode = builder.create().setTitle(titleData).commit();

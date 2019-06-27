@@ -9,6 +9,4 @@ public enum NodeType {
     OBJECT,
     NATIVE_FUNCTION,
     THREAD,
-    // TODO delete
-    FUNCTION
 }
