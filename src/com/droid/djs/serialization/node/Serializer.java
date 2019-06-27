@@ -48,7 +48,7 @@ import java.util.*;
 *
 *
 * */
-public class Formatter {
+public class Serializer {
 
     public static final String NEW_NODE_PREFIX = "w";
     public static final String NODE_PREFIX = "n";
@@ -138,7 +138,7 @@ public class Formatter {
     private static void setLink(NodeBuilder builder, com.droid.djs.nodes.Node node, LinkType linkType, Map<String, com.droid.djs.nodes.Node> replacementTable, String itemStr) {
         com.droid.djs.nodes.Node linkValueNode = null;
 
-        if (itemStr.equals(Formatter.TRUE) || itemStr.equals(Formatter.FALSE))
+        if (itemStr.equals(Serializer.TRUE) || itemStr.equals(Serializer.FALSE))
             linkValueNode = builder.create(NodeType.BOOL)
                     .setData(itemStr)
                     .commit();
@@ -146,12 +146,12 @@ public class Formatter {
             linkValueNode = builder.create(NodeType.NUMBER)
                     .setData(itemStr)
                     .commit();
-        if (itemStr.startsWith(Formatter.STRING_PREFIX))
+        if (itemStr.startsWith(Serializer.STRING_PREFIX))
             linkValueNode = builder.create(NodeType.STRING)
-                    .setData(itemStr.substring(Formatter.STRING_PREFIX.length()))
+                    .setData(itemStr.substring(Serializer.STRING_PREFIX.length()))
                     .commit();
-        if (itemStr.startsWith(Formatter.NODE_PREFIX))
-            linkValueNode = builder.get(Long.valueOf(itemStr.substring(Formatter.NODE_PREFIX.length())))
+        if (itemStr.startsWith(Serializer.NODE_PREFIX))
+            linkValueNode = builder.get(Long.valueOf(itemStr.substring(Serializer.NODE_PREFIX.length())))
                     .getNode();
         if (linkValueNode == null)
             linkValueNode = replacementTable.get(itemStr);
@@ -174,24 +174,24 @@ public class Formatter {
         Map<String, com.droid.djs.nodes.Node> replacementTable = new HashMap<>();
 
         for (String nodeStr : request.nodes.keySet()) {
-            if (nodeStr.startsWith(Formatter.NEW_NODE_PREFIX)) {
+            if (nodeStr.startsWith(Serializer.NEW_NODE_PREFIX)) {
                 com.droid.djs.nodes.Node node = builder.create().commit();
-                request.replacements.put(nodeStr, Formatter.NODE_PREFIX + node.id);
+                request.replacements.put(nodeStr, Serializer.NODE_PREFIX + node.id);
                 replacementTable.put(nodeStr, node);
             }
         }
 
         for (String nodeStr : request.nodes.keySet()) {
             com.droid.djs.nodes.Node node = replacementTable.get(nodeStr);
-            if (node == null && nodeStr.startsWith(Formatter.NODE_PREFIX))
-                node = builder.get(Long.valueOf(nodeStr.substring(Formatter.NODE_PREFIX.length()))).getNode();
+            if (node == null && nodeStr.startsWith(Serializer.NODE_PREFIX))
+                node = builder.get(Long.valueOf(nodeStr.substring(Serializer.NODE_PREFIX.length()))).getNode();
             Map<String, Object> links = request.nodes.get(nodeStr);
 
-            Object nodeTypeObj = links.get(Formatter.TYPE_PREFIX);
+            Object nodeTypeObj = links.get(Serializer.TYPE_PREFIX);
             if (nodeTypeObj instanceof char[]) {
                 NodeType nodeType = NodeType.valueOf(new String((char[]) nodeTypeObj));
                 if (nodeType == NodeType.NATIVE_FUNCTION) {
-                    Object functionIdObj = links.get(Formatter.FUNCTION_ID_PREFIX);
+                    Object functionIdObj = links.get(Serializer.FUNCTION_ID_PREFIX);
                     builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionId(Integer.valueOf(new String((char[]) functionIdObj)))
                             .commit();

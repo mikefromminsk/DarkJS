@@ -60,7 +60,7 @@ public class Node extends SuperNode {
     public void listLinks(NodeLinkListener linkListener) {
         if (linkListener == null)
             return;
-        // sequences for well see in Formatter
+        // sequences for well see in Serializer
         if (title != null)
             linkListener.get(LinkType.TITLE, title, true);
         if (value != null)

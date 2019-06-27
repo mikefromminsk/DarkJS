@@ -5,7 +5,7 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.runner.utils.NodeUtils;
 import com.droid.djs.runner.utils.ThreadUtils;
 import com.droid.djs.runner.utils.UiUtils;
-import com.droid.djs.serialization.node.Formatter;
+import com.droid.djs.serialization.node.Serializer;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
@@ -70,8 +70,8 @@ public class Caller {
         return EQ;
     }
 
-    private static Node trueValue = builder.create(NodeType.BOOL).setData(Formatter.TRUE).commit();
-    private static Node falseValue = builder.create(NodeType.BOOL).setData(Formatter.FALSE).commit();
+    private static Node trueValue = builder.create(NodeType.BOOL).setData(Serializer.TRUE).commit();
+    private static Node falseValue = builder.create(NodeType.BOOL).setData(Serializer.FALSE).commit();
 
     public static void invoke(Node node, Node ths) {
         builder.set(node);

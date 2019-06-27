@@ -3,7 +3,7 @@ package com.droid.djs.runner;
 import com.droid.Main;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.node.Formatter;
+import com.droid.djs.serialization.node.Serializer;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.ThreadPool;
 import org.apache.commons.io.FileUtils;
@@ -40,15 +40,15 @@ class RunnerTest {
 
                     Node testVar = builder.set(module).findLocal("test");
                     if (testVar == null)
-                        System.out.println(Formatter.toJson(module));
+                        System.out.println(Serializer.toJson(module));
                     assertNotNull(testVar);
                     Node testValue = builder.set(testVar).getValueNode();
                     if (testValue == null)
-                        System.out.println(Formatter.toJson(module));
+                        System.out.println(Serializer.toJson(module));
                     assertNotNull(testValue);
                     Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
                     if (testData == null || !testData)
-                        System.out.println(Formatter.toJson(module));
+                        System.out.println(Serializer.toJson(module));
                     assertTrue(testData);
                 }
             } else {
