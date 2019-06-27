@@ -14,23 +14,29 @@ public class DataInputStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
     private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
+    private byte type;
+    public long start;
+    public long length;
     private long currentPosition;
+    private NodeStorage storage;
     private FileReader fileReader;
-    private NodeStorage.NodeMetaCell metaCell;
 
-    public DataInputStream(NodeStorage.NodeMetaCell metaCell) {
-        this.metaCell = metaCell;
+    public DataInputStream(NodeStorage storage, byte type, long start, long length) {
+        this.storage = storage;
+        this.type = type;
+        this.start = start;
+        this.length = length;
         currentPosition = 0;
     }
 
     public boolean hasNext() {
-        boolean nextExist = currentPosition < metaCell.length;
+        boolean nextExist = currentPosition < length;
         if (!nextExist) currentPosition = 0;
         return nextExist;
     }
 
     private byte[] readFromDb() {
-        byte[] data = NodeStorage.getInstance().getData(metaCell.start, currentPosition, (int) Math.min(BUFFER_SIZE, metaCell.length));
+        byte[] data = storage.getData(start, currentPosition, (int) Math.min(BUFFER_SIZE, length));
         currentPosition += data.length;
         return data;
     }
@@ -38,7 +44,7 @@ public class DataInputStream extends InputStream {
     private char[] readFromFs() {
         try {
             if (fileReader == null)
-                fileReader = new FileReader(DiskManager.getInstance().getFileById(metaCell.start));
+                fileReader = new FileReader(DiskManager.getInstance().getFileById(start));
             char[] buf = new char[BUFFER_SIZE];
             int readiedChars = fileReader.read(buf);
             if ((readiedChars) > 0) {
@@ -47,7 +53,7 @@ public class DataInputStream extends InputStream {
                 currentPosition += readiedChars;
                 return buf;
             }
-            if (currentPosition == metaCell.length) {
+            if (currentPosition == length) {
                 fileReader.close();
                 fileReader = null;
             }
@@ -61,7 +67,7 @@ public class DataInputStream extends InputStream {
         StringBuilder stringBuilder = new StringBuilder();
         while (hasNext()) {
             char[] buffer;
-            if (metaCell.length < NodeStorage.MAX_STORAGE_DATA_IN_DB)
+            if (length < NodeStorage.MAX_STORAGE_DATA_IN_DB)
                 buffer = Bytes.toCharArray(readFromDb());
             else
                 buffer = readFromFs();
@@ -77,7 +83,7 @@ public class DataInputStream extends InputStream {
 
     public Object getObject() {
         String string = readString();
-        switch (metaCell.type) {
+        switch (type) {
             case NodeType.BOOL:
                 return Boolean.valueOf(string);
             case NodeType.NUMBER:
@@ -100,7 +106,7 @@ public class DataInputStream extends InputStream {
     public int read(byte[] b) throws IOException {
         // TODO !!!! rewrite
         // Multithreading read
-        if (currentPosition == metaCell.length) {
+        if (currentPosition == length){
             currentPosition = 0;
             return -1;
         }
@@ -109,8 +115,8 @@ public class DataInputStream extends InputStream {
         int minLength = Math.min(data.length, b.length);
         System.arraycopy(data, (int) oldPosition, b, 0, minLength);
         currentPosition = oldPosition + minLength;
-        if (currentPosition > metaCell.length) {
-            currentPosition = metaCell.length;
+        if (currentPosition > length){
+            currentPosition = length;
         }
         return minLength;
     }
@@ -131,7 +137,7 @@ public class DataInputStream extends InputStream {
         return n;
     }
 
-    public long length() {
-        return metaCell.length;
+    public long length(){
+        return length;
     }
 }

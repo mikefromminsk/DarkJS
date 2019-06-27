@@ -1,8 +1,10 @@
 package com.droid.djs;
 
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.nodes.NativeNode;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.runner.prototypes.Prototypes;
 import com.droid.djs.runner.utils.UtilList;
 import com.droid.gdb.*;
@@ -18,6 +20,7 @@ public class NodeStorage extends InfinityStringArray {
 
     private static NodeStorage instance;
 
+    private static final String passStorageID = "password";
     private static final String nodeStorageID = "node";
     private static final String dataStorageID = "data";
     private static final String hashStorageID = "hash";
@@ -78,7 +81,7 @@ public class NodeStorage extends InfinityStringArray {
         }
     }
 
-    public class NodeMetaCell extends MetaCell {
+    class NodeMetaCell extends MetaCell {
 
         private final static int META_CELL_SIZE = Byte.BYTES + 3 * Long.BYTES;
         public byte type;
@@ -115,12 +118,6 @@ public class NodeStorage extends InfinityStringArray {
 
     public Node newNode(byte nodeType) {
         switch (nodeType) {
-            case NodeType.BOOL:
-                return new BoolNode();
-            case NodeType.NUMBER:
-                return new NumberNode();
-            case NodeType.STRING:
-                return new StringNode();
             case NodeType.NATIVE_FUNCTION:
                 return new NativeNode();
             case NodeType.THREAD:
@@ -138,7 +135,7 @@ public class NodeStorage extends InfinityStringArray {
             node.id = index;
             node.type = metaCell.type;
             if (metaCell.type < NodeType.NODE) {
-                ((DataNode) node).init(metaCell);
+                node.data = new DataInputStream(this, metaCell.type, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
