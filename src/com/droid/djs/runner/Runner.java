@@ -9,7 +9,7 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
-import com.droid.djs.treads.ThreadPool;
+import com.droid.djs.treads.Threads;
 
 public class Runner {
 
@@ -206,7 +206,7 @@ public class Runner {
             ThreadNode threadNode = (ThreadNode) node;
             if (Thread.currentThread() != threadNode.thread) {
                 //TODO params for threads
-                ThreadPool.getInstance().run(node, null, true, null);
+                Threads.getInstance().run(node, null, true, null);
                 return;
             }
         }

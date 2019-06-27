@@ -3,12 +3,11 @@ package com.droid.net.http;
 
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.*;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.fs.Files;
 import com.droid.djs.treads.Secure;
-import com.droid.djs.treads.ThreadPool;
+import com.droid.djs.treads.Threads;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
@@ -78,7 +77,7 @@ public class HttpServer extends NanoHTTPD {
                             for (String argsKey : argsKeys)
                                 setParam(node, argsKey, args.get(argsKey));
 
-                            ThreadPool.getInstance().run(node, null, false, access_code);
+                            Threads.getInstance().run(node, null, false, access_code);
 
                             DataInputStream resultStream = (DataInputStream) getResult(node);
                             if (resultStream != null) {

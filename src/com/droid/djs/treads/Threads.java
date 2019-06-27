@@ -9,16 +9,15 @@ import com.droid.djs.serialization.js.JsParser;
 
 import java.util.List;
 
-public class ThreadPool {
+public class Threads {
 
-    // TODO add pool
     private NodeBuilder builder = new NodeBuilder();
-    private static ThreadPool threadPool;
+    private static Threads instance;
 
-    public static ThreadPool getInstance() {
-        if (threadPool == null)
-            threadPool = new ThreadPool();
-        return threadPool;
+    public static Threads getInstance() {
+        if (instance == null)
+            instance = new Threads();
+        return instance;
     }
 
     private ThreadNode findThread(Node node) {
@@ -39,11 +38,8 @@ public class ThreadPool {
     public Node runScript(String path, String sourceCode, Long code) {
         Node node = Files.getNode(path);
         Node module = jsParser.parse(node, sourceCode);
-        run(module,  null, false, code);
+        run(module, null, false, code);
         return node;
     }
 
-    public void stop() {
-
-    }
 }

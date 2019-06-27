@@ -5,7 +5,7 @@ import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.serialization.node.Serializer;
 import com.droid.djs.treads.Secure;
-import com.droid.djs.treads.ThreadPool;
+import com.droid.djs.treads.Threads;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ class RunnerTest {
                 for (File script : list) {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = ThreadPool.getInstance().runScript("tests/" + script.getName(), sourceCode,
+                    Node module = Threads.getInstance().runScript("tests/" + script.getName(), sourceCode,
                             Secure.getAccessCode(Main.login, Main.password));
 
                     Node testVar = builder.set(module).findLocal("test");

@@ -17,7 +17,7 @@ public class Secure {
     public static boolean start(String login, String password) {
         Long access_owner_code = getAccessCode(login, password);
 
-        boolean started = ThreadPool.getInstance().run(Master.getInstance(), null, false, access_owner_code);
+        boolean started = Threads.getInstance().run(Master.getInstance(), null, false, access_owner_code);
         if (started) {
             try {
                 httpServer = new HttpServer(HttpServer.debugPort);
@@ -40,7 +40,6 @@ public class Secure {
                         e1.printStackTrace();
                     }
                 }
-                ThreadPool.getInstance().stop();
                 return false;
             }
         }
