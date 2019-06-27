@@ -7,7 +7,7 @@ import com.droid.djs.runner.utils.Utils;
 
 public class NativeNode extends Node {
 
-    private Integer functionIndex; // TODO change to functionIndex
+    private Integer functionIndex;
     public Func func;
 
     public NativeNode() {
