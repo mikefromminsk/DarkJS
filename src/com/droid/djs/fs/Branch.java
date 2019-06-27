@@ -1,11 +1,8 @@
 package com.droid.djs.fs;
 
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeStyle;
-import com.droid.djs.fs.Files;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -49,7 +46,7 @@ public class Branch {
 
     public Node findPackage(Node node) {
         // if file
-        if (Files.getStyle(node, NodeStyle.SOURCE_CODE) != null)
+        if (builder.set(node).getSourceCodeNode() != null)
             return node;
         // if package
         if (builder.set(node).getLocalCount() > 1)

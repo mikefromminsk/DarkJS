@@ -254,6 +254,14 @@ public class NodeBuilder {
         return null;
     }
 
+    public Node getSourceCodeNode() {
+        if (node.sourceCode instanceof Node)
+            return (Node) node.sourceCode;
+        else if (node.sourceCode instanceof Long)
+            return (Node) (node.sourceCode = storage.get((Long) node.sourceCode));
+        return null;
+    }
+
     public NodeBuilder setValue(Node value) {
         node.value = value;
         return this;
@@ -309,6 +317,11 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder setSourceCode(Node sourceCode) {
+        node.sourceCode = sourceCode;
+        return this;
+    }
+
     public NodeBuilder setParser(Node node) {
         node.parser = node;
         return this;
@@ -336,10 +349,6 @@ public class NodeBuilder {
 
     public int getPropertiesCount() {
         return linksCount(node.prop);
-    }
-
-    public int getStylesCount() {
-        return linksCount(node.style);
     }
 
     private Node getListNode(ArrayList<Object> list, int index) {
@@ -373,10 +382,6 @@ public class NodeBuilder {
 
     public Node getPropertyNode(int index) {
         return getListNode(node.prop, index);
-    }
-
-    public Node getStyleNode(int index) {
-        return getListNode(node.style, index);
     }
 
     public NodeBuilder addLocal(Long id) {
@@ -450,13 +455,6 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder addStyle(Node item) {
-        if (node.style == null)
-            node.style = new ArrayList<>();
-        node.style.add(item);
-        return this;
-    }
-
     public void removeFromListNode(ArrayList<Object> list, Long nodeId) {
         if (list != null && nodeId != null) {
             Object find = null;
@@ -522,11 +520,6 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder removeStyle(Node item) {
-        if (item != null) removeFromListNode(node.style, item.id);
-        return this;
-    }
-
     public NodeBuilder setFunctionId(int functionId) {
         ((NativeNode) node).functionId = functionId;
         return this;
@@ -566,25 +559,6 @@ public class NodeBuilder {
         return null;
     }
 
-
-    public Node findStyle(byte[] title) {
-        if (node.id == null) commit();
-        Long titleId = storage.getDataId(title);
-        return findLocal(titleId);
-    }
-
-    public Node findStyle(Long titleId) {
-        // TODO refactor to get title
-        if (titleId != null) {
-            for (int i = 0; i < getStylesCount(); i++) {
-                Node node = getStyleNode(i);
-                Long itemNode = node.title instanceof Node ? ((Node) node.title).id : (Long) node.title;
-                if (titleId.equals(itemNode))
-                    return node;
-            }
-        }
-        return null;
-    }
 
     public Node getValueOrSelf() {
         Node value = getValueNode();
@@ -633,6 +607,9 @@ public class NodeBuilder {
             case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
                 break;
+            case SOURCE_CODE:
+                setSourceCode(linkValueNode);
+                break;
             case LOCAL:
                 addLocal(linkValueNode);
                 break;
@@ -644,9 +621,6 @@ public class NodeBuilder {
                 break;
             case CELL:
                 addCell(linkValueNode);
-                break;
-            case STYLE:
-                addStyle(linkValueNode);
                 break;
         }
     }
@@ -719,13 +693,6 @@ public class NodeBuilder {
         Node[] nodes = new Node[getLocalCount()];
         for (int i = 0; i < getLocalCount(); i++)
             nodes[i] = getLocalNode(i);
-        return nodes;
-    }
-
-    public Node[] getStyleNodes() {
-        Node[] nodes = new Node[getStylesCount()];
-        for (int i = 0; i < getStylesCount(); i++)
-            nodes[i] = getStyleNode(i);
         return nodes;
     }
 

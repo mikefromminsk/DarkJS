@@ -3,7 +3,6 @@ package com.droid.djs.nodes;
 import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
 import com.droid.gdb.Bytes;
-import com.droid.gdb.InfinityStringArrayCell;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -30,13 +29,13 @@ public class Node extends SuperNode {
     public Object prototype;
     public Object localParent;
     public Object parser; // TODO move to styles
+    public Object sourceCode;
 
     public ArrayList<Object> local;
     public ArrayList<Object> param;
     public ArrayList<Object> next;
     public ArrayList<Object> cell;
     public ArrayList<Object> prop;
-    public ArrayList<Object> style;
     // after addObject new link you should addObject it to listLinks and parse function
 
     public Node(NodeType type) {
@@ -84,6 +83,8 @@ public class Node extends SuperNode {
             linkListener.get(LinkType.PROTOTYPE, prototype, true);
         if (localParent != null)
             linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
+        if (sourceCode != null)
+            linkListener.get(LinkType.SOURCE_CODE, sourceCode, true);
         if (local != null)
             for (Object item : local)
                 linkListener.get(LinkType.LOCAL, item, false);
@@ -99,9 +100,6 @@ public class Node extends SuperNode {
         if (cell != null)
             for (Object item : cell)
                 linkListener.get(LinkType.CELL, item, false);
-        if (style != null)
-            for (Object item : style)
-                linkListener.get(LinkType.STYLE, item, false);
     }
 
 
@@ -160,11 +158,6 @@ public class Node extends SuperNode {
                 if (cell == null)
                     cell = new ArrayList<>();
                 cell.add(linkData);
-                break;
-            case STYLE:
-                if (style == null)
-                    style = new ArrayList<>();
-                style.add(linkData);
                 break;
         }
     }

@@ -16,7 +16,7 @@ public enum LinkType {
     PARAM,
     NEXT,
     CELL,
-    STYLE,
+    SOURCE_CODE,
     LOCAL_PARENT,
     NATIVE_FUNCTION_NUMBER,
     ACCESS_OWNER,

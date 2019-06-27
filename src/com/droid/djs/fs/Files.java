@@ -1,47 +1,14 @@
 package com.droid.djs.fs;
 
 import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.consts.NodeStyle;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class Files {
-
-    public static Node setStyle(Node node, String key, String value) {
-        return setStyle(node, key, new ByteArrayInputStream(value.getBytes()));
-    }
-
-    // TODO remove style and add FileNode with source code link type
-    public static Node setStyle(Node node, String key, InputStream value) {
-        return setStyle(node, key, new NodeBuilder().create(NodeType.STRING).setData(value).commit());
-    }
-
-    public static Node setStyle(Node node, String key, Node valueNode) {
-        NodeBuilder builder = new NodeBuilder();
-
-        Node keyNode = builder.create(NodeType.STRING).setData(key).commit();
-        Node nodeStyle = builder.set(node).findStyle(keyNode.id);
-        if (nodeStyle == null) {
-            Node sourceCodeNode = builder.create(NodeType.NODE).setTitle(keyNode).setValue(valueNode).commit();
-            builder.set(node).addStyle(sourceCodeNode).commit();
-        } else {
-            builder.set(nodeStyle).setValue(valueNode).commit();
-        }
-        return valueNode;
-    }
-
-    public static Node getStyle(Node node, String styleKey) {
-        NodeBuilder builder = new NodeBuilder();
-        for (Node style : builder.set(node).getStyleNodes()) {
-            if (builder.set(style).getTitleString().equals(styleKey))
-                return builder.getValueNode();
-        }
-        return null;
-    }
 
     public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
@@ -154,8 +121,10 @@ public class Files {
 
     public static Node putFile(Node node, String path, InputStream stream) {
         Node fileNode = getNode(node, path);
-        Node dataNode = setStyle(fileNode, NodeStyle.SOURCE_CODE, stream);
-        new NodeBuilder().set(fileNode).setValue(dataNode).commit();
+        NodeBuilder builder = new NodeBuilder();
+        Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
+        builder.set(fileNode).setSourceCode(dataNode).commit();
+        builder.set(fileNode).setValue(dataNode).commit();
         return fileNode;
     }
 
@@ -167,18 +136,6 @@ public class Files {
     }
 
     public static boolean isDirectory(Node node) {
-        return (node == null || Files.getStyle(node, NodeStyle.SOURCE_CODE) == null);
-    }
-
-    public interface FindFile {
-        void find(Node node);
-    }
-
-    public static void forEachFiles(Node node, FindFile func) {
-        NodeBuilder builder = new NodeBuilder().set(node);
-        if (getStyle(node, NodeStyle.SOURCE_CODE) != null)
-            func.find(node);
-        for (Node local : builder.getLocalNodes())
-            forEachFiles(local, func);
+        return (node == null || new NodeBuilder().set(node).getSourceCodeNode() == null);
     }
 }
