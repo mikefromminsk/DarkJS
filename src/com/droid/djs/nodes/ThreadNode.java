@@ -31,13 +31,13 @@ public class ThreadNode extends Node implements Runnable {
     }
 
     @Override
-    void restore(byte linkType, long linkData) {
+    void restore(LinkType linkType, long linkData) {
         super.restore(linkType, linkData);
         switch (linkType) {
-            case LinkType.ACCESS_OWNER:
+            case ACCESS_OWNER:
                 access_owner = linkData;
                 break;
-            case LinkType.ACCESS_USER:
+            case ACCESS_USER:
                 if (access_user == null)
                     access_user = new ArrayList<>();
                 access_user.add(linkData);

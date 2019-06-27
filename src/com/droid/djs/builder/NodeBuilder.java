@@ -19,7 +19,7 @@ public class NodeBuilder {
         return create(NodeType.NODE);
     }
 
-    public NodeBuilder create(byte nodeType) {
+    public NodeBuilder create(NodeType nodeType) {
         node = storage.newNode(nodeType);
         node.type = nodeType;
         return this;
@@ -637,70 +637,70 @@ public class NodeBuilder {
         return node;
     }
 
-    public void setLink(byte linkType, Node linkValueNode) {
+    public void setLink(LinkType linkType, Node linkValueNode) {
         switch (linkType) {
-            case LinkType.VALUE:
+            case VALUE:
                 setValue(linkValueNode);
                 break;
-            case LinkType.SOURCE:
+            case SOURCE:
                 setSource(linkValueNode);
                 break;
-            case LinkType.TITLE:
+            case TITLE:
                 setTitle(linkValueNode);
                 break;
-            case LinkType.SET:
+            case SET:
                 setSet(linkValueNode);
                 break;
-            case LinkType.TRUE:
+            case TRUE:
                 setTrue(linkValueNode);
                 break;
-            case LinkType.ELSE:
+            case ELSE:
                 setElse(linkValueNode);
                 break;
-            case LinkType.EXIT:
+            case EXIT:
                 setExit(linkValueNode);
                 break;
-            case LinkType.WHILE:
+            case WHILE:
                 setWhile(linkValueNode);
                 break;
-            case LinkType.IF:
+            case IF:
                 setIf(linkValueNode);
                 break;
-            case LinkType.PROP:
+            case PROP:
                 addProperty(linkValueNode);
                 break;
-            case LinkType.PROTOTYPE:
+            case PROTOTYPE:
                 setPrototype(linkValueNode);
                 break;
-            case LinkType.LOCAL_PARENT:
+            case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
                 break;
-            case LinkType.HISTORY:
+            case HISTORY:
                 setHistory(linkValueNode);
                 break;
-            case LinkType.BODY:
+            case BODY:
                 setBody(linkValueNode);
                 break;
-            case LinkType.LOCAL:
+            case LOCAL:
                 addLocal(linkValueNode);
                 break;
-            case LinkType.PARAM:
+            case PARAM:
                 addParam(linkValueNode);
                 break;
-            case LinkType.NEXT:
+            case NEXT:
                 addNext(linkValueNode);
                 break;
-            case LinkType.CELL:
+            case CELL:
                 addCell(linkValueNode);
                 break;
-            case LinkType.STYLE:
+            case STYLE:
                 addStyle(linkValueNode);
                 break;
         }
     }
 
     public void clearLinks() {
-        byte type = node.type;
+        NodeType type = node.type;
         node.parse(new byte[0]);
         node.type = type;
     }
@@ -716,12 +716,12 @@ public class NodeBuilder {
         storage.transactionCommit();
     }
 
-    public int getType() {
+    public NodeType getType() {
         return node.type;
     }
 
     public boolean isData() {
-        return node.type < NodeType.NODE;
+        return node.type.ordinal() < NodeType.NODE.ordinal();
     }
 
     public boolean isString() {

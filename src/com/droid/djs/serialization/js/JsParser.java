@@ -313,7 +313,7 @@ public class JsParser {
                     }
                     return arr;
                 }
-                byte nodeType = NodeType.BOOL;
+                NodeType nodeType = NodeType.BOOL;
                 if (literalNode.isNumeric())
                     nodeType = NodeType.NUMBER;
                 else if (literalNode.isString())

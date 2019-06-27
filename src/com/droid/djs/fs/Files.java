@@ -58,7 +58,7 @@ public class Files {
         return getNode(path, NodeType.NODE);
     }
 
-    public static Node getNode(String path, Byte nodeType) {
+    public static Node getNode(String path, NodeType nodeType) {
         return getNode(Master.getInstance(), path, nodeType);
     }
 
@@ -66,15 +66,15 @@ public class Files {
         return getNode(root, path, NodeType.NODE);
     }
 
-    public static Node getNode(Node root, String path, Byte nodeType) {
+    public static Node getNode(Node root, String path, NodeType nodeType) {
         return getNode(root, path, nodeType, null);
     }
 
-    public static Node getNode(String path, Byte nodeType, Long access_code) {
+    public static Node getNode(String path, NodeType nodeType, Long access_code) {
         return getNode(Master.getInstance(), path, nodeType, access_code);
     }
 
-    public static Node getNode(Node root, String path, Byte nodeType, Long access_code) {
+    public static Node getNode(Node root, String path, NodeType nodeType, Long access_code) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO remove types from names

@@ -20,7 +20,7 @@ public class NativeNode extends Node {
 
 
     @Override
-    void restore(byte linkType, long linkData) {
+    void restore(LinkType linkType, long linkData) {
         super.restore(linkType, linkData);
         if (linkType == LinkType.NATIVE_FUNCTION_NUMBER)
             functionId = (int) linkData;

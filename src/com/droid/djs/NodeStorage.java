@@ -30,13 +30,11 @@ public class NodeStorage extends InfinityStringArray {
     private static InfinityFile dataStorage;
     private static InfinityHashMap dataHashTree;
     private static ArrayList<Node> transactionNodes;
-    private static Map<Long, Node> nodesCache = new TreeMap<>();
+    private static Map<Long, Node> nodesCache;
 
 
     public NodeStorage(String infinityFileID) {
         super(infinityFileID);
-        if (meta.fileData.sumFilesSize == 0)
-            initStorage();
     }
 
     private void initStorage() {
@@ -50,11 +48,12 @@ public class NodeStorage extends InfinityStringArray {
 
     public static NodeStorage getInstance() {
         if (instance == null) {
-            instance = new NodeStorage(nodeStorageID);
-
+            nodesCache = new TreeMap<>();
             transactionNodes = new ArrayList<>();
+            instance = new NodeStorage(nodeStorageID);
             dataStorage = new InfinityFile(dataStorageID);
             dataHashTree = new InfinityHashMap(hashStorageID);
+            instance.initStorage();
         }
         return instance;
     }
@@ -116,11 +115,11 @@ public class NodeStorage extends InfinityStringArray {
         return new NodeMetaCell();
     }
 
-    public Node newNode(byte nodeType) {
+    public Node newNode(NodeType nodeType) {
         switch (nodeType) {
-            case NodeType.NATIVE_FUNCTION:
+            case NATIVE_FUNCTION:
                 return new NativeNode();
-            case NodeType.THREAD:
+            case THREAD:
                 return new ThreadNode();
             default:
                 return new Node(nodeType);
@@ -131,11 +130,12 @@ public class NodeStorage extends InfinityStringArray {
         Node node = nodesCache.get(index);
         if (node == null) {
             NodeMetaCell metaCell = (NodeMetaCell) getMeta(index);
-            node = newNode(metaCell.type);
+            NodeType nodeType = NodeType.values()[metaCell.type];
+            node = newNode(nodeType);
             node.id = index;
-            node.type = metaCell.type;
-            if (metaCell.type < NodeType.NODE) {
-                node.data = new DataInputStream(this, metaCell.type, metaCell.start, metaCell.length);
+            node.type = nodeType;
+            if (nodeType.ordinal() < NodeType.NODE.ordinal()) {
+                node.data = new DataInputStream(this, nodeType, metaCell.start, metaCell.length);
             } else {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
@@ -149,7 +149,7 @@ public class NodeStorage extends InfinityStringArray {
     }
 
     public void set(long index, Node node) {
-        if (node.type >= NodeType.NODE)
+        if (node.type.ordinal() >= NodeType.NODE.ordinal())
             super.setObject(index, node);
         // else {data is not mutable}
     }
@@ -157,13 +157,13 @@ public class NodeStorage extends InfinityStringArray {
     private static Random random = new Random();
 
     public void add(Node node) {
-        if (node.type >= NodeType.NODE) {
+        if (node.type.ordinal() >= NodeType.NODE.ordinal()) {
             byte[] data = node.build();
             NodeMetaCell metaCell = new NodeMetaCell();
             if (data != null/* && data.length != 0*/) {
                 byte[] sector = dataToSector(data);
                 long newAccessKey = encodeData(sector);
-                metaCell.type = node.type;
+                metaCell.type = (byte) node.type.ordinal();
                 metaCell.start = super.add(sector);
                 metaCell.length = data.length;
                 metaCell.accessKey = newAccessKey;
@@ -178,7 +178,7 @@ public class NodeStorage extends InfinityStringArray {
                     OutputStream outStream = null;
 
                     NodeMetaCell nodeMetaCell = new NodeMetaCell();
-                    nodeMetaCell.type = node.type;
+                    nodeMetaCell.type = (byte) node.type.ordinal();
                     nodeMetaCell.length = 0;
                     char[] buffer = new char[MAX_STORAGE_DATA_IN_DB];
                     byte[] bytes = null;
@@ -211,7 +211,7 @@ public class NodeStorage extends InfinityStringArray {
                                 nodeMetaCell.start = dataStorage.add(bytes);
                             }
                             node.id = meta.add(nodeMetaCell);
-                            node.data = new DataInputStream(this, nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.data = new DataInputStream(this, node.type, nodeMetaCell.start, nodeMetaCell.length);
                             node.externalData = null;
                             dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                         } else {
@@ -220,7 +220,7 @@ public class NodeStorage extends InfinityStringArray {
                             // TODO return instance from nodes cache
                             nodeMetaCell = (NodeMetaCell) meta.get(prevNodeId, nodeMetaCell);
                             node.id = prevNodeId;
-                            node.data = new DataInputStream(this, nodeMetaCell.type, nodeMetaCell.start, nodeMetaCell.length);
+                            node.data = new DataInputStream(this, node.type, nodeMetaCell.start, nodeMetaCell.length);
                             node.externalData = null;
                         }
                     } else {

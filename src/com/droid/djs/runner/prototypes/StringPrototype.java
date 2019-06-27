@@ -8,7 +8,7 @@ public class StringPrototype extends Utils {
 
     @Override
     public String name() {
-        return DEFAULT_PROTOTYPES_DIR + NodeType.toString(NodeType.STRING);
+        return DEFAULT_PROTOTYPES_DIR + NodeType.STRING.toString();
     }
 
     @Override

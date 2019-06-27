@@ -19,13 +19,13 @@ abstract public class Utils {
         builder.commit();
     }
 
-    public Node par(String name, byte nodeType) {
+    public Node par(String name, NodeType nodeType) {
         Node title = builder.create(NodeType.STRING).setData(name).commit();
         Node defValue = null;
         if (nodeType == NodeType.NUMBER)
             defValue = builder.create(nodeType).setData(0D).commit();
         else if (nodeType == NodeType.STRING)
-            defValue = builder.create(nodeType).setData("").commit();
+            defValue = builder.create(nodeType).setData("string").commit();
         else
             defValue = builder.create(nodeType).commit();
         return builder.create().setTitle(title).setValue(defValue).commit();

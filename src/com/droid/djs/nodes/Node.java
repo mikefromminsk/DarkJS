@@ -1,6 +1,7 @@
 package com.droid.djs.nodes;
 
 import com.droid.djs.consts.LinkType;
+import com.droid.djs.consts.NodeType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.InfinityStringArrayCell;
 
@@ -16,7 +17,7 @@ public class Node extends SuperNode {
     public InputStream externalData;
     // TODO move type to node body in the storage
     // TODO add flag isData into nodeMeta
-    public byte type;
+    public NodeType type;
     public Object value;
     public Object source;
     public Object title; // TODO maybe move to style
@@ -40,7 +41,7 @@ public class Node extends SuperNode {
     public ArrayList<Object> style;
     // after addObject new link you should addObject it to listLinks and parse function
 
-    public Node(byte type) {
+    public Node(NodeType type) {
         this.type = type;
     }
 
@@ -53,7 +54,7 @@ public class Node extends SuperNode {
                 linkId = (Long) link;
             else if (link instanceof Node)
                 linkId = ((Node) link).id;
-            long dataLink = linkId * 256L + (long) linkType;
+            long dataLink = linkId * 256L + (long) linkType.ordinal();
             links.add(dataLink);
         });
         return Bytes.fromLongList(links);
@@ -111,68 +112,68 @@ public class Node extends SuperNode {
 
 
     @Override
-    void restore(byte linkType, long linkData) {
+    void restore(LinkType linkType, long linkData) {
         switch (linkType) {
-            case LinkType.VALUE:
+            case VALUE:
                 value = linkData;
                 break;
-            case LinkType.SOURCE:
+            case SOURCE:
                 source = linkData;
                 break;
-            case LinkType.TITLE:
+            case TITLE:
                 title = linkData;
                 break;
-            case LinkType.SET:
+            case SET:
                 set = linkData;
                 break;
-            case LinkType.TRUE:
+            case TRUE:
                 _true = linkData;
                 break;
-            case LinkType.ELSE:
+            case ELSE:
                 _else = linkData;
                 break;
-            case LinkType.EXIT:
+            case EXIT:
                 exit = linkData;
                 break;
-            case LinkType.WHILE:
+            case WHILE:
                 _while = linkData;
                 break;
-            case LinkType.IF:
+            case IF:
                 _if = linkData;
                 break;
-            case LinkType.PROTOTYPE:
+            case PROTOTYPE:
                 prototype = linkData;
                 break;
-            case LinkType.BODY:
+            case BODY:
                 body = linkData;
                 break;
-            case LinkType.LOCAL_PARENT:
+            case LOCAL_PARENT:
                 localParent = linkData;
                 break;
-            case LinkType.HISTORY:
+            case HISTORY:
                 history = linkData;
                 break;
-            case LinkType.LOCAL:
+            case LOCAL:
                 if (local == null)
                     local = new ArrayList<>();
                 local.add(linkData);
                 break;
-            case LinkType.PARAM:
+            case PARAM:
                 if (param == null)
                     param = new ArrayList<>();
                 param.add(linkData);
                 break;
-            case LinkType.NEXT:
+            case NEXT:
                 if (next == null)
                     next = new ArrayList<>();
                 next.add(linkData);
                 break;
-            case LinkType.CELL:
+            case CELL:
                 if (cell == null)
                     cell = new ArrayList<>();
                 cell.add(linkData);
                 break;
-            case LinkType.STYLE:
+            case STYLE:
                 if (style == null)
                     style = new ArrayList<>();
                 style.add(linkData);

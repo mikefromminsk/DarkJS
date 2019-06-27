@@ -37,11 +37,11 @@ public class Runner {
             run(propNode);
             // TODO check getValue or getValueOrSelf
             Node propNameNode = builder.set(propNode).getValueOrSelf();
-            byte propType = propNameNode.type;
+            NodeType propType = propNameNode.type;
             if (propType == NodeType.STRING) {
                 String propName = (String) builder.set(propNameNode).getData().getObject();
                 // TODO delete duplicate with first call in this func
-                Byte nodeType = null;
+                NodeType nodeType = null;
                 if (builder.set(node).getValue() != null)
                     nodeType = builder.set(node).getValueNode().type;
                 Node prototypeNode = builder.set(node).getPrototypeNode();

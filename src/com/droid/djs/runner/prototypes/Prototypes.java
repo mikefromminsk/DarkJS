@@ -22,7 +22,7 @@ public class Prototypes {
     }
 
     // TODO delete
-    public static Node get(Byte nodeType) {
-        return Files.getNode(getInstance(), NodeType.toString(nodeType), null);
+    public static Node get(NodeType nodeType) {
+        return Files.getNode(getInstance(), nodeType.toString(), null);
     }
 }

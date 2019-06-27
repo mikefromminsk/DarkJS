@@ -87,9 +87,9 @@ public class Caller {
         Object leftObject = null;
         Object rightObject = null;
 
-        if (ths != null && ths.type < NodeType.NODE) thsObject = builder.set(ths).getData().getObject();
-        if (left != null && left.type < NodeType.NODE) leftObject = builder.set(left).getData().getObject();
-        if (right != null && right.type < NodeType.NODE) rightObject = builder.set(right).getData().getObject();
+        if (ths != null && ths.type.ordinal() < NodeType.NODE.ordinal()) thsObject = builder.set(ths).getData().getObject();
+        if (left != null && left.type.ordinal() < NodeType.NODE.ordinal()) leftObject = builder.set(left).getData().getObject();
+        if (right != null && right.type.ordinal() < NodeType.NODE.ordinal()) rightObject = builder.set(right).getData().getObject();
 
         Object firstObject = leftObject;
         Object secondObject = rightObject;

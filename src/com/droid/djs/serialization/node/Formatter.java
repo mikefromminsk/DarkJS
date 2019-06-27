@@ -82,24 +82,24 @@ public class Formatter {
         data.put(nodeName, links);
 
         if (node.type != NodeType.NODE)
-            links.put(TYPE_PREFIX, NodeType.toString(node.type));
+            links.put(TYPE_PREFIX, node.type.toString());
 
-        if (node.type < NodeType.NODE)
+        if (node.type.ordinal() < NodeType.NODE.ordinal())
             links.put(DATA_PREFIX, dataSimplification(builder, node));
 
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
 
             if (linkType == LinkType.NATIVE_FUNCTION_NUMBER) {
-                String linkTypeStr = LinkType.toString(linkType);
+                String linkTypeStr = linkType.toString().toLowerCase();
                 links.put(linkTypeStr, "" + link);
                 return;
             }
             // Nodes links
             Node linkNode = link instanceof Long ? builder.get((Long) link).getNode() : (Node) link;
-            String linkTypeStr = LinkType.toString(linkType);
+            String linkTypeStr = linkType.toString().toLowerCase();
             if (singleValue) {
-                if (linkNode.type < NodeType.NODE)
+                if (linkNode.type.ordinal() < NodeType.NODE.ordinal())
                     links.put(linkTypeStr, dataSimplification(builder, linkNode));
                 else if (depth > 0) {
                     links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
@@ -111,7 +111,7 @@ public class Formatter {
                     links.put(linkTypeStr, linkObject = new ArrayList<>());
                 ArrayList linkList = (ArrayList) linkObject;
 
-                if (linkNode.type < NodeType.NODE) // TODO exception
+                if (linkNode.type.ordinal() < NodeType.NODE.ordinal()) // TODO exception
                     linkList.add(dataSimplification(builder, linkNode));
                 else {
                     linkList.add(NODE_PREFIX + linkNode.id);
@@ -135,7 +135,7 @@ public class Formatter {
     }
 
 
-    private static void setLink(NodeBuilder builder, com.droid.djs.nodes.Node node, byte linkType, Map<String, com.droid.djs.nodes.Node> replacementTable, String itemStr) {
+    private static void setLink(NodeBuilder builder, com.droid.djs.nodes.Node node, LinkType linkType, Map<String, com.droid.djs.nodes.Node> replacementTable, String itemStr) {
         com.droid.djs.nodes.Node linkValueNode = null;
 
         if (itemStr.equals(Formatter.TRUE) || itemStr.equals(Formatter.FALSE))
@@ -189,22 +189,22 @@ public class Formatter {
 
             Object nodeTypeObj = links.get(Formatter.TYPE_PREFIX);
             if (nodeTypeObj instanceof char[]) {
-                byte nodeType = NodeType.fromString(new String((char[]) nodeTypeObj));
+                NodeType nodeType = NodeType.valueOf(new String((char[]) nodeTypeObj));
                 if (nodeType == NodeType.NATIVE_FUNCTION) {
                     Object functionIdObj = links.get(Formatter.FUNCTION_ID_PREFIX);
                     builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionId(Integer.valueOf(new String((char[]) functionIdObj)))
                             .commit();
-                } else if (nodeType != -1) {
+                } /* else if (nodeType != -1) {
                     node.type = nodeType;
-                }
+                }*/
             }
 
             builder.set(node).clearLinks();
             for (String linkName : links.keySet()) {
                 Object obj = links.get(linkName);
-                byte linkType = LinkType.fromString(linkName);
-                if (linkType != -1)
+                LinkType linkType = LinkType.valueOf(linkName);
+               /* if (linkType != -1)*/
                     if (obj instanceof ArrayList) {
                         for (Object item : (ArrayList) obj)
                             if (item instanceof String)

@@ -1,5 +1,6 @@
 package com.droid.djs.nodes;
 
+import com.droid.djs.consts.LinkType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.InfinityStringArrayCell;
 
@@ -16,14 +17,14 @@ public abstract class SuperNode implements InfinityStringArrayCell {
         for (long dataLink : links) {
             byte linkType = (byte) (dataLink % 256);
             long linkData = (dataLink - linkType) / 256;
-            restore(linkType, linkData);
+            restore(LinkType.values()[linkType], linkData);
         }
     }
 
-    abstract void restore(byte linkType, long linkData);
+    abstract void restore(LinkType linkType, long linkData);
 
     public interface NodeLinkListener {
-        void get(byte linkType, Object link, boolean singleValue);
+        void get(LinkType linkType, Object link, boolean singleValue);
     }
 
     abstract void listLinks(Node.NodeLinkListener linkListener);

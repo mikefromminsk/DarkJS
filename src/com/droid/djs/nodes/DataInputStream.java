@@ -14,14 +14,14 @@ public class DataInputStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
     private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
-    private byte type;
+    private NodeType type;
     public long start;
     public long length;
     private long currentPosition;
     private NodeStorage storage;
     private FileReader fileReader;
 
-    public DataInputStream(NodeStorage storage, byte type, long start, long length) {
+    public DataInputStream(NodeStorage storage, NodeType type, long start, long length) {
         this.storage = storage;
         this.type = type;
         this.start = start;
@@ -84,9 +84,9 @@ public class DataInputStream extends InputStream {
     public Object getObject() {
         String string = readString();
         switch (type) {
-            case NodeType.BOOL:
+            case BOOL:
                 return Boolean.valueOf(string);
-            case NodeType.NUMBER:
+            case NUMBER:
                 return Double.valueOf(string);
             default:
                 return string;
