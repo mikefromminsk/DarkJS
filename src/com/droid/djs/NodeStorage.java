@@ -78,36 +78,6 @@ public class NodeStorage extends InfinityStringArray {
         }
     }
 
-    class NodeMetaCell extends MetaCell {
-
-        private final static int META_CELL_SIZE = Byte.BYTES + 3 * Long.BYTES;
-        public byte type;
-
-        @Override
-        public void parse(byte[] data) {
-            ByteBuffer bytebuffer = ByteBuffer.wrap(data);
-            type = bytebuffer.get();
-            start = bytebuffer.getLong();
-            length = bytebuffer.getLong();
-            accessKey = bytebuffer.getLong();
-        }
-
-        @Override
-        public byte[] build() {
-            ByteBuffer bytebuffer = ByteBuffer.allocate(META_CELL_SIZE);
-            bytebuffer.put(type);
-            bytebuffer.putLong(start);
-            bytebuffer.putLong(length);
-            bytebuffer.putLong(accessKey);
-            return bytebuffer.array();
-        }
-
-        @Override
-        public int getSize() {
-            return META_CELL_SIZE;
-        }
-    }
-
     @Override
     public MetaCell initMeta() {
         return new NodeMetaCell();
@@ -138,7 +108,6 @@ public class NodeStorage extends InfinityStringArray {
                 byte[] readiedData = read(metaCell.start, metaCell.length);
                 if (readiedData == null)
                     return null;
-                decodeData(readiedData, metaCell.accessKey);
                 node.parse(readiedData);
             }
             nodesCache.put(index, node);
@@ -160,11 +129,9 @@ public class NodeStorage extends InfinityStringArray {
             NodeMetaCell metaCell = new NodeMetaCell();
             if (data != null/* && data.length != 0*/) {
                 byte[] sector = dataToSector(data);
-                long newAccessKey = encodeData(sector);
                 metaCell.type = (byte) node.type.ordinal();
                 metaCell.start = super.add(sector);
                 metaCell.length = data.length;
-                metaCell.accessKey = newAccessKey;
             }
             node.id = meta.add(metaCell);
         } else {

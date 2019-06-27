@@ -35,7 +35,6 @@ public class InfinityStringArray extends InfinityFile {
     public InfinityStringArrayCellParser getObject(long index, InfinityStringArrayCellParser dest) {
         MetaCell metaCell = getMeta(index);
         byte[] readiedData = read(metaCell.start, metaCell.length);
-        decodeData(readiedData, metaCell.accessKey);
         dest.parse(readiedData);
         return dest;
     }
@@ -51,27 +50,6 @@ public class InfinityStringArray extends InfinityFile {
         return getString(index).getBytes();
     }
 
-    private static Random randomOfAccessKeys = new Random(System.currentTimeMillis());
-    private static Random random = new Random();
-
-    public static long encodeData(byte[] data) {
-        long accessKey = randomOfAccessKeys.nextLong();
-        /*random.setSeed(accessKey);
-        byte[] gamma = new byte[data.length];
-        random.nextBytes(gamma);
-        for (int i = 0; i < data.length; i++)
-            data[i] = (byte) ((data[i] + gamma[i]) % 256);*/
-        return accessKey;
-    }
-
-    public static void decodeData(byte[] data, long accessKey) {
-        /*random.setSeed(accessKey);
-        byte[] gamma = new byte[data.length];
-        random.nextBytes(gamma);
-        for (int i = 0; i < data.length; i++)
-            data[i] = (byte) ((256 + (data[i] - gamma[i])) % 256);*/
-    }
-
     public void setBytes(long index, byte[] data) {
         MetaCell metaCell = getMeta(index);
         int lastSectorLength = getSectorLength((int) metaCell.length);
@@ -81,22 +59,18 @@ public class InfinityStringArray extends InfinityFile {
             removeSector(index, lastSectorLength);
             byte[] sectorWithData = new byte[newSectorLength];
             System.arraycopy(data, 0, sectorWithData, 0, data.length);
-            long newAccessKey = encodeData(sectorWithData);
             if (garbage == null) {
                 metaCell.start = super.add(sectorWithData);
                 metaCell.length = data.length;
-                metaCell.accessKey = newAccessKey;
                 meta.set(index, metaCell);
             } else {
                 write(garbage.start, sectorWithData);
                 garbage.length = data.length;
-                garbage.accessKey = newAccessKey;
                 meta.set(index, garbage);
             }
         } else {
             byte[] sectorWithData = new byte[lastSectorLength];
             System.arraycopy(data, 0, sectorWithData, 0, data.length);
-            metaCell.accessKey = encodeData(sectorWithData);
             metaCell.length = data.length;
             meta.set(index, metaCell);
             write(metaCell.start, sectorWithData);
@@ -152,10 +126,8 @@ public class InfinityStringArray extends InfinityFile {
         MetaCell metaCell = initMeta();
         if (data != null && data.length != 0) {
             byte[] sector = dataToSector(data);
-            long newAccessKey = encodeData(sector);
             metaCell.start = super.add(sector);
             metaCell.length = data.length;
-            metaCell.accessKey = newAccessKey;
         }
         return meta.add(metaCell);
     }
