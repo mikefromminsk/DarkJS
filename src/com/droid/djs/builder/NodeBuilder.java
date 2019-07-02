@@ -8,8 +8,7 @@ import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.nodes.data.Data;
-import com.droid.djs.nodes.data.StringData;
+import com.droid.djs.nodes.Data;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -191,11 +190,11 @@ public class NodeBuilder {
         return null;
     }
 
-    public StringData getTitleNode() {
-        if (node.title instanceof StringData)
-            return (StringData) node.title;
+    public Data getTitleNode() {
+        if (node.title instanceof Data)
+            return (Data) node.title;
         else if (node.title instanceof Long)
-            return (StringData) (node.title = nodeStorage.get((Long) node.title));
+            return (Data) (node.title = nodeStorage.get((Long) node.title));
         return null;
     }
 
@@ -692,7 +691,7 @@ public class NodeBuilder {
     }
 
     public String getTitleString() {
-        StringData title = getTitleNode();
+        Data title = getTitleNode();
         if (title != null && title.data != null)
             return title.data.readString();
         return null;

@@ -6,10 +6,7 @@ import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.nodes.data.BoolData;
-import com.droid.djs.nodes.data.Data;
-import com.droid.djs.nodes.data.NumberData;
-import com.droid.djs.nodes.data.StringData;
+import com.droid.djs.nodes.Data;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
 
@@ -79,11 +76,9 @@ public class NodeStorage extends InfinityStringArray {
     public Node newNode(NodeType nodeType) {
         switch (nodeType) {
             case BOOL:
-                return new BoolData();
             case NUMBER:
-                return new NumberData();
             case STRING:
-                return new StringData();
+                return new Data(nodeType);
             case NATIVE_FUNCTION:
                 return new NativeNode();
             case THREAD:

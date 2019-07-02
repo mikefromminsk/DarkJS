@@ -1,8 +1,7 @@
 package com.droid.djs;
 
 import com.droid.djs.nodes.DataInputStream;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.data.Data;
+import com.droid.djs.nodes.Data;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
 import com.droid.gdb.InfinityFile;
@@ -10,7 +9,6 @@ import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
