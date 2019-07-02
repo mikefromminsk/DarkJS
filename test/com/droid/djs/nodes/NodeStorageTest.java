@@ -46,7 +46,7 @@ class NodeStorageTest implements Runnable {
             // progress request
             return out;
         } else {
-            if (out == null) { // init request
+            if (out == null) { // getFunctions request
                 out = new ArrayList<>();
                 return null;
             } else if (out.size() > 0) {  // last request

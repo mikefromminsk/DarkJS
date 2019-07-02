@@ -61,7 +61,8 @@ public class DataOutputStream extends OutputStream {
         if (newFileName.endsWith(".json")) {
             new JsonParser().parse(res);
         } else if (newFileName.endsWith(".node.js")) {
-            String sourceCode = builder.getValueNode().data.readString();
+            NodeBuilder value = new NodeBuilder().set(builder.getValueNode());
+            String sourceCode = value.getData().readString();
             builder.setValue(null).commit();
             new JsParser().parse(res, sourceCode);
         } else if (newFileName.equals("index.html")) {

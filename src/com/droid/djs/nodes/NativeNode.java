@@ -23,7 +23,11 @@ public class NativeNode extends Node {
 
     public void setFunctionIndex(Integer functionIndex) {
         this.functionIndex = functionIndex;
-        func = Utils.functions.get(functionIndex);
+        func = Utils.getFunctions().get(functionIndex);
+    }
+
+    public Integer getFunctionIndex(){
+        return functionIndex;
     }
 
     @Override

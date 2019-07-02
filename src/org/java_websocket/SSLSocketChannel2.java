@@ -100,7 +100,7 @@ public class SSLSocketChannel2 implements ByteChannel, WrappedByteChannel {
         this.sslEngine = sslEngine;
         this.exec = exec;
 
-        readEngineResult = writeEngineResult = new SSLEngineResult( Status.BUFFER_UNDERFLOW, sslEngine.getHandshakeStatus(), 0, 0 ); // init to prevent NPEs
+        readEngineResult = writeEngineResult = new SSLEngineResult( Status.BUFFER_UNDERFLOW, sslEngine.getHandshakeStatus(), 0, 0 ); // getFunctions to prevent NPEs
 
         tasks = new ArrayList<Future<?>>( 3 );
         if( key != null ) {

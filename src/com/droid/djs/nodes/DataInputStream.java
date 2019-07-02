@@ -1,7 +1,7 @@
 package com.droid.djs.nodes;
 
+import com.droid.djs.DataStorage;
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.NodeStorage;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
 
@@ -13,16 +13,15 @@ import java.util.Arrays;
 public class DataInputStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
-    private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
+    private static final int BUFFER_SIZE = DataStorage.MAX_STORAGE_DATA_IN_DB;
     private NodeType type;
     public long start;
     public long length;
     private long currentPosition;
-    private NodeStorage storage;
+    private DataStorage dataStorage = DataStorage.getInstance();
     private FileReader fileReader;
 
-    public DataInputStream(NodeStorage storage, NodeType type, long start, long length) {
-        this.storage = storage;
+    public DataInputStream( NodeType type, long start, long length) {
         this.type = type;
         this.start = start;
         this.length = length;
@@ -36,7 +35,7 @@ public class DataInputStream extends InputStream {
     }
 
     private byte[] readFromDb() {
-        byte[] data = storage.getData(start, currentPosition, (int) Math.min(BUFFER_SIZE, length));
+        byte[] data = dataStorage.getData(start, currentPosition, (int) Math.min(BUFFER_SIZE, length));
         currentPosition += data.length;
         return data;
     }
@@ -67,7 +66,7 @@ public class DataInputStream extends InputStream {
         StringBuilder stringBuilder = new StringBuilder();
         while (hasNext()) {
             char[] buffer;
-            if (length < NodeStorage.MAX_STORAGE_DATA_IN_DB)
+            if (length < DataStorage.MAX_STORAGE_DATA_IN_DB)
                 buffer = Bytes.toCharArray(readFromDb());
             else
                 buffer = readFromFs();

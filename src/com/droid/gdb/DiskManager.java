@@ -33,7 +33,7 @@ public class DiskManager {
 
     private DiskManager() throws FileNotFoundException {
         // TODO double save settings
-        // TODO problem when DiskManager init without saving data rights
+        // TODO problem when DiskManager getFunctions without saving data rights
 
         if (!dbDir.isDirectory())
             if (!dbDir.mkdirs())

@@ -1,9 +1,11 @@
 package com.droid.djs.serialization.js;
 
+import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
+import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.utils.MathUtils;
 import jdk.nashorn.internal.ir.*;
@@ -112,8 +114,9 @@ public class JsParser {
                 TokenType tokenType = unaryNode.tokenType();
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = jsLine(module, unaryNode.getExpression());
+                    NativeNode nativeNode = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(tokenType));
                     Node func = builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(MathUtils.tokenToFunctionIndex(tokenType))
+                            .setFunctionIndex(nativeNode.getFunctionIndex())
                             .addParam(variable)
                             .commit();
                     return builder.create()
@@ -122,9 +125,10 @@ public class JsParser {
                             .setSet(func)
                             .commit();
                 } else if (tokenType.toString().equals("-")) {
+                    NativeNode nativeNode = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.UNARY_MINUS);
                     Node expression = jsLine(module, unaryNode.getExpression());
                     return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(MathUtils.funcNameToFuncIndex(MathUtils.UNARY_MINUS))
+                            .setFunctionIndex(nativeNode.getFunctionIndex())
                             .addParam(expression)
                             .commit();
                 } else {
@@ -145,19 +149,22 @@ public class JsParser {
                     if (binaryNode.tokenType() == TokenType.ASSIGN_ADD ||
                             binaryNode.tokenType() == TokenType.ASSIGN_SUB ||
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
-                            binaryNode.tokenType() == TokenType.ASSIGN_DIV)
+                            binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
+                        NativeNode nativeFunc = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create(NodeType.NATIVE_FUNCTION)
-                                .setFunctionIndex(MathUtils.tokenToFunctionIndex(binaryNode.tokenType()))
+                                .setFunctionIndex(nativeFunc.getFunctionIndex())
                                 .addParam(left)
                                 .addParam(right)
                                 .commit();
+                    }
                     return builder.create()
                             .setSource(left)
                             .setSet(right)
                             .commit();
                 } else {
+                    NativeNode nativeFunc = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
                     return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(MathUtils.tokenToFunctionIndex(binaryNode.tokenType()))
+                            .setFunctionIndex(nativeFunc.getFunctionIndex())
                             .addParam(left)
                             .addParam(right)
                             .commit();
@@ -225,7 +232,7 @@ public class JsParser {
                 String name = identNode.getName();
 
                 Node ident = null;
-                Long titleId = NodeStorage.getInstance().getDataId(name.getBytes());
+                Long titleId = DataStorage.getInstance().getDataId(name.getBytes());
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
                     Node findNode = builder.set(node).findLocal(titleId);
@@ -333,7 +340,7 @@ public class JsParser {
 
     }
 
-    // this function solve 05testFunctionVariables.js problem with var init
+    // this function solve 05testFunctionVariables.js problem with var getFunctions
     private boolean isOperation(BinaryNode binaryNode) {
         try {
             return binaryNode.isLocal();

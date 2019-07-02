@@ -1,15 +1,11 @@
 package com.droid.djs.runner.utils;
 
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.runner.Func;
 import jdk.nashorn.internal.parser.TokenType;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class MathUtils extends Utils {
 
+    public final static String MATH_UTIL_NAME = "Math";
     public final static String UNARY_MINUS = "unaryMinus";
     public final static String EQ = "equals"; // ==
     public final static String ADD = "add"; // +
@@ -22,24 +18,6 @@ public class MathUtils extends Utils {
     public final static String MORE_OR_EQUAL = "moreOrEqual"; // >=
     public final static String LESS = "less"; // <
     public final static String LESS_OR_EQUAL = "lessOrEqual"; // <=
-
-    public static Map<String, Func> mapFunctions = new LinkedHashMap<>();
-
-    @Override
-    public void func(String name, Func func, Node... args) {
-        super.func(name, func, args);
-        mapFunctions.put(name, func);
-    }
-
-    public static Integer funcNameToFuncIndex(String funcName) {
-        Func func = mapFunctions.get(funcName);
-        return functions.indexOf(func);
-    }
-
-    public static Integer tokenToFunctionIndex(TokenType tokenType) {
-        String funcName = convertTokenTypeToFuncName(tokenType);
-        return funcNameToFuncIndex(funcName);
-    }
 
     public static String convertTokenTypeToFuncName(TokenType tokenType) {
         switch (tokenType) {
@@ -79,7 +57,7 @@ public class MathUtils extends Utils {
 
     @Override
     public String name() {
-        return "Math";
+        return MATH_UTIL_NAME;
     }
 
     @Override

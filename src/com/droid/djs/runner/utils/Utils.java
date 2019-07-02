@@ -9,45 +9,66 @@ import com.droid.djs.runner.Func;
 import com.droid.djs.runner.prototypes.StringPrototype;
 import com.droid.djs.serialization.node.Serializer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 abstract public class Utils {
 
     private static NodeBuilder builder = new NodeBuilder();
     public static String DEFAULT_PROTOTYPES_DIR = "defaultPrototypes/";
-    public static Node defaultPrototypesDir;
-    public static List<Func> functions = new ArrayList<>();
+    private static Node defaultPrototypesDir;
+    private static List<Func> functions = new ArrayList<>();
+    private static List<FuncInterface> interfaces = new ArrayList<>();
+
     public static Node trueValue = builder.create(NodeType.BOOL).setData(Serializer.TRUE).commit();
     public static Node falseValue = builder.create(NodeType.BOOL).setData(Serializer.FALSE).commit();
 
-    public static void init(){
-        defaultPrototypesDir  =  Files.getNode(DEFAULT_PROTOTYPES_DIR);
-        new ThreadUtils().methods();
-        new MathUtils().methods();
-        new StringPrototype().methods();
+
+    public static List<Func> getFunctions() {
+        if (functions.size() == 0) {
+            new ThreadUtils().methods();
+            new MathUtils().methods();
+            new StringPrototype().methods();
+        }
+        return functions;
     }
 
-    public void func(String name, Func func, Node... args) {
-        String functionName = (name().endsWith("/") ? name() : name() + "/") + name;
-        NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
+    public static Node getDefaultPrototypesDir() {
+        if (defaultPrototypesDir == null)
+            defaultPrototypesDir = Files.getNode(DEFAULT_PROTOTYPES_DIR);
+        return defaultPrototypesDir;
+    }
+
+    public void func(String name, Func func, Parameter... args) {
         functions.add(func);
-        builder.set(function).setFunctionIndex(functions.size() - 1);
-        for (Node arg : args)
-            builder.addParam(arg);
-        builder.commit();
+        interfaces.add(new FuncInterface((name().endsWith("/") ? name() : name() + "/"), name, Arrays.asList(args)));
     }
 
-    public Node par(String name, NodeType nodeType) {
-        Node title = builder.create(NodeType.STRING).setData(name).commit();
+    public static void saveInterfaces(){
+        for (int i=0; i< interfaces.size(); i++){
+            FuncInterface funcInterface = interfaces.get(i);
+            String functionName = funcInterface.path + funcInterface.name;
+            NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
+            builder.set(function).setFunctionIndex(i);
+            for (Parameter parameter : funcInterface.parameters)
+                builder.addParam(parNode(parameter));
+            builder.commit();
+        }
+    }
+
+    private static Node parNode(Parameter parameter) {
+        Node title = builder.create(NodeType.STRING).setData(parameter.name).commit();
         Node defValue = null;
-        if (nodeType == NodeType.NUMBER)
-            defValue = builder.create(nodeType).setData(0D).commit();
-        else if (nodeType == NodeType.STRING)
-            defValue = builder.create(nodeType).setData("string").commit();
+        if (parameter.nodeType == NodeType.NUMBER)
+            defValue = builder.create(parameter.nodeType).setData(0D).commit();
+        else if (parameter.nodeType == NodeType.STRING)
+            defValue = builder.create(parameter.nodeType).setData("string").commit();
         else
-            defValue = builder.create(nodeType).commit();
+            defValue = builder.create(parameter.nodeType).commit();
         return builder.create().setTitle(title).setValue(defValue).commit();
+    }
+
+    public Parameter par(String name, NodeType nodeType) {
+        return new Parameter(name, nodeType);
     }
 
     Object leftObject(NodeBuilder builder, Node node) {

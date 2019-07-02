@@ -8,7 +8,7 @@ public class InfinityStringArray extends InfinityFile {
 
     // TODO addObject secure
 
-    protected InfinityConstArray meta;
+    public InfinityConstArray meta;
     private Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
 
     public InfinityStringArray(String infinityFileID) {

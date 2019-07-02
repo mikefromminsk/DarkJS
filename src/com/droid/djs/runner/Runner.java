@@ -22,7 +22,7 @@ public class Runner {
     }
 
     Node getNodePrototype(NodeType nodeType){
-        return Files.getNode(Utils.defaultPrototypesDir, Utils.capitalize(nodeType.toString()));
+        return Files.getNode(Utils.getDefaultPrototypesDir(), Utils.capitalize(nodeType.toString()));
     }
 
     private Node propCalledNode = null;
