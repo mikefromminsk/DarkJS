@@ -58,6 +58,8 @@ public class Branch {
     }
 
     public void mergeWithMaster() {
+        if (timer != null)
+            timer.cancel();
         if (root != null) {
             Node branchPackage = findPackage(root);
             if (branchPackage != null) {

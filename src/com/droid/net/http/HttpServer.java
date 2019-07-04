@@ -79,10 +79,24 @@ public class HttpServer extends NanoHTTPD {
 
                             Threads.getInstance().run(node, null, false, access_token);
 
-                            DataInputStream resultStream = (DataInputStream) getResult(node);
-                            if (resultStream != null) {
-                                String responseContentType = ContentType.getContentTypeFromName(new NodeBuilder().set(node).getTitleString());
-                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, resultStream, resultStream.length());
+                            NodeBuilder builder = new NodeBuilder().set(node);
+                            if (builder.getValueNode() != null && builder.getValueNode().type.ordinal() < NodeType.NODE.ordinal()) {
+                                Data dataNode = (Data) builder.getValueNode();
+                                String responseContentType = ContentType.getContentTypeFromName(builder.getTitleString());
+                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, dataNode.data, dataNode.data.length());
+                            } else {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                Node[] locals = builder.getLocalNodes();
+
+                                stringBuilder.append("<html>");
+                                stringBuilder.append("<body>");
+
+                                for (Node local : locals)
+                                    stringBuilder.append("<a href=\"" + Files.getPath(local) + "\">" + builder.set(local).getTitleString() + "</a><br>");
+
+                                stringBuilder.append("</body>");
+                                stringBuilder.append("</html>");
+                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_HTML, stringBuilder.toString());
                             }
                         }
                     }
@@ -108,12 +122,6 @@ public class HttpServer extends NanoHTTPD {
 
     private String[] getFileNames(String filename) {
         return new String[]{filename};
-    }
-
-    private InputStream getResult(Node resultNode) {
-        NodeBuilder builder = new NodeBuilder();
-        Node nodeValue = builder.set(resultNode).getValueOrSelf();
-        return builder.set(nodeValue).getData();
     }
 
     Map<String, String> parseArguments(String args) {
