@@ -59,9 +59,9 @@ public class HttpServer extends NanoHTTPD {
                     if (node == null) {
                         response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
                     } else {
-                        Long access_code = Secure.getAccessCode(login, password);
+                        Long access_token = Secure.getAccessToken(login, password);
 
-                        node = Files.getNode(session.getUri(), null, access_code);
+                        node = Files.getNode(session.getUri(), null, access_token);
 
                         if (node == null) {
                             response = newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Access denied");
@@ -77,7 +77,7 @@ public class HttpServer extends NanoHTTPD {
                             for (String argsKey : argsKeys)
                                 setParam(node, argsKey, args.get(argsKey));
 
-                            Threads.getInstance().run(node, null, false, access_code);
+                            Threads.getInstance().run(node, null, false, access_token);
 
                             DataInputStream resultStream = (DataInputStream) getResult(node);
                             if (resultStream != null) {

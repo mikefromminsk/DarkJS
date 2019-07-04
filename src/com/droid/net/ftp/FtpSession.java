@@ -1,7 +1,6 @@
 package com.droid.net.ftp;
 
 import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.fs.Master;
@@ -17,10 +16,10 @@ public class FtpSession implements IFileSystem<Node> {
 
     private Branch branch = new Branch();
     private NodeBuilder builder = new NodeBuilder();
-    private Long access_code;
+    private Long access_token;
 
     public FtpSession(String username, String password) {
-        access_code = Secure.getAccessCode(username, password);
+        access_token = Secure.getAccessToken(username, password);
     }
 
     @Override
@@ -119,7 +118,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public Node findFile(Node cwd, String path) {
-        return Files.getNode(cwd, path, null, access_code);
+        return Files.getNode(cwd, path, null, access_token);
     }
 
     @Override

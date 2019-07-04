@@ -720,10 +720,10 @@ public class NodeBuilder {
         node.cell = null;
     }
 
-    public void setOwnerAccessCode(Long access_code) {
+    public void setOwnerAccessCode(Long access_token) {
         if (node instanceof ThreadNode) {
             ThreadNode threadNode = (ThreadNode) node;
-            threadNode.access_owner = access_code;
+            threadNode.access_owner = access_token;
         }
     }
 }

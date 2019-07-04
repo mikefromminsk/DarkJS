@@ -37,11 +37,11 @@ public class Files {
         return getNode(root, path, nodeType, null);
     }
 
-    public static Node getNode(String path, NodeType nodeType, Long access_code) {
-        return getNode(Master.getInstance(), path, nodeType, access_code);
+    public static Node getNode(String path, NodeType nodeType, Long access_token) {
+        return getNode(Master.getInstance(), path, nodeType, access_token);
     }
 
-    public static Node getNode(Node root, String path, NodeType nodeType, Long access_code) {
+    public static Node getNode(Node root, String path, NodeType nodeType, Long access_token) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
         // TODO remove types from names
@@ -64,7 +64,7 @@ public class Files {
                 for (Node node : builder.getLocalNodes()) {
                     if (name.equals(builder2.set(node).getTitleString())) {
                         builder.set(node);
-                        if (builder.isThread() && access_code != null && !((ThreadNode) node).checkAccess(access_code))
+                        if (builder.isThread() && access_token != null && !((ThreadNode) node).checkAccess(access_token))
                                 return null;
                         find = true;
                         break;
@@ -78,7 +78,7 @@ public class Files {
                         Node node = builder2.create(isTheLast ? nodeType : NodeType.NODE).setTitle(title).commit();
                         if (isTheLast){
                             if (nodeType == NodeType.THREAD)
-                                builder2.setOwnerAccessCode(access_code);
+                                builder2.setOwnerAccessCode(access_token);
                             if (type != null){
                                 Node typeTitle = builder2.create(NodeType.STRING).setData(type).commit();
                                 builder2.setParser(typeTitle);

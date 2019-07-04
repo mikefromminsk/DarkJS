@@ -57,11 +57,11 @@ public class ThreadNode extends Node implements Runnable {
         }
     }
 
-    public boolean checkAccess(Long access_code) {
+    public boolean checkAccess(Long access_token) {
         boolean secure_enabled = access_owner != null || access_user != null;
         if (secure_enabled) {
-            boolean access_granted = (access_owner != null && access_owner.equals(access_code))
-                    || (access_user != null && access_user.indexOf(access_code) != -1);
+            boolean access_granted = (access_owner != null && access_owner.equals(access_token))
+                    || (access_user != null && access_user.indexOf(access_token) != -1);
             if (!access_granted)
                 return false;
         }
@@ -70,8 +70,8 @@ public class ThreadNode extends Node implements Runnable {
 
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
-    public boolean run(Node node, boolean async, Long access_code) {
-        if (!checkAccess(access_code))
+    public boolean run(Node node, boolean async, Long access_token) {
+        if (!checkAccess(access_token))
             return false;
 
         runQueue.add(new RunData(node, null));

@@ -3,7 +3,7 @@ package com.droid.djs.runner;
 import com.droid.Main;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.node.Serializer;
+import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
 import org.apache.commons.io.FileUtils;
@@ -36,19 +36,19 @@ class RunnerTest {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
                     Node module = Threads.getInstance().runScript("tests/" + script.getName(), sourceCode,
-                            Secure.getAccessCode(Main.login, Main.password));
+                            Secure.getAccessToken(Main.login, Main.password));
 
                     Node testVar = builder.set(module).findLocal("test");
                     if (testVar == null)
-                        System.out.println(Serializer.toJson(module));
+                        System.out.println(NodeSerializer.toJson(module));
                     assertNotNull(testVar);
                     Node testValue = builder.set(testVar).getValueNode();
                     if (testValue == null)
-                        System.out.println(Serializer.toJson(module));
+                        System.out.println(NodeSerializer.toJson(module));
                     assertNotNull(testValue);
                     Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
                     if (testData == null || !testData)
-                        System.out.println(Serializer.toJson(module));
+                        System.out.println(NodeSerializer.toJson(module));
                     assertTrue(testData);
                 }
             } else {

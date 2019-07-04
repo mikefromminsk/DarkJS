@@ -28,9 +28,9 @@ public class Threads {
     }
 
     //TODO add args to thread
-    public boolean run(Node node, List<Node> args, boolean async, Long access_code) {
+    public boolean run(Node node, List<Node> args, boolean async, Long access_token) {
         ThreadNode thread = findThread(node);
-        return thread.run(node, async, access_code);
+        return thread.run(node, async, access_token);
     }
 
     private JsParser jsParser = new JsParser();

@@ -57,7 +57,7 @@ public class Node extends SuperNode {
     public void listLinks(NodeLinkListener linkListener) {
         if (linkListener == null)
             return;
-        // sequences for well see in Serializer
+        // sequences for well see in NodeSerializer
         if (title != null)
             linkListener.get(LinkType.TITLE, title, true);
         if (value != null)

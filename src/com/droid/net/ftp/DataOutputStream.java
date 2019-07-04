@@ -5,7 +5,6 @@ import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.fs.Files;
-import com.droid.djs.serialization.json.JsonParser;
 
 import java.io.*;
 import java.util.Random;
@@ -59,7 +58,7 @@ public class DataOutputStream extends OutputStream {
         NodeBuilder builder = new NodeBuilder();
         String newFileName = builder.set(res).getTitleString().toLowerCase();
         if (newFileName.endsWith(".json")) {
-            new JsonParser().parse(res);
+            // TODO add json parser
         } else if (newFileName.endsWith(".node.js")) {
             NodeBuilder value = new NodeBuilder().set(builder.getValueNode());
             String sourceCode = value.getData().readString();

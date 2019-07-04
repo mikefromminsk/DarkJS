@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class JsParserTest {
+class JsNodeParserTest {
 
     @Test
     void parse() throws IOException {

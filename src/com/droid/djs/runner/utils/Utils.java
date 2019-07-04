@@ -7,7 +7,7 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.Func;
 import com.droid.djs.runner.prototypes.StringPrototype;
-import com.droid.djs.serialization.node.Serializer;
+import com.droid.djs.serialization.node.NodeSerializer;
 
 import java.util.*;
 
@@ -19,15 +19,20 @@ abstract public class Utils {
     private static List<Func> functions = new ArrayList<>();
     private static List<FuncInterface> interfaces = new ArrayList<>();
 
-    public static Node trueValue = builder.create(NodeType.BOOL).setData(Serializer.TRUE).commit();
-    public static Node falseValue = builder.create(NodeType.BOOL).setData(Serializer.FALSE).commit();
+    public static Node trueValue = builder.create(NodeType.BOOL).setData(NodeSerializer.TRUE).commit();
+    public static Node falseValue = builder.create(NodeType.BOOL).setData(NodeSerializer.FALSE).commit();
 
+    public Utils() {
+        methods();
+    }
 
     public static List<Func> getFunctions() {
         if (functions.size() == 0) {
-            new ThreadUtils().methods();
-            new MathUtils().methods();
-            new StringPrototype().methods();
+            new StringPrototype();
+            new ThreadUtils();
+            new MathUtils();
+            new RootUtils();
+            new NodeUtils();
         }
         return functions;
     }
@@ -43,8 +48,8 @@ abstract public class Utils {
         interfaces.add(new FuncInterface((name().endsWith("/") ? name() : name() + "/"), name, Arrays.asList(args)));
     }
 
-    public static void saveInterfaces(){
-        for (int i=0; i< interfaces.size(); i++){
+    public static void saveInterfaces() {
+        for (int i = 0; i < interfaces.size(); i++) {
             FuncInterface funcInterface = interfaces.get(i);
             String functionName = funcInterface.path + funcInterface.name;
             NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
@@ -77,6 +82,34 @@ abstract public class Utils {
 
     Object rightObject(NodeBuilder builder, Node node) {
         return toObject(builder, builder.set(node).getParamNode(1));
+    }
+
+    String leftString(NodeBuilder builder, Node node) {
+        Object leftObj = leftObject(builder, node);
+        if (leftObj != null)
+            return (String) leftObj;
+        return null;
+    }
+
+    String rightString(NodeBuilder builder, Node node) {
+        Object leftObj = rightObject(builder, node);
+        if (leftObj != null)
+            return (String) leftObj;
+        return null;
+    }
+
+    Double leftNumber(NodeBuilder builder, Node node) {
+        Object leftObj = leftObject(builder, node);
+        if (leftObj != null)
+            return (Double) leftObj;
+        return null;
+    }
+
+    Double rightNumber(NodeBuilder builder, Node node) {
+        Object leftObj = rightObject(builder, node);
+        if (leftObj != null)
+            return (Double) leftObj;
+        return null;
     }
 
     protected Object toObject(NodeBuilder builder, Node node) {

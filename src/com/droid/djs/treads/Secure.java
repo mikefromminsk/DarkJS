@@ -15,7 +15,7 @@ public class Secure {
     private static WsServer wsServer = null;
 
     public static boolean start(String login, String password) {
-        Long access_owner_code = getAccessCode(login, password);
+        Long access_owner_code = getAccessToken(login, password);
 
         boolean started = Threads.getInstance().run(Master.getInstance(), null, false, access_owner_code);
         if (started) {
@@ -46,7 +46,7 @@ public class Secure {
         return started;
     }
 
-    public static Long getAccessCode(String login, String password) {
+    public static Long getAccessToken(String login, String password) {
         return (long) Crc16.getHash(login + password);
     }
 
