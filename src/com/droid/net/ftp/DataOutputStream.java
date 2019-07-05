@@ -1,6 +1,7 @@
 package com.droid.net.ftp;
 
 import com.droid.djs.fs.Branch;
+import com.droid.djs.nodes.Data;
 import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -56,20 +57,23 @@ public class DataOutputStream extends OutputStream {
         // TODO error with uploading a empty file
         Node res = Files.putFile(node, new FileInputStream(tempFile));
         NodeBuilder builder = new NodeBuilder();
-        String newFileName = builder.set(res).getTitleString().toLowerCase();
-        if (newFileName.endsWith(".json")) {
-            // TODO add json parser
-        } else if (newFileName.endsWith(".node.js")) {
+        String parser = "";
+        Data parserNode = builder.set(res).getParserNode();
+        if (parserNode != null)
+            parser = parserNode.data.readString();
+        /*if (parser == null) {
+            // nothing
+        } else if (parser.equals("thread.js")) {
             NodeBuilder value = new NodeBuilder().set(builder.getValueNode());
             String sourceCode = value.getData().readString();
             builder.setValue(null).commit();
             new JsParser().parse(res, sourceCode);
-        } else if (newFileName.equals("index.html")) {
+        } else if (parser.equals("html")) {
             Node parent = builder.set(node).getLocalParentNode();
             parent.parse(node.build());
             builder.set(parent).commit();
             // TODO delete local from parent
-        }
+        }*/
         tempFile.delete();
     }
 }

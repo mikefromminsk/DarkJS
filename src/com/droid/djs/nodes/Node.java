@@ -25,7 +25,7 @@ public class Node extends SuperNode {
     public Object _if;// TODO move to new node
     public Object prototype;
     public Object localParent;
-    public Object parser; // TODO move to styles
+    public Object parser;
     public Object sourceCode;
 
     public ArrayList<Object> local;
@@ -82,6 +82,8 @@ public class Node extends SuperNode {
             linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
         if (sourceCode != null)
             linkListener.get(LinkType.SOURCE_CODE, sourceCode, true);
+        if (parser != null)
+            linkListener.get(LinkType.PARSER, parser, true);
         if (local != null)
             for (Object item : local)
                 linkListener.get(LinkType.LOCAL, item, false);
@@ -136,6 +138,9 @@ public class Node extends SuperNode {
             case LOCAL_PARENT:
                 localParent = linkData;
                 break;
+            case PARSER:
+                parser = linkData;
+                break;
             case LOCAL:
                 if (local == null)
                     local = new ArrayList<>();
@@ -155,7 +160,6 @@ public class Node extends SuperNode {
                 if (cell == null)
                     cell = new ArrayList<>();
                 cell.add(linkData);
-                break;
         }
     }
 }

@@ -20,5 +20,6 @@ public enum LinkType {
     LOCAL_PARENT,
     NATIVE_FUNCTION_NUMBER,
     ACCESS_OWNER,
-    ACCESS_USER
+    ACCESS_USER,
+    PARSER
 }

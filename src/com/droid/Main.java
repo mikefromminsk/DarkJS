@@ -1,5 +1,6 @@
 package com.droid;
 
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.treads.Secure;
@@ -25,7 +26,7 @@ public class Main {
     }
 
     private static void loadProject(String projectPath, String localPath) {
-        File root = new File(projectPath + localPath);
+        File root = new File(projectPath);
         File[] list = root.listFiles();
         if (list == null) return;
         for (File file : list) {
@@ -34,12 +35,14 @@ public class Main {
                 loadProject(file.getAbsolutePath(), localFileName);
             } else {
                 try {
-                    DataOutputStream dataOutputStream = new DataOutputStream(loadingBranch, Files.getNode(loadingBranch.getRoot(), localFileName));
+                    DataOutputStream dataOutputStream = new DataOutputStream(loadingBranch, Files.getNode(loadingBranch.getRoot(), localFileName, NodeType.NODE));
                     FileInputStream fileInputStream = new FileInputStream(file);
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = fileInputStream.read(buffer)) != -1)
                         dataOutputStream.write(buffer, 0, len);
+                    fileInputStream.close();
+                    dataOutputStream.close();
                 } catch (IOException ignored) {
                 }
             }

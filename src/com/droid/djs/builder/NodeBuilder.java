@@ -270,6 +270,14 @@ public class NodeBuilder {
         return null;
     }
 
+    public Data getParserNode() {
+        if (node.parser instanceof Node)
+            return (Data) node.parser;
+        else if (node.parser instanceof Long)
+            return (Data) (node.parser = nodeStorage.get((Long) node.parser));
+        return null;
+    }
+
     public NodeBuilder setValue(Node value) {
         node.value = value;
         return this;
@@ -330,8 +338,8 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setParser(Node node) {
-        node.parser = node;
+    public NodeBuilder setParser(Node parser) {
+        node.parser = parser;
         return this;
     }
 

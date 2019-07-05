@@ -55,9 +55,8 @@ public class Files {
                 String type = null;
                 if (name.contains(".")){
                     int dotPos = name.indexOf('.');
-                    // TODO test
                     type = name.substring(dotPos + 1);
-                    name = name.substring(0, dotPos - 1);
+                    name = name.substring(0, dotPos);
                 }
 
                 boolean find = false;
