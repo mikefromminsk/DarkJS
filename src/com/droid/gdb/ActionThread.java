@@ -52,7 +52,11 @@ public class ActionThread implements Runnable {
                     cachedData.readCount += 1;
                     cachedData.saveTime = cachedData.lastTime + cachedData.readCount;
                 }
-                System.arraycopy(cachedData.data, 0, data, 0, length);
+                try {
+                    System.arraycopy(cachedData.data, 0, data, 0, Math.min(cachedData.data.length, length));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 return data;
             }
         }
@@ -100,7 +104,7 @@ public class ActionThread implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (threadsWaiting == 0 && writeSequences.size() > 0) {
+            if (threadsWaiting == 0 && !writeSequences.isEmpty()) {
                 try {
                     CacheData action = writeSequences.get(0);
                     boolean success = doAction(ACTION_WRITE, action.file, action.offset, action.data);

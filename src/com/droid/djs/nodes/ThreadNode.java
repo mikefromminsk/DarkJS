@@ -6,6 +6,7 @@ import com.droid.djs.runner.Runner;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,7 +69,7 @@ public class ThreadNode extends Node implements Runnable {
         return true;
     }
 
-    private LinkedList<RunData> runQueue = new LinkedList<>();
+    private List<RunData> runQueue = new LinkedList<>();
 
     public boolean run(Node node, boolean async, Long access_token) {
         if (!checkAccess(access_token))
@@ -90,9 +91,12 @@ public class ThreadNode extends Node implements Runnable {
 
     @Override
     public void run() {
-        while (runQueue.size() > 0) {
-            RunData data = runQueue.pollFirst();
-            runner.start(data.node);
+        while (!runQueue.isEmpty()) {
+            RunData data = runQueue.get(0);
+            if (data != null){
+                runner.start(data.node);
+                runQueue.remove(data);
+            }
         }
     }
 

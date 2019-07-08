@@ -74,7 +74,6 @@ public class Branch {
             }
             if (root != Master.getInstance())
                 builder.get(0L).removeLocal(root).commit();
-            root = null;
-        }
+            root = null;        }
     }
 }
