@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpServerTest {
-
+/*
     @Test
     void join() {
         try {
@@ -47,5 +47,5 @@ class HttpServerTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

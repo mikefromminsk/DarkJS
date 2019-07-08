@@ -2,6 +2,7 @@ package com.droid.djs.fs;
 
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 
@@ -61,7 +62,8 @@ public class Files {
 
                 boolean find = false;
                 for (Node node : builder.getLocalNodes()) {
-                    if (name.equals(builder2.set(node).getTitleString())) {
+                    String title = builder2.set(node).getTitleString();
+                    if (name.equals(title)) {
                         builder.set(node);
                         if (builder.isThread() && access_token != null && !((ThreadNode) node).checkAccess(access_token))
                                 return null;
@@ -79,14 +81,14 @@ public class Files {
                             if (nodeType == NodeType.THREAD)
                                 builder2.setOwnerAccessCode(access_token);
                             if (type != null){
-                                Node typeTitle = builder2.create(NodeType.STRING).setData(type).commit();
-                                builder2.setParser(typeTitle);
+                                Data typeTitle = (Data) builder2.create(NodeType.STRING).setData(type).commit();
+                                builder2.set(node).setParser(typeTitle).commit();
                             }
                         }
                         builder.addLocal(node).commit();
                         builder.set(node);
                     } else {
-                        builder.set(null);
+                        return null;
                     }
                 }
             }

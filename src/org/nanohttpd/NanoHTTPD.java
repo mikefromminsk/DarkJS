@@ -150,20 +150,6 @@ public abstract class NanoHTTPD {
         public static final String AUTHENTICATE = "WWW-Authenticate";
     }
 
-    public static class ContentType {
-        public static final String JSON = "application/json";
-        public static final String FORM_DATA = "application/x-www-form-urlencoded";
-
-        public static String getContentTypeFromName(String filename){
-            if (filename != null && filename.contains(".")){
-                String extention =  filename.substring(filename.lastIndexOf('.'));
-                switch (extention){
-                    case "json": return JSON;
-                }
-            }
-            return null;
-        }
-    }
     /**
      * Pluggable strategy for asynchronously executing requests.
      */
@@ -1333,6 +1319,7 @@ public abstract class NanoHTTPD {
                 this.data = data;
                 this.contentLength = totalBytes;
             }
+
             this.chunkedTransfer = this.contentLength < 0;
             keepAlive = true;
         }

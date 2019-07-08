@@ -338,7 +338,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setParser(Node parser) {
+    public NodeBuilder setParser(Data parser) {
         node.parser = parser;
         return this;
     }
@@ -702,6 +702,13 @@ public class NodeBuilder {
         Data title = getTitleNode();
         if (title != null && title.data != null)
             return title.data.readString();
+        return null;
+    }
+
+    public String getParserString() {
+        Data parser = getParserNode();
+        if (parser != null && parser.data != null)
+            return parser.data.readString();
         return null;
     }
 

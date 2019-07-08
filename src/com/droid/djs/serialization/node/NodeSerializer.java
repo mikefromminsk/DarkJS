@@ -4,8 +4,10 @@ import com.droid.djs.DataStorage;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
+import com.droid.djs.fs.Branch;
 import com.droid.djs.nodes.DataInputStream;
 // TODO remove Gson library
+import com.droid.net.ftp.DataOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
@@ -45,16 +47,13 @@ import java.util.*;
         type
         data
 
-*
-*
-* */
+*/
 public class NodeSerializer {
 
     public static final String NEW_NODE_PREFIX = "w";
     public static final String NODE_PREFIX = "n";
     public static final String TYPE_PREFIX = "type";
     public static final String DATA_PREFIX = "data";
-    public static final String FUNCTION_ID_PREFIX = "function_id";
     public static final String STRING_PREFIX = "!";
     public static final String LINK_PREFIX = "@";
     public static final String TRUE = "true";
@@ -72,7 +71,7 @@ public class NodeSerializer {
 
     public static Map<String, Map<String, Object>> toMap(Node node, int level) {
         Map<String, Map<String, Object>> data = new LinkedHashMap<>();
-        toJsonRecursive(new NodeBuilder(), data, level, node);
+        toMapRecursive(new NodeBuilder(), data, level, node);
         return data;
     }
 
@@ -88,7 +87,7 @@ public class NodeSerializer {
         }
     }
 
-    public static void toJsonRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int depth, Node node) {
+    public static void toMapRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int depth, Node node) {
         if (node.id == 0) return;
         String nodeName = NODE_PREFIX + node.id;
         if (data.get(nodeName) != null) return;
@@ -119,7 +118,7 @@ public class NodeSerializer {
                     links.put(linkTypeStr, dataSimplification(builder, linkNode));
                 else if (depth > 0) {
                     links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
-                    toJsonRecursive(builder, data, depth - 1, linkNode);
+                    toMapRecursive(builder, data, depth - 1, linkNode);
                 }
             } else {
                 Object linkObject = links.get(linkTypeStr);
@@ -131,7 +130,7 @@ public class NodeSerializer {
                     linkList.add(dataSimplification(builder, linkNode));
                 else {
                     linkList.add(NODE_PREFIX + linkNode.id);
-                    toJsonRecursive(builder, data, depth, linkNode);
+                    toMapRecursive(builder, data, depth, linkNode);
                 }
             }
         });

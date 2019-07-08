@@ -30,9 +30,10 @@ public class NodeStorage extends InfinityStringArray {
     private void initStorage() {
         ThreadNode root = new ThreadNode();
         add(root);
-        transactionCommit();
         Master.getInstance();
         Utils.getFunctions();
+        Utils.saveInterfaces();
+        transactionCommit();
     }
 
     public static NodeStorage getInstance() {

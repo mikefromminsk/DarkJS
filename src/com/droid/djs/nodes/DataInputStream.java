@@ -30,7 +30,18 @@ public class DataInputStream extends InputStream {
 
     public boolean hasNext() {
         boolean nextExist = currentPosition < length;
-        if (!nextExist) currentPosition = 0;
+        if (!nextExist){
+            currentPosition = 0;
+            if (fileReader != null){
+                try {
+                    fileReader.close();
+                    fileReader = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
         return nextExist;
     }
 
@@ -52,10 +63,6 @@ public class DataInputStream extends InputStream {
                 currentPosition += readiedChars;
                 return buf;
             }
-            if (currentPosition == length) {
-                fileReader.close();
-                fileReader = null;
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,6 +79,8 @@ public class DataInputStream extends InputStream {
                 buffer = readFromFs();
             if (buffer != null)
                 stringBuilder.append(buffer);
+            if (buffer == null) // TODO DANGER INFINITY LOOP
+                throw new NullPointerException();
         }
         return stringBuilder.toString();
     }

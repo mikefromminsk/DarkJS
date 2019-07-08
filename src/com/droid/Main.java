@@ -19,9 +19,10 @@ public class Main {
     private static Branch loadingBranch = new Branch();
 
     public static void main(String[] args) throws InterruptedException {
-        loadProject("C:/wamp/www/droid", "");
+        loadProject("C:/wamp/www/droid", "root");
         loadingBranch.mergeWithMaster();
         Secure.start(login, password);
+        System.out.println("Server started");
         Secure.join();
     }
 

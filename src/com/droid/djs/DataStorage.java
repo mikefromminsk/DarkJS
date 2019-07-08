@@ -102,6 +102,7 @@ public class DataStorage {
     }
 
     // TODO change getData function name
+    // TODO public byte[] getData(byte[] buf) {
     public byte[] getData(long start, long offset, int length) {
         return dataStorage.read(start + offset, length);
     }

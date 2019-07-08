@@ -100,7 +100,7 @@ public class ActionThread implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (threadsWaiting == 0) {
+            if (threadsWaiting == 0 && writeSequences.size() > 0) {
                 try {
                     CacheData action = writeSequences.get(0);
                     boolean success = doAction(ACTION_WRITE, action.file, action.offset, action.data);

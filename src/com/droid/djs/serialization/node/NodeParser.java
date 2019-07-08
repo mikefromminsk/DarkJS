@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class NodeParser {
+    public static final String FUNCTION_ID_PREFIX = "function_id";
 
     private static void setLink(NodeBuilder builder, com.droid.djs.nodes.Node node, LinkType linkType, Map<String, Node> replacementTable, String itemStr) {
         com.droid.djs.nodes.Node linkValueNode = null;
@@ -68,7 +69,7 @@ public class NodeParser {
             if (nodeTypeObj instanceof char[]) {
                 NodeType nodeType = NodeType.valueOf(new String((char[]) nodeTypeObj));
                 if (nodeType == NodeType.NATIVE_FUNCTION) {
-                    Object functionIdObj = links.get(NodeSerializer.FUNCTION_ID_PREFIX);
+                    Object functionIdObj = links.get(FUNCTION_ID_PREFIX);
                     builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionIndex(Integer.valueOf(new String((char[]) functionIdObj)))
                             .commit();

@@ -4,15 +4,17 @@ package com.droid.net.http;
 import com.droid.djs.builder.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.*;
-import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.fs.Files;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
 import org.nanohttpd.NanoHTTPD;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 public class HttpServer extends NanoHTTPD {
 
+    public static final String FORM_DATA = "application/x-www-form-urlencoded";
     public static int defaultPort = 80;
     public static int debugPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
@@ -42,7 +45,7 @@ public class HttpServer extends NanoHTTPD {
             if (requestContentType != null)
                 requestContentType = requestContentType.toLowerCase();
             if (session.getMethod() == Method.GET
-                    || session.getMethod() == Method.POST && ContentType.FORM_DATA.equals(requestContentType)) {
+                    || session.getMethod() == Method.POST && FORM_DATA.equals(requestContentType)) {
                 //Authorization: Basic userid:password
                 String authorization = session.getHeaders().get(Headers.AUTHORIZATION);
                 if (authorization == null || !authorization.startsWith(BASIC_AUTH_PREFIX)) {
@@ -53,8 +56,13 @@ public class HttpServer extends NanoHTTPD {
                     authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
                     String login = authorization.substring(0, authorization.indexOf(":"));
                     String password = authorization.substring(authorization.indexOf(":") + 1);
-
-                    Node node = Files.getNode(session.getUri(), null);
+                    Node node = null;
+                    try {
+                        node = Files.getNode(session.getUri(), null);
+                    } catch (Exception e) {
+                        System.out.println("uri error with: " + session.getUri());
+                        e.printStackTrace();
+                    }
 
                     if (node == null) {
                         response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
@@ -82,8 +90,10 @@ public class HttpServer extends NanoHTTPD {
                             NodeBuilder builder = new NodeBuilder().set(node);
                             if (builder.getValueNode() != null && builder.getValueNode().type.ordinal() < NodeType.NODE.ordinal()) {
                                 Data dataNode = (Data) builder.getValueNode();
-                                String responseContentType = ContentType.getContentTypeFromName(builder.getTitleString());
-                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseContentType, dataNode.data, dataNode.data.length());
+                                String mimeType = getContentType(builder.getParserString());
+                                String data = dataNode.data.readString();
+                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, data);
+                                response.addHeader("content-length", "" + dataNode.data.length()); // fix nanohttpd issue when content type is define
                             } else {
                                 StringBuilder stringBuilder = new StringBuilder();
                                 Node[] locals = builder.getLocalNodes();
@@ -120,8 +130,14 @@ public class HttpServer extends NanoHTTPD {
         return response;
     }
 
-    private String[] getFileNames(String filename) {
-        return new String[]{filename};
+    String getContentType(String ext){
+        if (ext.endsWith("js"))
+            return "text/javascript;";
+        if (ext.endsWith("html"))
+            return "text/html";
+        if (ext.endsWith("css"))
+            return "text/css";
+        return null;
     }
 
     Map<String, String> parseArguments(String args) {

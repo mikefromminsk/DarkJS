@@ -22,8 +22,8 @@ public class Secure {
             try {
                 httpServer = new HttpServer(HttpServer.debugPort);
                 httpServer.start();
-                ftpServer = new FtpServer(FtpServer.defaultPort);
-                ftpServer.start();
+                //ftpServer = new FtpServer(FtpServer.defaultPort);
+                //ftpServer.start();
                 wsServer = new WsServer(WsServer.defaultPort);
                 wsServer.start();
             } catch (Exception e) {
