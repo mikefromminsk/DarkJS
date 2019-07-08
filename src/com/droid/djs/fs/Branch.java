@@ -1,5 +1,6 @@
 package com.droid.djs.fs;
 
+import com.droid.djs.NodeStorage;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.builder.NodeBuilder;
@@ -25,8 +26,9 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = builder.create(NodeType.THREAD).commit();
-            builder.get(0L).addLocal(root);
+            root = builder.create().commit();
+            builder.get(0L).addLocal(root).commit();
+            NodeStorage.getInstance().transactionCommit();
             updateTimer();
         }
         return root;
@@ -64,16 +66,18 @@ public class Branch {
             Node branchPackage = findPackage(root);
             if (branchPackage != null) {
                 Node masterPackage = Files.getNode(Master.getInstance(), Files.getPath(branchPackage));
-                Node localParent = builder.set(masterPackage).getLocalParentNode();
-                Node[] locals = builder.set(localParent).getLocalNodes();
-                int localIndex = Arrays.asList(locals).indexOf(masterPackage);
-                builder.set(localParent).setLocalNode(localIndex, branchPackage).commit();
+                Node masterLocalParent = builder.set(masterPackage).getLocalParentNode();
+                Node[] masterParentLocals = builder.set(masterLocalParent).getLocalNodes();
+                int localIndex = Arrays.asList(masterParentLocals).indexOf(masterPackage);
+                builder.set(masterLocalParent).setLocalNode(localIndex, branchPackage).commit();
                 if (masterPackage == Master.getInstance())
                     Master.removeInstance();
                 //builder.set(branchPackage).setHistory(masterPackage).commit();
             }
             if (root != Master.getInstance())
                 builder.get(0L).removeLocal(root).commit();
-            root = null;        }
+            root = null;
+            NodeStorage.getInstance().transactionCommit();
+        }
     }
 }

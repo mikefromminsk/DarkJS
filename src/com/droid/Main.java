@@ -16,13 +16,13 @@ public class Main {
     public static final String login = "john";
     public static String password = "123";
 
-    private static Branch loadingBranch = new Branch();
+    private static Branch loadingBranch;
 
     public static void main(String[] args) throws InterruptedException {
+        loadingBranch = new Branch();
         loadProject("C:/wamp/www/droid", "root");
         loadingBranch.mergeWithMaster();
         Secure.start(login, password);
-        System.out.println("Server started");
         Secure.join();
     }
 

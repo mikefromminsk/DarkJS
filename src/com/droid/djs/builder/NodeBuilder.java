@@ -439,7 +439,11 @@ public class NodeBuilder {
         if (node.local == null)
             node.local = new ArrayList<>();
         node.local.add(item);
-        item.localParent = node;
+        Node prevNode = node;
+        set(item);
+        setLocalParent(prevNode);
+        commit();
+        set(prevNode);
         return this;
     }
 
@@ -728,6 +732,11 @@ public class NodeBuilder {
 
     public NodeBuilder setLocalNode(int index, Node item) {
         node.local.set(index, item);
+        Node prevNode = node;
+        set(item);
+        setLocalParent(prevNode);
+        commit();
+        set(prevNode);
         return this;
     }
 

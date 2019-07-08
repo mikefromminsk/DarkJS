@@ -69,7 +69,7 @@ public class ThreadNode extends Node implements Runnable {
         return true;
     }
 
-    private List<RunData> runQueue = new LinkedList<>();
+    private LinkedList<RunData> runQueue = new LinkedList<>();
 
     public boolean run(Node node, boolean async, Long access_token) {
         if (!checkAccess(access_token))
@@ -92,11 +92,11 @@ public class ThreadNode extends Node implements Runnable {
     @Override
     public void run() {
         while (!runQueue.isEmpty()) {
-            RunData data = runQueue.get(0);
-            if (data != null){
+            RunData data = runQueue.pollFirst();
+            if (data != null)
                 runner.start(data.node);
-                runQueue.remove(data);
-            }
+            else
+                runQueue.clear();
         }
     }
 
