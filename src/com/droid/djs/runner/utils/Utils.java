@@ -1,6 +1,6 @@
 package com.droid.djs.runner.utils;
 
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
@@ -19,8 +19,8 @@ abstract public class Utils {
     private static List<Func> functions = new ArrayList<>();
     private static List<FuncInterface> interfaces = new ArrayList<>();
 
-    public static Node trueValue = builder.create(NodeType.BOOL).setData(NodeSerializer.TRUE).commit();
-    public static Node falseValue = builder.create(NodeType.BOOL).setData(NodeSerializer.FALSE).commit();
+    public static Node trueValue = builder.create(NodeType.BOOL).setData(true).commit();
+    public static Node falseValue = builder.create(NodeType.BOOL).setData(false).commit();
 
     public Utils() {
         methods();

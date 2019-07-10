@@ -6,7 +6,7 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.treads.Threads;
@@ -112,6 +112,7 @@ public class Runner {
         return node;
     }
 
+    // TODO remove NodeType.OBJECT
     private void cloneObject(Node sourceNode, Node templateNode) {
         // TODO delete setType
         sourceNode.type = NodeType.OBJECT;

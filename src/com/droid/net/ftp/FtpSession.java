@@ -1,6 +1,6 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.fs.Master;

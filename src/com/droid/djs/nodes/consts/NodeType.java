@@ -6,7 +6,7 @@ public enum NodeType {
     BOOL,
     NODE,
     ARRAY,
-    OBJECT,
+    OBJECT, // TODO delete and add link type CloneObject
     NATIVE_FUNCTION,
     THREAD,
 }

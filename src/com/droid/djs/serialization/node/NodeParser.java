@@ -1,5 +1,6 @@
 package com.droid.djs.serialization.node;
 
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.Node;

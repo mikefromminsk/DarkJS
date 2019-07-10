@@ -1,14 +1,10 @@
-package com.droid.djs.serialization.node;
+package com.droid.djs.nodes;
 
 import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
-import com.droid.djs.nodes.DataInputStream;
-import com.droid.djs.nodes.NativeNode;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.nodes.Data;
+import com.droid.djs.serialization.node.NodeSerializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -64,6 +60,11 @@ public class NodeBuilder {
 
     public DataInputStream getData() {
         return ((Data)node).data;
+    }
+
+    public NodeBuilder setData(Boolean bool) {
+        setData(bool ? NodeSerializer.TRUE : NodeSerializer.FALSE);
+        return this;
     }
 
     public NodeBuilder setData(Double number) {

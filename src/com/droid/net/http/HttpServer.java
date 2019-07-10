@@ -1,7 +1,7 @@
 package com.droid.net.http;
 
 
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.fs.Files;

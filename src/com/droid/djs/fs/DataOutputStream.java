@@ -1,9 +1,11 @@
 package com.droid.djs.fs;
 
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.serialization.json.JsonBuilder;
+import com.droid.djs.serialization.json.JsonParser;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
-import com.google.gson.*;
+import com.google.gson.JsonElement;
 
 import java.io.*;
 import java.util.Random;
@@ -11,7 +13,6 @@ import java.util.Random;
 public class DataOutputStream extends OutputStream {
 
 
-    private static JsonParser jsonParser = new JsonParser();
     public final static File ftpTempDir = new File("out/FtpTemp");
     public final static Random random = new Random();
     private Node node;
@@ -52,7 +53,6 @@ public class DataOutputStream extends OutputStream {
     }
 
 
-
     @Override
     public void close() {
         try {
@@ -62,11 +62,11 @@ public class DataOutputStream extends OutputStream {
             NodeBuilder builder = new NodeBuilder().set(res);
             Data dataNode = builder.getSourceCodeNode();
             Data parserNode = builder.getParserNode();
-            if (parserNode != null && dataNode != null){
+            if (parserNode != null && dataNode != null) {
                 String parser = parserNode.data.readString();
-                if ("json".equals(parser)){
-                    JsonElement jsonElement = jsonParser.parse(new InputStreamReader(dataNode.data));
-
+                if ("json".equals(parser)) {
+                    JsonElement jsonElement = JsonParser.parse(dataNode.data);
+                    JsonBuilder.build(node, jsonElement);
                 }
             }
 

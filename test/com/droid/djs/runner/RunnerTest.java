@@ -1,7 +1,7 @@
 package com.droid.djs.runner;
 
 import com.droid.Main;
-import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.djs.treads.Secure;
