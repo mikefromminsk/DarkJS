@@ -65,10 +65,7 @@ public class Branch {
             Node branchPackage = findPackage(root);
             if (branchPackage != null) {
                 Node masterPackage = Files.getNode(Master.getInstance(), Files.getPath(branchPackage));
-                Node masterLocalParent = builder.set(masterPackage).getLocalParentNode();
-                Node[] masterParentLocals = builder.set(masterLocalParent).getLocalNodes();
-                int localIndex = Arrays.asList(masterParentLocals).indexOf(masterPackage);
-                builder.set(masterLocalParent).setLocalNode(localIndex, branchPackage).commit();
+                Files.replace(masterPackage, branchPackage);
                 if (masterPackage == Master.getInstance())
                     Master.removeInstance();
                 //builder.set(branchPackage).setHistory(masterPackage).commit();

@@ -8,6 +8,7 @@ import com.droid.djs.nodes.ThreadNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class Files {
 
@@ -54,7 +55,7 @@ public class Files {
                 String name = names[i];
                 if (name.equals("")) continue;
                 String type = null;
-                if (name.contains(".")){
+                if (name.contains(".")) {
                     int dotPos = name.indexOf('.');
                     type = name.substring(dotPos + 1);
                     name = name.substring(0, dotPos);
@@ -66,7 +67,7 @@ public class Files {
                     if (name.equals(title)) {
                         builder.set(node);
                         if (builder.isThread() && access_token != null && !((ThreadNode) node).checkAccess(access_token))
-                                return null;
+                            return null;
                         find = true;
                         break;
                     }
@@ -77,10 +78,10 @@ public class Files {
                         boolean isTheLast = i == names.length - 1;
                         Node title = builder2.create(NodeType.STRING).setData(name).commit();
                         Node node = builder2.create(isTheLast ? nodeType : NodeType.NODE).setTitle(title).commit();
-                        if (isTheLast){
+                        if (isTheLast) {
                             if (nodeType == NodeType.THREAD)
                                 builder2.setOwnerAccessCode(access_token);
-                            if (type != null){
+                            if (type != null) {
                                 Data typeTitle = (Data) builder2.create(NodeType.STRING).setData(type).commit();
                                 builder2.set(node).setParser(typeTitle).commit();
                             }
@@ -138,5 +139,17 @@ public class Files {
 
     public static boolean isDirectory(Node node) {
         return (node == null || new NodeBuilder().set(node).getSourceCodeNode() == null);
+    }
+
+    public static void replace(Node from, Node to) {
+        NodeBuilder builder = new NodeBuilder();
+        Node masterLocalParent = builder.set(from).getLocalParentNode();
+        Node[] masterParentLocals = builder.set(masterLocalParent).getLocalNodes();
+        int localIndex = Arrays.asList(masterParentLocals).indexOf(from);
+        builder.set(masterLocalParent).setLocalNode(localIndex, to).commit();
+
+        Node title = builder.set(from).getTitleNode();
+        Data parser = builder.set(from).getParserNode();
+        builder.set(to).setTitle(title).setParser(parser).commit();
     }
 }

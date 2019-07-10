@@ -1,5 +1,6 @@
 package com.droid.djs.serialization.json;
 
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
@@ -14,16 +15,8 @@ public class JsonBuilder {
     private static NodeBuilder builder = new NodeBuilder();
 
     public static void build(Node file, JsonElement je) {
-        Node localParent = builder.set(file).getLocalParentNode();
-        Node sourceCode = builder.set(file).getSourceCodeNode();
-        Data parser = builder.set(file).getParserNode();
         Node obj = build(je);
-        file.parse(obj.build());
-        builder.set(file)
-                .setLocalParent(localParent)
-                .setSourceCode(sourceCode)
-                .setParser(parser)
-                .commit();
+        Files.replace(file, obj);
     }
 
     public static Node build(JsonElement je) {
@@ -41,7 +34,7 @@ public class JsonBuilder {
         }
 
         if (je.isJsonArray()) {
-            Node arr = builder.create(NodeType.ARRAY).getNode();
+            Node arr = builder.create(NodeType.ARRAY).commit();
             for (JsonElement item : je.getAsJsonArray()) {
                 Node node = build(item);
                 builder.set(arr).addCell(node).commit();
@@ -50,7 +43,7 @@ public class JsonBuilder {
         }
 
         if (je.isJsonObject()) {
-            Node obj = builder.create().getNode();
+            Node obj = builder.create().commit();
             for (Map.Entry<String, JsonElement> e : je.getAsJsonObject().entrySet()) {
                 Node value = build(e.getValue());
                 Node title = builder.create(NodeType.STRING).setData(e.getKey()).commit();

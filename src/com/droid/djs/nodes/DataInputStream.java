@@ -134,6 +134,7 @@ public class DataInputStream extends InputStream {
         // TODO !!!! rewrite
         long oldPosition = currentPosition;
         byte[] data = Bytes.fromString(readString());
+        len = Math.min(len, data.length);
         System.arraycopy(data, off, b, 0, len);
         currentPosition = oldPosition;
         return len;
