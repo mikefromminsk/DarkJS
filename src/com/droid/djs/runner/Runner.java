@@ -6,8 +6,8 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.treads.Threads;
 

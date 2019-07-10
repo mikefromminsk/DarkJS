@@ -1,11 +1,11 @@
 package com.droid;
 
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.treads.Secure;
 
-import com.droid.net.ftp.DataOutputStream;
+import com.droid.djs.fs.DataOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;

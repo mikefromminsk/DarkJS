@@ -1,17 +1,17 @@
-package com.droid.net.ftp;
+package com.droid.djs.fs;
 
-import com.droid.djs.fs.Branch;
+import com.droid.djs.serialization.node.NodeBuilder;
 import com.droid.djs.nodes.Data;
-import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.fs.Files;
+import com.google.gson.*;
 
 import java.io.*;
 import java.util.Random;
 
 public class DataOutputStream extends OutputStream {
 
+
+    private static JsonParser jsonParser = new JsonParser();
     public final static File ftpTempDir = new File("out/FtpTemp");
     public final static Random random = new Random();
     private Node node;
@@ -51,27 +51,35 @@ public class DataOutputStream extends OutputStream {
         out.write(b);
     }
 
+
+
     @Override
     public void close() {
         try {
             out.close();
             // TODO error with uploading a empty file
             Node res = Files.putFile(node, new FileInputStream(tempFile));
-            NodeBuilder builder = new NodeBuilder();
-            String parser = "";
-            Data parserNode = builder.set(res).getParserNode();
-            if (parserNode != null)
-                parser = parserNode.data.readString();
+            NodeBuilder builder = new NodeBuilder().set(res);
+            Data dataNode = builder.getSourceCodeNode();
+            Data parserNode = builder.getParserNode();
+            if (parserNode != null && dataNode != null){
+                String parser = parserNode.data.readString();
+                if ("json".equals(parser)){
+                    JsonElement jsonElement = jsonParser.parse(new InputStreamReader(dataNode.data));
+
+                }
+            }
+
         /*if (parser == null) {
             // nothing
         } else if (parser.equals("thread.js")) {
             NodeBuilder value = new NodeBuilder().set(builder.getValueNode());
             String sourceCode = value.getData().readString();
             builder.setValue(null).commit();
-            new JsParser().parse(res, sourceCode);
+            new JsBuilder().build(res, sourceCode);
         } else if (parser.equals("html")) {
             Node parent = builder.set(node).getLocalParentNode();
-            parent.parse(node.build());
+            parent.build(node.build());
             builder.set(parent).commit();
             // TODO delete local from parent
         }*/

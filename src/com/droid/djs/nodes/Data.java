@@ -1,12 +1,13 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.NodeType;
 
 import java.io.InputStream;
 
 public class Data extends Node {
 
-    public DataInputStream data; // TODO move to new node
+    // TODO проблема что поток уже был считан но другой узел пытается его считать заново
+    public DataInputStream data;
     // TODO read external data in another thread
     public InputStream externalData;
 

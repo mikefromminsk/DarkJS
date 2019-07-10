@@ -1,9 +1,10 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.serialization.node.NodeBuilder;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.fs.Master;
+import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.treads.Secure;
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;

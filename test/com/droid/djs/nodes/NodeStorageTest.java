@@ -1,8 +1,8 @@
 package com.droid.djs.nodes;
 
 import com.droid.djs.NodeStorage;
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.gdb.DiskManager;
 
 import java.util.ArrayList;

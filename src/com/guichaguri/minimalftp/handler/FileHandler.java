@@ -386,7 +386,7 @@ public class FileHandler {
         try {
             time = Utils.fromMdtmTimestamp(args[0]);
         } catch(ParseException ex) {
-            con.sendResponse(500, "Couldn't parse the time");
+            con.sendResponse(500, "Couldn't build the time");
             return;
         }
 

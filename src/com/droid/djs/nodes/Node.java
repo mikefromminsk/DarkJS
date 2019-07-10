@@ -1,10 +1,9 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.consts.LinkType;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.LinkType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.gdb.Bytes;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Node extends SuperNode {
@@ -16,24 +15,24 @@ public class Node extends SuperNode {
     public NodeType type;
     public Object value;
     public Object source;
-    public Object title; // TODO maybe move to style
+    public Object title;
     public Object set;
-    public Object _true; // TODO move to new node
-    public Object _else;// TODO move to new node
-    public Object exit; // TODO move to new node
-    public Object _while;// TODO move to new node
-    public Object _if;// TODO move to new node
+    public Object _true; 
+    public Object _else;
+    public Object exit; 
+    public Object _while;
+    public Object _if;
     public Object prototype;
     public Object localParent;
     public Object parser;
     public Object sourceCode;
 
-    public ArrayList<Object> local;
-    public ArrayList<Object> param;
+    public ArrayList<Object> local; // TODO rename to locals
+    public ArrayList<Object> param; // TODO rename to params
     public ArrayList<Object> next;
     public ArrayList<Object> cell;
     public ArrayList<Object> prop;
-    // after addObject new link you should addObject it to listLinks and parse function
+    // after addObject new link you should addObject it to listLinks and build function
 
     public Node(NodeType type) {
         this.type = type;

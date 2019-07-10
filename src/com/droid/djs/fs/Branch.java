@@ -1,9 +1,8 @@
 package com.droid.djs.fs;
 
 import com.droid.djs.NodeStorage;
-import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.serialization.node.NodeBuilder;
 
 import java.util.Arrays;
 import java.util.Timer;

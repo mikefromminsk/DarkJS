@@ -1,9 +1,9 @@
-package com.droid.djs.builder;
+package com.droid.djs.serialization.node;
 
 import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
-import com.droid.djs.consts.LinkType;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.LinkType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
@@ -262,11 +262,11 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getSourceCodeNode() {
+    public Data getSourceCodeNode() {
         if (node.sourceCode instanceof Node)
-            return (Node) node.sourceCode;
+            return (Data) node.sourceCode;
         else if (node.sourceCode instanceof Long)
-            return (Node) (node.sourceCode = nodeStorage.get((Long) node.sourceCode));
+            return (Data) (node.sourceCode = nodeStorage.get((Long) node.sourceCode));
         return null;
     }
 
@@ -749,5 +749,9 @@ public class NodeBuilder {
             ThreadNode threadNode = (ThreadNode) node;
             threadNode.access_owner = access_token;
         }
+    }
+
+    public boolean isFunction() {
+        return getNextCount() > 0 || getType() == NodeType.NATIVE_FUNCTION;
     }
 }

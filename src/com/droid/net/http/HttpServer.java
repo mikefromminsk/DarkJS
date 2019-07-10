@@ -1,20 +1,17 @@
 package com.droid.net.http;
 
 
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.fs.Files;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
 import org.nanohttpd.NanoHTTPD;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -88,9 +85,11 @@ public class HttpServer extends NanoHTTPD {
                             Threads.getInstance().run(node, null, false, access_token);
 
                             NodeBuilder builder = new NodeBuilder().set(node);
-                            if (builder.getValueNode() != null && builder.getValueNode().type.ordinal() < NodeType.NODE.ordinal()) {
-                                Data dataNode = (Data) builder.getValueNode();
-                                String mimeType = getContentType(builder.getParserString());
+                            if (builder.getValueNode() != null) {
+                                if (builder.isFunction())
+                                    builder.set(builder.getValueNode());
+                                Data dataNode = (Data) builder.getValueOrSelf();
+                                String mimeType = getContentType(builder.getParserString()) + ";utf-8;";
                                 String data = dataNode.data.readString();
                                 response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, data);
                                 response.addHeader("content-length", "" + dataNode.data.length()); // fix nanohttpd issue when content type is define
@@ -131,8 +130,12 @@ public class HttpServer extends NanoHTTPD {
     }
 
     String getContentType(String ext){
+        if (ext == null)
+            return null;
+        if (ext.endsWith("json"))
+            return "application/json";
         if (ext.endsWith("js"))
-            return "text/javascript;";
+            return "text/javascript";
         if (ext.endsWith("html"))
             return "text/html";
         if (ext.endsWith("css"))

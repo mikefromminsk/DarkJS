@@ -1,13 +1,10 @@
 package com.droid.djs.serialization.node;
 
 import com.droid.djs.DataStorage;
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.LinkType;
-import com.droid.djs.consts.NodeType;
-import com.droid.djs.fs.Branch;
+import com.droid.djs.nodes.consts.LinkType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 // TODO remove Gson library
-import com.droid.net.ftp.DataOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
@@ -16,32 +13,32 @@ import java.util.*;
 
 /*
 * {
-  "node1": {
+  "n1": {
     // exept true false
     "path": "/reverse2",
     "local": "!wefwef"
   },
-  "node2": {
+  "n2": {
     "start": "/root/dev",
     "path": "/reverse",
     "name": "!title",
-    "local": ["node1"],
+    "local": ["n1"],
     "data": "reverse",
     "type": "Object",
     "string": "!new title",
     "number": 30,
     "bool": true,
-    "link": "node1",
+    "link": "n1",
     "array": [
-      "node1",
-      "node2",
+      "n1",
+      "n2",
       true,
       30
     ]
   }
 }
 
-/* parse priority
+/* build priority
         node_path
         node_local
         type

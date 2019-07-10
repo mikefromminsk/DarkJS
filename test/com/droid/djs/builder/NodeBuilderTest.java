@@ -1,6 +1,7 @@
 package com.droid.djs.builder;
 
 import com.droid.djs.nodes.Node;
+import com.droid.djs.serialization.node.NodeBuilder;
 
 import static org.junit.jupiter.api.Assertions.*;
 

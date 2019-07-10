@@ -1,15 +1,12 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.consts.LinkType;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.LinkType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.Runner;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ThreadNode extends Node implements Runnable {
 

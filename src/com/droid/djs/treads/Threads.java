@@ -1,11 +1,12 @@
 package com.droid.djs.treads;
 
-import com.droid.djs.builder.NodeBuilder;
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.serialization.js.JsParser;
+import com.droid.djs.serialization.node.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.serialization.js.JsParser;
+import com.droid.djs.serialization.js.JsBuilder;
 
 import java.util.List;
 
@@ -33,11 +34,11 @@ public class Threads {
         return thread.run(node, async, access_token);
     }
 
-    private JsParser jsParser = new JsParser();
+    private JsBuilder jsBuilder = new JsBuilder();
 
     public Node runScript(String path, String sourceCode, Long code) {
         Node node = Files.getNode(path);
-        Node module = jsParser.parse(node, sourceCode);
+        Node module = jsBuilder.build(node, JsParser.parse(sourceCode));
         run(module, null, false, code);
         return node;
     }

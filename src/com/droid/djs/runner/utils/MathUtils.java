@@ -1,6 +1,6 @@
 package com.droid.djs.runner.utils;
 
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
 public class MathUtils extends Utils {

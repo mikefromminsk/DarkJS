@@ -1,6 +1,6 @@
 package com.droid.djs.runner;
 
-import com.droid.djs.builder.NodeBuilder;
+import com.droid.djs.serialization.node.NodeBuilder;
 import com.droid.djs.nodes.Node;
 
 public interface Func {

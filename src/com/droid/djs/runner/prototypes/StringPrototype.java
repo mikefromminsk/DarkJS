@@ -1,6 +1,6 @@
 package com.droid.djs.runner.prototypes;
 
-import com.droid.djs.consts.NodeType;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 
 public class StringPrototype extends Utils {

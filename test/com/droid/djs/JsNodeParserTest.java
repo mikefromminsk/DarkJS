@@ -1,5 +1,6 @@
 package com.droid.djs;
 
+import com.droid.djs.serialization.js.JsBuilder;
 import com.droid.djs.serialization.js.JsParser;
 import jdk.nashorn.internal.runtime.ParserException;
 import org.apache.commons.io.FileUtils;
@@ -16,11 +17,10 @@ class JsNodeParserTest {
 
     @Test
     void parse() throws IOException {
-        File file = new File("test_res/parse/JsParserScript.js");
+        File file = new File("test_res/build/JsParserScript.js");
         String scriptStr = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        JsParser jsParser = new JsParser();
         try {
-            jsParser.parse(null, scriptStr);
+            JsParser.parse(scriptStr);
         } catch (ParserException e) {
             fail("parse exception");
         }
@@ -28,21 +28,18 @@ class JsNodeParserTest {
 
     @Test
     void parseSimple() {
-        JsParser jsParser = new JsParser();
         try {
-            jsParser.parse(null, "var wef = 1;");
+            JsParser.parse("var wef = 1;");
         } catch (ParserException e) {
             fail("parse exception");
         }
     }
 
-
     /*@Test
     void parseException() {
-        JsParser parser = new JsParser();
         Boolean parseError;
         try {
-            parser.parse(null, "1d1d");
+            JsParser.parse("1d1d");
             parseError = false;
         } catch (ParserException e) {
             parseError = true;
