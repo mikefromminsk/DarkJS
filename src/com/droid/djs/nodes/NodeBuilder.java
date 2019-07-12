@@ -734,6 +734,13 @@ public class NodeBuilder {
         return nodes;
     }
 
+    public Node[] getCells() {
+        Node[] nodes = new Node[getCellCount()];
+        for (int i = 0; i < getCellCount(); i++)
+            nodes[i] = getCellNode(i);
+        return nodes;
+    }
+
     public NodeBuilder setLocalNode(int index, Node item) {
         node.local.set(index, item);
         Node prevNode = node;

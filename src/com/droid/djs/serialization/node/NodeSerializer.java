@@ -59,7 +59,7 @@ public class NodeSerializer {
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
     public static String toJson(Node node) {
-        return toJson(node, 15);
+        return toJson(node, 2);
     }
 
     public static String toJson(Node node, int level) {

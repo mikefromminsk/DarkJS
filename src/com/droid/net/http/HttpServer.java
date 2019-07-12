@@ -5,6 +5,8 @@ import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.fs.Files;
+import com.droid.djs.serialization.json.JsonSerializer;
+import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
 import org.nanohttpd.NanoHTTPD;
@@ -49,10 +51,6 @@ public class HttpServer extends NanoHTTPD {
                     response = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "Need basic auth");
                     response.addHeader(Headers.AUTHENTICATE, "Basic realm=\"Access to the site\"");
                 } else {
-                    authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
-                    authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
-                    String login = authorization.substring(0, authorization.indexOf(":"));
-                    String password = authorization.substring(authorization.indexOf(":") + 1);
                     Node node = null;
                     try {
                         node = Files.getNode(session.getUri(), null);
@@ -64,6 +62,10 @@ public class HttpServer extends NanoHTTPD {
                     if (node == null) {
                         response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
                     } else {
+                        authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
+                        authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
+                        String login = authorization.substring(0, authorization.indexOf(":"));
+                        String password = authorization.substring(authorization.indexOf(":") + 1);
                         Long access_token = Secure.getAccessToken(login, password);
 
                         node = Files.getNode(session.getUri(), null, access_token);
@@ -72,11 +74,10 @@ public class HttpServer extends NanoHTTPD {
                             response = newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Access denied");
                         } else {
                             Map<String, String> args = null;
-                            if (session.getMethod() == Method.POST) {
+                            if (session.getMethod() == Method.POST)
                                 args = parseArguments(session.getInputStream());
-                            } else if (session.getMethod() == Method.GET) {
+                            else if (session.getMethod() == Method.GET)
                                 args = parseArguments(session.getQueryParameterString());
-                            }
 
                             ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
                             for (String argsKey : argsKeys)
@@ -85,28 +86,13 @@ public class HttpServer extends NanoHTTPD {
                             Threads.getInstance().run(node, null, false, access_token);
 
                             NodeBuilder builder = new NodeBuilder().set(node);
-                            if (builder.getValueNode() != null) {
-                                if (builder.isFunction())
-                                    builder.set(builder.getValueNode());
-                                Data dataNode = (Data) builder.getValueOrSelf();
-                                String mimeType = getContentType(builder.getParserString()) + ";utf-8;";
-                                String data = dataNode.data.readString();
-                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, data);
-                                response.addHeader("content-length", "" + dataNode.data.length()); // fix nanohttpd issue when content type is define
-                            } else {
-                                StringBuilder stringBuilder = new StringBuilder();
-                                Node[] locals = builder.getLocalNodes();
+                            if (builder.isFunction() && builder.getValueNode() != null)
+                                builder.set(builder.getValueNode());
 
-                                stringBuilder.append("<html>");
-                                stringBuilder.append("<body>");
-
-                                for (Node local : locals)
-                                    stringBuilder.append("<a href=\"" + Files.getPath(local) + "\">" + builder.set(local).getTitleString() + "</a><br>");
-
-                                stringBuilder.append("</body>");
-                                stringBuilder.append("</html>");
-                                response = NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_HTML, stringBuilder.toString());
-                            }
+                            String responseData = serializeNode(builder);
+                            String mimeType = getContentType(builder.getParserString());
+                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, responseData);
+                            response.addHeader("content-length", "" + responseData.length()); // fix nanohttpd issue when content type is define
                         }
                     }
                 }
@@ -129,18 +115,29 @@ public class HttpServer extends NanoHTTPD {
         return response;
     }
 
-    String getContentType(String ext){
-        if (ext == null)
-            return null;
-        if (ext.endsWith("json"))
-            return "application/json";
-        if (ext.endsWith("js"))
-            return "text/javascript";
-        if (ext.endsWith("html"))
-            return "text/html";
-        if (ext.endsWith("css"))
-            return "text/css";
-        return null;
+    private String serializeNode(NodeBuilder builder) {
+        String parser = builder.getParserString();
+        if (parser != null) {
+            if (parser.endsWith("json"))
+                return JsonSerializer.serialize(builder);
+            if (builder.getValueNode() instanceof Data)
+                return ((Data) builder.getValueNode()).data.readString();
+        }
+        return NodeSerializer.toJson(builder.getNode());
+    }
+
+    String getContentType(String ext) {
+        if (ext != null) {
+            if (ext.endsWith("json"))
+                return "application/json";
+            if (ext.endsWith("js"))
+                return "text/javascript";
+            if (ext.endsWith("html"))
+                return "text/html";
+            if (ext.endsWith("css"))
+                return "text/css";
+        }
+        return "application/json"; // NodeSerializer
     }
 
     Map<String, String> parseArguments(String args) {
