@@ -90,7 +90,7 @@ public class HttpServer extends NanoHTTPD {
                                 builder.set(builder.getValueNode());
 
                             String responseData = serializeNode(builder);
-                            String mimeType = getContentType(builder.getParserString());
+                            String mimeType = getContentType(builder);
                             response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, responseData);
                             response.addHeader("content-length", "" + responseData.length()); // fix nanohttpd issue when content type is define
                         }
@@ -115,29 +115,32 @@ public class HttpServer extends NanoHTTPD {
         return response;
     }
 
+    String getContentType(NodeBuilder builder) {
+        String parser = builder.getParserString();
+        if (parser != null) {
+            if (parser.endsWith("json"))
+                return "application/json";
+            if (parser.endsWith("js"))
+                return "text/javascript";
+            if (parser.endsWith("html"))
+                return "text/html";
+            if (parser.endsWith("css"))
+                return "text/css";
+        }
+        if (builder.getValueNode() instanceof Data)
+            return "";
+        return "application/json";
+    }
+
     private String serializeNode(NodeBuilder builder) {
         String parser = builder.getParserString();
         if (parser != null) {
             if (parser.endsWith("json"))
                 return JsonSerializer.serialize(builder);
-            if (builder.getValueNode() instanceof Data)
-                return ((Data) builder.getValueNode()).data.readString();
         }
+        if (builder.getValueNode() instanceof Data)
+            return ((Data) builder.getValueNode()).data.readString();
         return NodeSerializer.toJson(builder.getNode());
-    }
-
-    String getContentType(String ext) {
-        if (ext != null) {
-            if (ext.endsWith("json"))
-                return "application/json";
-            if (ext.endsWith("js"))
-                return "text/javascript";
-            if (ext.endsWith("html"))
-                return "text/html";
-            if (ext.endsWith("css"))
-                return "text/css";
-        }
-        return "application/json"; // NodeSerializer
     }
 
     Map<String, String> parseArguments(String args) {
@@ -187,10 +190,10 @@ public class HttpServer extends NanoHTTPD {
             } else if (param.type == NodeType.ARRAY) {
                 builder.set(param).clearCells();
                 for (Object obj : toList(value)) {
-
+                    //TODO add code
                 }
             } else if (param.type == NodeType.OBJECT) {
-
+                //TODO add code
             }
         }
     }
