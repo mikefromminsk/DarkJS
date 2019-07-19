@@ -4,15 +4,16 @@ import com.droid.djs.fs.Master;
 import com.droid.gdb.map.Crc16;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpServer;
+import com.droid.net.ws.WsClientServer;
 import com.droid.net.ws.WsServer;
 
 import java.io.IOException;
 
 public class Secure {
 
-    private static HttpServer httpServer = null;
-    private static FtpServer ftpServer = null;
-    private static WsServer wsServer = null;
+    private static HttpServer http = null;
+    private static FtpServer ftp = null;
+    private static WsClientServer ws = null;
 
     public static boolean start(String login, String password, String nodeName) {
         Long access_owner_code = getAccessToken(login, password);
@@ -20,26 +21,19 @@ public class Secure {
         boolean started = Threads.getInstance().run(Master.getInstance(), null, false, access_owner_code);
         if (started) {
             try {
-                httpServer = new HttpServer(HttpServer.debugPort);
-                httpServer.start();
-                ftpServer = new FtpServer(FtpServer.defaultPort);
-                ftpServer.start();
-                wsServer = new WsServer(WsServer.defaultPort, nodeName);
-                wsServer.start();
+                http = new HttpServer(HttpServer.debugPort);
+                http.start();
+                ftp = new FtpServer(FtpServer.defaultPort);
+                ftp.start();
+                ws = new WsClientServer(WsServer.defaultPort, nodeName);
+                ws.start();
             } catch (Exception e) {
-                if (httpServer != null)
-                    httpServer.stop();
-                if (ftpServer != null)
-                    ftpServer.stop();
-                if (wsServer != null) {
-                    try {
-                        wsServer.stop();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
+                if (http != null)
+                    http.stop();
+                if (ftp != null)
+                    ftp.stop();
+                if (ws != null)
+                    ws.stop();
                 return false;
             }
         }
@@ -51,7 +45,7 @@ public class Secure {
     }
 
     public static void join() throws InterruptedException {
-        if (httpServer != null)
-            httpServer.join();
+        if (http != null)
+            http.join();
     }
 }

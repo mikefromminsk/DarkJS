@@ -28,6 +28,18 @@ public class NodeBuilder {
         return this;
     }
 
+    public Node createString(String string) {
+        return create(NodeType.STRING).setData(string).commit();
+    }
+
+    public Node createNumber(Double number) {
+        return create(NodeType.NUMBER).setData(number).commit();
+    }
+
+    public Node createBool(Boolean bool) {
+        return create(NodeType.BOOL).setData(bool).commit();
+    }
+
     public NodeBuilder get(Long id) {
         node = nodeStorage.get(id);
         return this;

@@ -66,7 +66,12 @@ public class NodeSerializer {
         return json.toJson(toMap(node, level));
     }
 
+    public static Map<String, Map<String, Object>> toMap(Node node) {
+        return toMap(node, -1);
+    }
+
     public static Map<String, Map<String, Object>> toMap(Node node, int level) {
+        if (level <= 0) level = 15;
         Map<String, Map<String, Object>> data = new LinkedHashMap<>();
         toMapRecursive(new NodeBuilder(), data, level, node);
         return data;
@@ -84,7 +89,7 @@ public class NodeSerializer {
         }
     }
 
-    public static void toMapRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int depth, Node node) {
+    public static void toMapRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int level, Node node) {
         if (node.id == 0) return;
         String nodeName = NODE_PREFIX + node.id;
         if (data.get(nodeName) != null) return;
@@ -113,9 +118,9 @@ public class NodeSerializer {
             if (singleValue) {
                 if (linkNode.type.ordinal() < NodeType.NODE.ordinal())
                     links.put(linkTypeStr, dataSimplification(builder, linkNode));
-                else if (depth > 0) {
+                else if (level > 0) {
                     links.put(linkTypeStr, NODE_PREFIX + linkNode.id);
-                    toMapRecursive(builder, data, depth - 1, linkNode);
+                    toMapRecursive(builder, data, level - 1, linkNode);
                 }
             } else {
                 Object linkObject = links.get(linkTypeStr);
@@ -127,7 +132,7 @@ public class NodeSerializer {
                     linkList.add(dataSimplification(builder, linkNode));
                 else {
                     linkList.add(NODE_PREFIX + linkNode.id);
-                    toMapRecursive(builder, data, depth, linkNode);
+                    toMapRecursive(builder, data, level, linkNode);
                 }
             }
         });

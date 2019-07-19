@@ -7,7 +7,6 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.Func;
 import com.droid.djs.runner.prototypes.StringPrototype;
-import com.droid.djs.serialization.node.NodeSerializer;
 
 import java.util.*;
 
@@ -33,6 +32,7 @@ abstract public class Utils {
             new MathUtils();
             new RootUtils();
             new NodeUtils();
+            new Net();
         }
         return functions;
     }
@@ -76,40 +76,46 @@ abstract public class Utils {
         return new Parameter(name, nodeType);
     }
 
-    Object leftObject(NodeBuilder builder, Node node) {
-        return toObject(builder, builder.set(node).getParamNode(0));
+    Object getObject(int index, NodeBuilder builder, Node node) {
+        return toObject(builder, builder.set(node).getParamNode(index));
     }
 
-    Object rightObject(NodeBuilder builder, Node node) {
-        return toObject(builder, builder.set(node).getParamNode(1));
+    Object firstObject(NodeBuilder builder, Node node) {
+        return getObject(0, builder, node);
     }
 
-    String leftString(NodeBuilder builder, Node node) {
-        Object leftObj = leftObject(builder, node);
+    Object secondObject(NodeBuilder builder, Node node) {
+        return getObject(1, builder, node);
+    }
+
+    String getString(int index, NodeBuilder builder, Node node) {
+        Object leftObj = getObject(index, builder, node);
         if (leftObj != null)
             return (String) leftObj;
         return null;
     }
 
-    String rightString(NodeBuilder builder, Node node) {
-        Object leftObj = rightObject(builder, node);
-        if (leftObj != null)
-            return (String) leftObj;
-        return null;
+    String firstString(NodeBuilder builder, Node node) {
+        return getString(0, builder, node);
     }
 
-    Double leftNumber(NodeBuilder builder, Node node) {
-        Object leftObj = leftObject(builder, node);
+    String secondString(NodeBuilder builder, Node node) {
+        return getString(1, builder, node);
+    }
+
+    Double getNumber(int index, NodeBuilder builder, Node node) {
+        Object leftObj = firstObject(builder, node);
         if (leftObj != null)
             return (Double) leftObj;
         return null;
     }
 
-    Double rightNumber(NodeBuilder builder, Node node) {
-        Object leftObj = rightObject(builder, node);
-        if (leftObj != null)
-            return (Double) leftObj;
-        return null;
+    Double firstNumber(NodeBuilder builder, Node node) {
+        return getNumber(0, builder, node);
+    }
+
+    Double secondNumber(NodeBuilder builder, Node node) {
+        return getNumber(1, builder, node);
     }
 
     protected Object toObject(NodeBuilder builder, Node node) {

@@ -1,9 +1,17 @@
 package com.droid.net.ws;
 
 import java.util.List;
+import java.util.Map;
 
 public class Message {
     // TODO TTL
     String destination;
-    List<String> trace;
+    String path;
+    Map<String, Map<String, Object>> nodes;
+
+    public Message(String destination, String path, Map<String, Map<String, Object>> nodes) {
+        this.destination = destination;
+        this.path = path;
+        this.nodes = nodes;
+    }
 }
