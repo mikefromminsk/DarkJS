@@ -24,6 +24,10 @@ public class Files {
     }
 
     public static Node getNode(String path) {
+        return getNode(path);
+    }
+
+    public static Node getNodeIfExist(String path) {
         return getNode(path, NodeType.NODE);
     }
 
@@ -151,5 +155,10 @@ public class Files {
         Node title = builder.set(from).getTitleNode();
         Data parser = builder.set(from).getParserNode();
         builder.set(to).setTitle(title).setParser(parser).commit();
+    }
+
+    public static void putNode(Node root, String path, Node node) {
+        Node newNode = Files.getNode(root, path, node.type);
+        replace(newNode, node);
     }
 }

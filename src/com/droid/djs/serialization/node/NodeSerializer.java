@@ -49,7 +49,7 @@ public class NodeSerializer {
 
     public static final String NEW_NODE_PREFIX = "w";
     public static final String NODE_PREFIX = "n";
-    public static final String TYPE_PREFIX = "type";
+    public static final String TYPE_KEY = "type";
     public static final String DATA_PREFIX = "data";
     public static final String STRING_PREFIX = "!";
     public static final String LINK_PREFIX = "@";
@@ -99,7 +99,7 @@ public class NodeSerializer {
         data.put(nodeName, links);
 
         if (node.type != NodeType.NODE)
-            links.put(TYPE_PREFIX, node.type.toString());
+            links.put(TYPE_KEY, node.type.toString());
 
         if (node.type.ordinal() < NodeType.NODE.ordinal())
             links.put(DATA_PREFIX, dataSimplification(builder, node));

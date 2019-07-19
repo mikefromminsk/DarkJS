@@ -661,12 +661,6 @@ public class NodeBuilder {
         }
     }
 
-    public void clearLinks() {
-        NodeType type = node.type;
-        node.parse(new byte[0]);
-        node.type = type;
-    }
-
     public NodeBuilder removeAllNext() {
         node.next = null;
         return this;

@@ -1,6 +1,5 @@
 package com.droid.net.ws;
 
-import java.util.List;
 import java.util.Map;
 
 public class Message {

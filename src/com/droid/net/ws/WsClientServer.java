@@ -1,8 +1,11 @@
 package com.droid.net.ws;
 
 import com.droid.djs.NodeStorage;
+import com.droid.djs.fs.Branch;
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,7 +61,11 @@ public class WsClientServer {
 
     void onMessage(Message message) {
         if (message.destination == null || message.destination.equals(nodeName)) { // node is finded
-
+            Node node = Files.getNodeIfExist(message.path);
+            if (node != null) {
+                Node receivedNode = NodeParser.parse(message.nodes);
+                Files.putNode(node, message.path, receivedNode);
+            }
         } else {
             /*int traceIndex = message.trace.indexOf(nodeName);
             if (traceIndex != -1) {// retranslate

@@ -53,7 +53,7 @@ public class HttpServer extends NanoHTTPD {
                 } else {
                     Node node = null;
                     try {
-                        node = Files.getNode(session.getUri(), null);
+                        node = Files.getNodeIfExist(session.getUri());
                     } catch (Exception e) {
                         System.out.println("uri error with: " + session.getUri());
                         e.printStackTrace();

@@ -26,6 +26,7 @@ public class Node extends SuperNode {
     public Object localParent;
     public Object parser;
     public Object sourceCode;
+    // TODO add sourceParent for GC and Files.replace
 
     public ArrayList<Object> local; // TODO rename to locals
     public ArrayList<Object> param; // TODO rename to params
