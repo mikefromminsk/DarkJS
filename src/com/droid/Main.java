@@ -22,7 +22,7 @@ public class Main {
         loadingBranch = new Branch();
         loadProject("C:/wamp/www/droid", "root");
         loadingBranch.mergeWithMaster();
-        Secure.start(login, password);
+        Secure.start(login, password, "notebook");
         Secure.join();
     }
 

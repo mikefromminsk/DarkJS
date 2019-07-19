@@ -1,16 +1,18 @@
 package com.droid.net.ws;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class WsServer extends WebSocketServer {
 
-    public static int defaultPort = 8887;
+    public static int defaultPort = 8081;
 
     public WsServer(int port) {
         super(new InetSocketAddress(port));
@@ -18,8 +20,7 @@ public class WsServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        conn.send("Welcome to the server!");
-        broadcast("new connection: " + handshake.getResourceDescriptor());
+
     }
 
     @Override
@@ -28,8 +29,8 @@ public class WsServer extends WebSocketServer {
     }
 
     @Override
-    public void onMessage(WebSocket conn, String message) {
-        broadcast(message);
+    public void onMessage(WebSocket conn, String messageStr) {
+
     }
 
     @Override

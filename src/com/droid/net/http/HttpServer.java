@@ -92,7 +92,7 @@ public class HttpServer extends NanoHTTPD {
                             String responseData = serializeNode(builder);
                             String mimeType = getContentType(builder);
                             response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, responseData);
-                            response.addHeader("content-length", "" + responseData.length()); // fix nanohttpd issue when content type is define
+                            response.addHeader("content-length", "" + responseData.getBytes().length); // fix nanohttpd issue when content type is define
                         }
                     }
                 }
