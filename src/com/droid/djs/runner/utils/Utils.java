@@ -54,19 +54,20 @@ abstract public class Utils {
             String functionName = funcInterface.path + funcInterface.name;
             NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
             builder.set(function).setFunctionIndex(i);
-            for (Parameter parameter : funcInterface.parameters)
-                builder.addParam(parNode(parameter));
-            builder.commit();
+            for (Parameter parameter : funcInterface.parameters){
+                Node param = parNode(parameter);
+                builder.set(function).addParam(param).commit();
+            }
         }
     }
 
     private static Node parNode(Parameter parameter) {
-        Node title = builder.create(NodeType.STRING).setData(parameter.name).commit();
-        Node defValue = null;
+        Node title = builder.createString(parameter.name);
+        Node defValue;
         if (parameter.nodeType == NodeType.NUMBER)
-            defValue = builder.create(parameter.nodeType).setData(0D).commit();
+            defValue = builder.createNumber(0D);
         else if (parameter.nodeType == NodeType.STRING)
-            defValue = builder.create(parameter.nodeType).setData("string").commit();
+            defValue = builder.createString("string");
         else
             defValue = builder.create(parameter.nodeType).commit();
         return builder.create().setTitle(title).setValue(defValue).commit();
@@ -103,19 +104,11 @@ abstract public class Utils {
         return getString(1, builder, node);
     }
 
-    Double getNumber(int index, NodeBuilder builder, Node node) {
-        Object leftObj = firstObject(builder, node);
+    Double getNumber(int index, NodeBuilder builder, Node node, Double def) {
+        Object leftObj = getObject(index, builder, node);
         if (leftObj != null)
             return (Double) leftObj;
-        return null;
-    }
-
-    Double firstNumber(NodeBuilder builder, Node node) {
-        return getNumber(0, builder, node);
-    }
-
-    Double secondNumber(NodeBuilder builder, Node node) {
-        return getNumber(1, builder, node);
+        return def;
     }
 
     protected Object toObject(NodeBuilder builder, Node node) {

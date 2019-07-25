@@ -5,6 +5,7 @@ import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.*;
 import com.droid.djs.fs.Files;
+import com.droid.djs.runner.utils.NodeUtils;
 import com.droid.djs.serialization.json.JsonSerializer;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.djs.treads.Secure;
@@ -12,13 +13,12 @@ import com.droid.djs.treads.Threads;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.security.InvalidParameterException;
+import java.util.*;
 
 public class HttpServer extends NanoHTTPD {
 
@@ -37,8 +37,9 @@ public class HttpServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
+        super.serve(session);
         Response response = null;
-
+        long startRequestTime = new Date().getTime();
         try {
             String requestContentType = session.getHeaders().get(Headers.CONTENT_TYPE);
             if (requestContentType != null)
@@ -73,19 +74,19 @@ public class HttpServer extends NanoHTTPD {
                         if (node == null) {
                             response = newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Access denied");
                         } else {
-                            Map<String, String> args = null;
-                            if (session.getMethod() == Method.POST)
-                                args = parseArguments(session.getInputStream());
-                            else if (session.getMethod() == Method.GET)
-                                args = parseArguments(session.getQueryParameterString());
+                            Map<String, String> args = parseArguments(session.getQueryParameterString());
 
-                            ArrayList<String> argsKeys = new ArrayList<>(args.keySet());
-                            for (String argsKey : argsKeys)
+                            NodeBuilder builder = new NodeBuilder().set(node);
+
+                            for (Node param : builder.getParams())
+                                builder.set(param).setValue(null).commit();
+
+                            for (String argsKey : args.keySet())
                                 setParam(node, argsKey, args.get(argsKey));
 
                             Threads.getInstance().run(node, null, false, access_token);
 
-                            NodeBuilder builder = new NodeBuilder().set(node);
+                            builder.set(node);
                             if (builder.isFunction() && builder.getValueNode() != null)
                                 builder.set(builder.getValueNode());
 
@@ -112,6 +113,8 @@ public class HttpServer extends NanoHTTPD {
         if (response == null)
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "response is empty");
 
+        System.out.println(session.getUri() + " (" + (new Date().getTime() - startRequestTime) + ")");
+
         return response;
     }
 
@@ -137,31 +140,20 @@ public class HttpServer extends NanoHTTPD {
         if (parser != null) {
             if (parser.endsWith("json"))
                 return JsonSerializer.serialize(builder);
+            if (builder.getValueNode() instanceof Data)
+                return ((Data) builder.getValueNode()).data.readString();
         }
-        if (builder.getValueNode() instanceof Data)
-            return ((Data) builder.getValueNode()).data.readString();
         return NodeSerializer.toJson(builder.getNode());
     }
 
     Map<String, String> parseArguments(String args) {
-        if (args == null)
-            return new LinkedHashMap<>();
-        return parseArguments(new ByteArrayInputStream(args.getBytes()));
-    }
-
-    public static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
-
-    Map<String, String> parseArguments(InputStream args) {
         Map<String, String> query_pairs = new LinkedHashMap<>();
-        String query = convertStreamToString(args);
-        String[] pairs = query.split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
+        if (args != null) {
             try {
-                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                for (String pair : args.split("&")) {
+                    int idx = pair.indexOf("=");
+                    query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                }
             } catch (UnsupportedEncodingException e) {
             }
         }
@@ -175,26 +167,31 @@ public class HttpServer extends NanoHTTPD {
     void setParam(Node node, String key, String value) {
         NodeBuilder builder = new NodeBuilder();
         Node param = null;
+        // TODO key can be par[title][0]
         for (Node paramNode : builder.set(node).getParams())
             if (key.equals(builder.set(paramNode).getTitleString())) {
                 param = paramNode;
                 break;
             }
         if (param != null) {
-            if (param.type == NodeType.NUMBER) {
-                Node number = builder.create(NodeType.NUMBER).setData(value).commit();
-                builder.set(param).setValue(number).commit();
-            } else if (param.type == NodeType.STRING) {
-                Node number = builder.create(NodeType.STRING).setData(value).commit();
-                builder.set(param).setValue(number).commit();
-            } else if (param.type == NodeType.ARRAY) {
-                builder.set(param).clearCells();
-                for (Object obj : toList(value)) {
-                    //TODO add code
+            Node valueNode;
+            if (value.charAt(0) == '!') {
+                valueNode = builder.createString(value.substring(1));
+            } else if (value.charAt(0) >= '0' && value.charAt(0) <= '9') {
+                try {
+                    Double numberValue = Double.valueOf(value);
+                    valueNode = builder.createNumber(numberValue);
+                } catch (NumberFormatException e) {
+                    throw new InvalidParameterException();
                 }
-            } else if (param.type == NodeType.OBJECT) {
-                //TODO add code
-            }
+            } else if ("true".equals(value)) {
+                valueNode = builder.createBool(true);
+            } else if ("false".equals(value)) {
+                valueNode = builder.createBool(false);
+            } else
+                throw new InvalidParameterException();
+
+            builder.set(param).setValue(valueNode).commit();
         }
     }
 }

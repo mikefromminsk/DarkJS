@@ -4,7 +4,6 @@ import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,6 +15,7 @@ public class Branch {
     private int mergeTimer;
 
     public Branch() {
+        // TODO if 1000 Main.loadProject don`t load all files
         this(2000);
     }
 

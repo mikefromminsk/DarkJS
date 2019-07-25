@@ -24,11 +24,11 @@ public class Files {
     }
 
     public static Node getNode(String path) {
-        return getNode(path);
+        return getNode(path, NodeType.NODE);
     }
 
     public static Node getNodeIfExist(String path) {
-        return getNode(path, NodeType.NODE);
+        return getNode(path, null);
     }
 
     public static Node getNode(String path, NodeType nodeType) {

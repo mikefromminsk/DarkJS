@@ -32,15 +32,10 @@ public class NodeUtils extends Utils {
 
     @Override
     public void methods() {
-        func("body", (builder, node, ths) -> {
+        func("get", (builder, node, ths) -> {
             String path = firstString(builder, node);
-            Double level = secondNumber(builder, node);
-            Node pathNode = Files.getNode(path);
-            String jsonStr = json.toJson(new NodeBody(pathNode.id, NodeSerializer.toMap(pathNode, level.intValue())));
-            Node jsonData = builder.create(NodeType.STRING).setData(jsonStr).commit();
-            Node jsonType = builder.create(NodeType.STRING).setData("json").commit();
-            return builder.create().setValue(jsonData).setParser((Data) jsonType).commit();
-        }, par("path", NodeType.STRING), par("level", NodeType.NUMBER));
+            return Files.getNodeIfExist(path);
+        }, par("path", NodeType.STRING));
 
         func("path", (builder, node, ths) -> builder.create(NodeType.STRING).setData(Files.getPath(node)).commit());
     }
