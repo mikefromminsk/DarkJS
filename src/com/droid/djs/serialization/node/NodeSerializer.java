@@ -99,7 +99,7 @@ public class NodeSerializer {
         data.put(nodeName, links);
 
         if (node.type != NodeType.NODE)
-            links.put(TYPE_KEY, node.type.toString());
+            links.put(TYPE_KEY, node.type.toString().toLowerCase());
 
         if (node.type.ordinal() < NodeType.NODE.ordinal())
             links.put(DATA_PREFIX, dataSimplification(builder, node));

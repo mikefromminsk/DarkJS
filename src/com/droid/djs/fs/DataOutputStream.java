@@ -1,5 +1,7 @@
 package com.droid.djs.fs;
 
+import com.droid.djs.serialization.js.JsBuilder;
+import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.serialization.json.JsonBuilder;
 import com.droid.djs.serialization.json.JsonParser;
 import com.droid.djs.nodes.NodeBuilder;
@@ -64,9 +66,14 @@ public class DataOutputStream extends OutputStream {
             Data parserNode = builder.getParserNode();
             if (parserNode != null && dataNode != null) {
                 String parser = parserNode.data.readString();
+                String data = dataNode.data.readString();
                 if ("json".equals(parser)) {
-                    JsonElement jsonElement = JsonParser.parse(dataNode.data);
+                    JsonElement jsonElement = JsonParser.parse(data);
                     JsonBuilder.build(node, jsonElement);
+                }
+                if ("node.js".equals(parser)) {
+                    jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
+                    new JsBuilder().build(node, nashornNode);
                 }
             }
 

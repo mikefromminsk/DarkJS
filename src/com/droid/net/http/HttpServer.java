@@ -118,10 +118,11 @@ public class HttpServer extends NanoHTTPD {
         return response;
     }
 
+    // TODO merge with serializeNode
     String getContentType(NodeBuilder builder) {
         String parser = builder.getParserString();
         if (parser != null) {
-            if (parser.endsWith("json"))
+            if (parser.endsWith("json") || parser.equals("node.js"))
                 return "application/json";
             if (parser.endsWith("js"))
                 return "text/javascript";
@@ -135,11 +136,14 @@ public class HttpServer extends NanoHTTPD {
         return "application/json";
     }
 
+    // TODO merge with getContentType
     private String serializeNode(NodeBuilder builder) {
         String parser = builder.getParserString();
         if (parser != null) {
-            if (parser.endsWith("json"))
+            if (parser.equals("json"))
                 return JsonSerializer.serialize(builder);
+            if (parser.equals("node.js"))
+                return NodeSerializer.toJson(builder.getNode());
             if (builder.getValueNode() instanceof Data)
                 return ((Data) builder.getValueNode()).data.readString();
         }
@@ -148,7 +152,7 @@ public class HttpServer extends NanoHTTPD {
 
     Map<String, String> parseArguments(String args) {
         Map<String, String> query_pairs = new LinkedHashMap<>();
-        if (args != null) {
+        if (args != null && !args.equals("")) {
             try {
                 for (String pair : args.split("&")) {
                     int idx = pair.indexOf("=");
