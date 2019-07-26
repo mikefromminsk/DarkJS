@@ -33,6 +33,7 @@ abstract public class Utils {
             new RootUtils();
             new NodeUtils();
             new Net();
+            new Console();
         }
         return functions;
     }

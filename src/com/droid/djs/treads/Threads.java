@@ -28,10 +28,8 @@ public class Threads {
         return (ThreadNode) item;
     }
 
-    //TODO add args to thread
-    public boolean run(Node node, List<Node> args, boolean async, Long access_token) {
-        ThreadNode thread = findThread(node);
-        return thread.run(node, async, access_token);
+    public boolean run(Node node, Node[] args, boolean async, Long access_token) {
+        return findThread(node).run(node, args, async, access_token);
     }
 
     private JsBuilder jsBuilder = new JsBuilder();

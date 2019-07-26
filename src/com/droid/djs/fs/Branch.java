@@ -4,6 +4,7 @@ import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,6 +13,7 @@ public class Branch {
     private NodeBuilder builder = new NodeBuilder();
     private Node root;
     private Timer timer = new Timer();
+    private Random random = new Random();
     private int mergeTimer;
 
     public Branch() {
@@ -25,8 +27,7 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = builder.create().commit();
-            builder.get(0L).addLocal(root).commit();
+            root = Files.getNode("Branch/" + Math.abs(random.nextInt()));
             NodeStorage.getInstance().transactionCommit();
             updateTimer();
         }
@@ -63,15 +64,17 @@ public class Branch {
             timer.cancel();
         if (root != null) {
             Node branchPackage = findPackage(root);
+            String branchRootPath = Files.getPath(root);
             if (branchPackage != null) {
-                Node masterPackage = Files.getNode(Master.getInstance(), Files.getPath(branchPackage));
+                String branchFilePath = Files.getPath(branchPackage);
+                branchFilePath = branchFilePath.substring(branchRootPath.length());
+                Node masterPackage = Files.getNode(Master.getInstance(), branchFilePath);
                 Files.replace(masterPackage, branchPackage);
                 if (masterPackage == Master.getInstance())
                     Master.removeInstance();
-                //builder.set(branchPackage).setHistory(masterPackage).commit();
             }
             if (root != Master.getInstance())
-                builder.get(0L).removeLocal(root).commit();
+                Files.remove(root);
             root = null;
             NodeStorage.getInstance().transactionCommit();
         }

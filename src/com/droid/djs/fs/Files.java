@@ -161,4 +161,10 @@ public class Files {
         Node newNode = Files.getNode(root, path, node.type);
         replace(newNode, node);
     }
+
+    public static void remove(Node root) {
+        NodeBuilder builder = new NodeBuilder();
+        Node masterLocalParent = builder.set(root).getLocalParentNode();
+        builder.set(masterLocalParent).removeLocal(root);
+    }
 }

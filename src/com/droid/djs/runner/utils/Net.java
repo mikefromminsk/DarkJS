@@ -12,13 +12,18 @@ public class Net extends Utils {
 
     @Override
     public void methods() {
+
+        // TODO dynamic params
         func("send", (builder, node, ths) -> {
+            System.out.println("Net.send");
             String to = firstString(builder, node);
             String path = secondString(builder, node);
-            Node message = builder.set(node).getParamNode(2);
-            WsClientServer.send(to, path, message);
-            return null;
-        }, par("to", NodeType.STRING), par("path", NodeType.STRING), par("message", NodeType.STRING));
+            WsClientServer.instance.send(to, path, node);
+            return builder.createBool(true);
+        }, par("to", NodeType.STRING),
+                par("receiver", NodeType.STRING),
+                par("first", NodeType.STRING),
+                par("second", NodeType.STRING));
 
         func("name", (builder, node, ths) -> builder.createString(WsClientServer.nodeName));
     }

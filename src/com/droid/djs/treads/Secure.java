@@ -7,18 +7,17 @@ import com.droid.net.http.HttpServer;
 import com.droid.net.ws.WsClientServer;
 import com.droid.net.ws.WsServer;
 
-import java.io.IOException;
-
 public class Secure {
 
+    public static Long selfAccessCode;
     private static HttpServer http = null;
     private static FtpServer ftp = null;
     private static WsClientServer ws = null;
 
     public static boolean start(String login, String password, String nodeName) {
-        Long access_owner_code = getAccessToken(login, password);
+        selfAccessCode = getAccessToken(login, password);
 
-        boolean started = Threads.getInstance().run(Master.getInstance(), null, false, access_owner_code);
+        boolean started = Threads.getInstance().run(Master.getInstance(), null, false, selfAccessCode);
         if (started) {
             try {
                 http = new HttpServer(HttpServer.debugPort);

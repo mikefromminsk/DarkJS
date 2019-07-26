@@ -1,12 +1,12 @@
 package com.droid.net.ws;
 
-import com.droid.djs.NodeStorage;
-import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
+import com.droid.djs.treads.Secure;
+import com.droid.djs.treads.Threads;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.java_websocket.WebSocket;
@@ -18,10 +18,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WsClientServer {
 
@@ -29,6 +26,7 @@ public class WsClientServer {
 
     private int port;
     public static String nodeName;
+    public static String ip;
 
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
@@ -36,30 +34,41 @@ public class WsClientServer {
     private static Map<String, WebSocket> incoming = new HashMap<>();
     private static Map<String, WebSocketClient> outgoing = new HashMap<>();
 
+    public static WsClientServer instance;
+
     public WsClientServer(int port, String nodeName) {
         this.port = port;
+        this.ip = "172.17.0.70";
         WsClientServer.nodeName = nodeName;
+        instance = this;
     }
 
-    public static void sendGui(Node node) {
-        Message message = new Message(null, null, NodeSerializer.toMap(node));
+    public void sendGui(Node nodeWithParams) {
         for (WebSocket client : gui)
-            client.send(json.toJson(message));
+            client.send(NodeSerializer.toJson(nodeWithParams));
     }
 
-    public static void send(String to, String path, Node node) {
-        WebSocket serverSocket = incoming.get(to);
-        Message message = new Message(to, path, NodeSerializer.toMap(node));
-        if (serverSocket != null)
-            serverSocket.send(json.toJson(message));
+    public void send(String to, String path, Node node) {
+        if (to == null)
+            return;
+        if (to.equals(nodeName) || to.equals(ip)) {
+            onMessage(path, node, Secure.selfAccessCode);
+        } else {
+            WebSocket serverSocket = incoming.get(to);
+            Message message = new Message(to, path, NodeSerializer.toMap(node));
+            if (serverSocket != null)
+                serverSocket.send(json.toJson(message));
+        }
     }
 
-    void onMessage(String messageStr) {
-        Message message = json.fromJson(messageStr, Message.class);
-        onMessage(message);
+    void onMessage(String receiverPath, Node node, Long selfAccessCode) {
+        Node receiver = Files.getNode(receiverPath);
+        Node[] messageParams = new NodeBuilder().set(node).getParams();
+        Node[] receiverParams = Arrays.copyOfRange(messageParams, 2, messageParams.length);
+        Threads.getInstance().run(receiver, receiverParams, true, selfAccessCode);
     }
 
-    void onMessage(Message message) {
+    void transmit(Message message) {
         if (message.destination == null || message.destination.equals(nodeName)) { // node is finded
             Node node = Files.getNodeIfExist(message.path);
             if (node != null) {
@@ -99,6 +108,7 @@ public class WsClientServer {
             @Override
             public void onOpen(WebSocket conn, ClientHandshake handshake) {
                 String name = handshake.getResourceDescriptor().substring(1).toLowerCase();
+                System.out.println("connect " + name);
                 if (name.equals("gui"))
                     gui.add(conn);
                 else
@@ -113,7 +123,7 @@ public class WsClientServer {
 
             @Override
             public void onMessage(WebSocket conn, String message) {
-                WsClientServer.this.onMessage(message);
+
             }
 
             @Override
@@ -123,9 +133,10 @@ public class WsClientServer {
 
             @Override
             public void onStart() {
-
+                System.out.println("server started");
             }
         };
+        server.start();
     }
 
 
@@ -160,7 +171,7 @@ public class WsClientServer {
 
                     @Override
                     public void onMessage(String message) {
-                        WsClientServer.this.onMessage(message);
+
                     }
 
                     @Override

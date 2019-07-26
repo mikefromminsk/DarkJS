@@ -164,10 +164,6 @@ public class HttpServer extends NanoHTTPD {
         return query_pairs;
     }
 
-    ArrayList toList(String str) {
-        return new ArrayList();
-    }
-
     void setParam(Node node, String key, String value) {
         NodeBuilder builder = new NodeBuilder();
         Node param = null;

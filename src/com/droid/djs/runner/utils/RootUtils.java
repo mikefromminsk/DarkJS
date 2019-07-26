@@ -16,9 +16,12 @@ public class RootUtils extends Utils {
             return null;
         }, par("hash", NodeType.STRING));
 
-        func("Gui", (builder, node, ths) -> {
-            WsClientServer.sendGui(node);
+        // TODO add dynamic count of params
+        func("gui", (builder, node, ths) -> {
+            WsClientServer.instance.sendGui(node);
             return null;
-        }, par("id", NodeType.STRING));
+        }, par("observer_id", NodeType.STRING),
+                par("key", NodeType.NODE),
+                par("value", NodeType.NODE));
     }
 }

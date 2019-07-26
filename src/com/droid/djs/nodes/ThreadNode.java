@@ -6,6 +6,7 @@ import com.droid.djs.runner.Runner;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ThreadNode extends Node implements Runnable {
@@ -68,9 +69,11 @@ public class ThreadNode extends Node implements Runnable {
 
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
-    public boolean run(Node node, boolean async, Long access_token) {
+    public boolean run(Node node, Node[] args, boolean async, Long access_token) {
         if (!checkAccess(access_token))
             return false;
+
+        setParams(node, args);
 
         runQueue.add(new RunData(node, null));
         if (thread == null || !thread.isAlive()) {
@@ -84,6 +87,20 @@ public class ThreadNode extends Node implements Runnable {
             }
         }
         return true;
+    }
+
+    private void setParams(Node node, Node[] args) {
+        if (args != null){
+            NodeBuilder builder = new NodeBuilder();
+            for (Node param : builder.set(node).getParams())
+                builder.set(param).setValue(null);
+
+            for (int i = 0; i < Math.min(args.length, builder.set(node).getParamCount()); i++) {
+                Node destParam = builder.set(node).getParamNode(i);
+                Node sourceParam = builder.set(args[i]).getValueNode();
+                builder.set(destParam).setValue(sourceParam).commit();
+            }
+        }
     }
 
     @Override
