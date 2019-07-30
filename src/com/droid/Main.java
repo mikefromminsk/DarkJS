@@ -13,15 +13,17 @@ import java.io.IOException;
 
 public class Main {
 
+    public static final int VERSION = 541;
+
     public static final String login = "john";
     public static String password = "123";
 
     private static Branch loadingBranch;
 
     public static void main(String[] args) throws InterruptedException {
-        loadingBranch = new Branch();
-        loadProject("C:/wamp/www/droid", "root");
-        loadingBranch.mergeWithMaster();
+        //loadingBranch = new Branch();
+        //loadProject("C:/wamp/www/droid", "root");
+        //loadingBranch.mergeWithMaster();
         Secure.start(login, password, "172.17.0.70");
         Secure.join();
     }

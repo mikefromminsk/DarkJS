@@ -74,7 +74,7 @@ public class NodeBuilder {
     //public Long setType() { }
 
     public DataInputStream getData() {
-        return ((Data)node).data;
+        return ((Data) node).data;
     }
 
     public NodeBuilder setData(Boolean bool) {
@@ -98,7 +98,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder setData(InputStream stream) {
-        ((Data)node).externalData = stream;
+        ((Data) node).externalData = stream;
         return this;
     }
 
@@ -356,6 +356,17 @@ public class NodeBuilder {
 
     public NodeBuilder setParser(Data parser) {
         node.parser = parser;
+        return this;
+    }
+
+    public NodeBuilder setParser(String parser) {
+        Node parserNode = null;
+        if (parser != null) {
+            Node prevNode = node;
+            parserNode = createString(parser.toLowerCase());
+            node = prevNode;
+        }
+        node.parser = parserNode;
         return this;
     }
 
