@@ -12,8 +12,6 @@ import java.util.Map;
 
 public class WsServer extends WebSocketServer {
 
-    public static int defaultPort = 8081;
-
     public WsServer(int port) {
         super(new InetSocketAddress(port));
     }

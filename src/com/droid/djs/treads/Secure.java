@@ -20,11 +20,11 @@ public class Secure {
         boolean started = Threads.getInstance().run(Master.getInstance(), null, false, selfAccessCode);
         if (started) {
             try {
-                http = new HttpServer(HttpServer.debugPort);
+                http = new HttpServer();
                 http.start();
-                ftp = new FtpServer(FtpServer.defaultPort);
+                ftp = new FtpServer();
                 ftp.start();
-                ws = new WsClientServer(WsServer.defaultPort, nodeName);
+                ws = new WsClientServer(nodeName);
                 ws.start();
             } catch (Exception e) {
                 if (http != null)

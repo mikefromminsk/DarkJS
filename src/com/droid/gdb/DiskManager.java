@@ -2,6 +2,7 @@ package com.droid.gdb;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 public class DiskManager {
 
@@ -13,6 +14,7 @@ public class DiskManager {
     public final static File propertiesFile = new File(dbDir, "settings.properties");
     public Integer partSize;
     public Integer cacheSize;
+    public Integer device_id;
 
     public static DiskManager getInstance() {
         if (instance == null) {
@@ -30,6 +32,7 @@ public class DiskManager {
     public final static Integer PART_SIZE_DEFAULT = 4096;
     public final static String CACHE_SIZE_KEY = "cache_size";
     public final static Integer CACHE_SIZE_DEFAULT = 4096;
+    public final static String DEVICE_ID_KEY = "device_id";
 
     private DiskManager() throws FileNotFoundException {
         // TODO double save settings
@@ -40,9 +43,9 @@ public class DiskManager {
                 throw new FileNotFoundException();
         try {
             properties = new IniFile(propertiesFile);
-            if (properties.getSection(SECTION) == null)
-                initProperties(properties);
+
             loadProperties(properties);
+            saveProperties(properties);
 
             mainThread = new ActionThread(cacheSize);
             Thread thread = new Thread(mainThread);
@@ -56,11 +59,13 @@ public class DiskManager {
     private void loadProperties(IniFile properties) {
         this.partSize = properties.getInt(SECTION, PART_SIZE_KEY, PART_SIZE_DEFAULT);
         this.cacheSize = properties.getInt(SECTION, CACHE_SIZE_KEY, CACHE_SIZE_DEFAULT);
+        this.device_id = properties.getInt(SECTION, DEVICE_ID_KEY, Math.abs(new Random().nextInt()));
     }
 
-    private void initProperties(IniFile properties) {
-        properties.put(SECTION, PART_SIZE_KEY, "" + PART_SIZE_DEFAULT);
-        properties.put(SECTION, CACHE_SIZE_KEY, "" + CACHE_SIZE_DEFAULT);
+    private void saveProperties(IniFile properties) {
+        properties.put(SECTION, PART_SIZE_KEY, "" + this.partSize);
+        properties.put(SECTION, CACHE_SIZE_KEY, "" + this.cacheSize);
+        properties.put(SECTION, DEVICE_ID_KEY, "" + this.device_id);
     }
 
     public void addDisk(String rootDir) {

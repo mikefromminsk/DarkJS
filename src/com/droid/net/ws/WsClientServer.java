@@ -7,6 +7,7 @@ import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
+import com.droid.gdb.DiskManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.java_websocket.WebSocket;
@@ -16,17 +17,16 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.*;
 
-public class WsClientServer {
+public class WsClientServer extends WebSocketServer {
 
-    private WebSocketServer server;
 
-    private int port;
-    public static String nodeName;
-    public static String ip;
+    public static int defaultPort = 8081;
+    public int port;
+    public String nodeName;
+    private static WsClientServer instance;
 
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
@@ -34,13 +34,33 @@ public class WsClientServer {
     private static Map<String, WebSocket> incoming = new HashMap<>();
     private static Map<String, WebSocketClient> outgoing = new HashMap<>();
 
-    public static WsClientServer instance;
+    private static Map<String, List<Message>> messages = new HashMap<>();
 
-    public WsClientServer(int port, String nodeName) {
-        this.port = port;
-        this.ip = "172.17.0.70";
-        WsClientServer.nodeName = nodeName;
+
+    public WsClientServer(Integer port, String nodeName) {
         instance = this;
+        this.port = port == null ? defaultPort : port;
+        this.nodeName = nodeName == null ? "" + DiskManager.getInstance().device_id : nodeName;
+    }
+
+    public WsClientServer() {
+        this(null, null);
+    }
+
+    public WsClientServer(int port) {
+        this(port, null);
+    }
+
+    public WsClientServer(String nodeName) {
+        this(null, nodeName);
+    }
+
+    public static WsClientServer getInstance() {
+        if (instance == null) {
+            instance = new WsClientServer();
+            instance.start();
+        }
+        return instance;
     }
 
     public void sendGui(Node nodeWithParams) {
@@ -48,144 +68,177 @@ public class WsClientServer {
             client.send(NodeSerializer.toJson(nodeWithParams));
     }
 
-    public void send(String to, String path, Node node) {
+    public void send(String to, String receiverPath, Node node) {
         if (to == null)
             return;
-        if (to.equals(nodeName) || to.equals(ip)) {
-            onMessage(path, node, Secure.selfAccessCode);
+        if (to.equals(nodeName) || to.equals("localhost")) {
+            onDestinationMessage(receiverPath, node, Secure.selfAccessCode);
         } else {
+            send(to, receiverPath, NodeSerializer.toMap(node));
+        }
+    }
+
+    public void send(String to, String receiverPath, Map<String, Map<String, Object>> map) {
+        if (to == null)
+            return;
+        if (to.equals(nodeName) || to.equals("localhost")) {
+            onDestinationMessage(receiverPath, NodeParser.parse(map), Secure.selfAccessCode);
+        } else {
+            Message message = new Message(to, receiverPath, map, Secure.selfAccessCode);
             WebSocket serverSocket = incoming.get(to);
-            Message message = new Message(to, path, NodeSerializer.toMap(node));
-            if (serverSocket != null)
+            if (serverSocket != null) {
                 serverSocket.send(json.toJson(message));
+                return;
+            }
+            WebSocketClient clientSocket = outgoing.get(to);
+            if (clientSocket != null) {
+                clientSocket.send(json.toJson(message));
+                return;
+            } else {
+                clientSocket = createConnect(to);
+                clientSocket.connect();
+                List<Message> list = messages.get(to);
+                if (list == null)
+                    messages.put(to, list = new ArrayList<>());
+                list.add(message);
+            }
         }
     }
 
-    void onMessage(String receiverPath, Node node, Long selfAccessCode) {
-        Node receiver = Files.getNode(receiverPath);
-        Node[] messageParams = new NodeBuilder().set(node).getParams();
-        Node[] receiverParams = Arrays.copyOfRange(messageParams, 2, messageParams.length);
-        Threads.getInstance().run(receiver, receiverParams, true, selfAccessCode);
-    }
-
-    void transmit(Message message) {
-        if (message.destination == null || message.destination.equals(nodeName)) { // node is finded
-            Node node = Files.getNodeIfExist(message.path);
-            if (node != null) {
-                Node receivedNode = NodeParser.parse(message.nodes);
-                Files.putNode(node, message.path, receivedNode);
-            }
-        } else {
-            /*int traceIndex = message.trace.indexOf(nodeName);
-            if (traceIndex != -1) {// retranslate
-                WebSocket nextNode = incoming.get(traceIndex - 1);
-                nextNode.send(json.toJson(message));
-            } else { // find node
-                int minDist = message.destination.length();
-                WebSocket minConn = null;
-                for (String name : incoming.keySet()) {
-                    if (message.trace.indexOf(name) == -1) {
-                        int dist = StringDistance.calculate(name, message.destination);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            minConn = incoming.get(name);
-                        }
-                    }
-                }
-                message.trace.add(nodeName);
-                if (minConn != null)
-                    minConn.send(json.toJson(message));
-            }*/
-        }
-    }
-
-
-    public void start() {
-        if (server != null)
-            stop();
-        server = new WebSocketServer(new InetSocketAddress(port)) {
-
+    private WebSocketClient createConnect(String to) {
+        return new WebSocketClient(URI.create(to + "/" + nodeName)) {
             @Override
-            public void onOpen(WebSocket conn, ClientHandshake handshake) {
-                String name = handshake.getResourceDescriptor().substring(1).toLowerCase();
-                System.out.println("connect " + name);
-                if (name.equals("gui"))
-                    gui.add(conn);
-                else
-                    incoming.put(name, conn);
+            public void onOpen(ServerHandshake handshakedata) {
+                outgoing.put(to, this);
+                List<Message> list = messages.get(to);
+                for (Message message : list)
+                    this.send(json.toJson(message));
+                messages.remove(to);
             }
 
             @Override
-            public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-                gui.remove(conn);
-                outgoing.values().remove(conn);
+            public void onMessage(String message) {
+                onTransmitMessage(message);
             }
 
             @Override
-            public void onMessage(WebSocket conn, String message) {
-
+            public void onClose(int code, String reason, boolean remote) {
+                outgoing.values().remove(this);
             }
 
             @Override
-            public void onError(WebSocket conn, Exception ex) {
-
-            }
-
-            @Override
-            public void onStart() {
-                System.out.println("server started");
+            public void onError(Exception ex) {
+                connectError(to, this);
             }
         };
-        server.start();
+    }
+
+    private void connectError(String to, WebSocketClient client) {
+
+        int serverMinDifference = to.length();
+        WebSocket serverConnection = null;
+        for (String destination : incoming.keySet()) {
+            int destinationDistance = StringDistance.calculate(to, destination);
+            if (destinationDistance <= serverMinDifference) {
+                serverMinDifference = destinationDistance;
+                serverConnection = incoming.get(destination);
+            }
+        }
+        int clientMinDifference = to.length();
+        WebSocketClient clienctConnection = null;
+        for (String destination : outgoing.keySet()) {
+            int destinationDistance = StringDistance.calculate(to, destination);
+            if (destinationDistance <= clientMinDifference) {
+                clientMinDifference = destinationDistance;
+                clienctConnection = outgoing.get(destination);
+            }
+        }
+
+        List<Message> list = messages.get(to);
+        for (Message message : list) {
+            if (message.trace == null)
+                message.trace = new ArrayList<>();
+            message.trace.add(nodeName);
+            String messageStr = json.toJson(message);
+            if (serverConnection != null && serverMinDifference >= clientMinDifference) {
+                serverConnection.send(messageStr);
+            } else if (clienctConnection != null) {
+                clienctConnection.send(messageStr);
+            } else {
+                receiveError(to);
+            }
+        }
+    }
+
+    private void receiveError(String to) {
+        System.out.println("receiveError");
+        messages.remove(to);
     }
 
 
-    public void stop() {
+    @Override
+    public void stop() throws IOException, InterruptedException {
+        super.stop();
         for (WebSocket guiClietn : gui)
             guiClietn.close();
         for (WebSocketClient client : outgoing.values())
             client.close();
-        try {
-            server.stop();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        server = null;
+        instance = null;
     }
 
-    void send(String toNodeName, String message) {
-        WebSocket serverSocket = incoming.get(toNodeName);
-        if (serverSocket != null) {
-            serverSocket.send(message);
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        String name = handshake.getResourceDescriptor().substring(1).toLowerCase();
+        System.out.println("connect " + name);
+        if (name.equals("gui"))
+            gui.add(conn);
+        else
+            incoming.put(name, conn);
+    }
+
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        gui.remove(conn);
+        outgoing.values().remove(conn);
+    }
+
+    @Override
+    public void onMessage(WebSocket conn, String message) {
+        onTransmitMessage(message);
+    }
+
+    @Override
+    public void onError(WebSocket conn, Exception ex) {
+
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    private void onTransmitMessage(String messageStr) {
+        Message message = json.fromJson(messageStr, Message.class);
+        if (message.destination == null || message.destination.equals(nodeName)) { // node is finded
+            onDestinationMessage(message.receiverPath, NodeParser.parse(message.node), message.accessCode);
         } else {
-            WebSocketClient clientSocket = outgoing.get(toNodeName);
-            if (clientSocket != null) {
-                clientSocket.send(message);
+            // send(message.destination, message.receiverPath, message.node)
+            int traceIndex = message.trace == null ? -1 : message.trace.indexOf(nodeName);
+            if (traceIndex != -1) {
+                // loop
             } else {
-                URI uri = URI.create("ws://localhost:8081/wwwww");
-                clientSocket = new WebSocketClient(uri) {
-                    @Override
-                    public void onOpen(ServerHandshake handshakedata) {
+                // find
 
-                    }
-
-                    @Override
-                    public void onMessage(String message) {
-
-                    }
-
-                    @Override
-                    public void onClose(int code, String reason, boolean remote) {
-
-                    }
-
-                    @Override
-                    public void onError(Exception ex) {
-
-                    }
-                };
-                outgoing.put(toNodeName, clientSocket);
             }
+        }
+    }
+
+    void onDestinationMessage(String receiverPath, Node node, Long selfAccessCode) {
+        Node receiver = Files.getNodeIfExist(receiverPath);
+        if (receiver != null) {
+            Node[] messageParams = new NodeBuilder().set(node).getParams();
+            Node[] receiverParams = Arrays.copyOfRange(messageParams, 2, messageParams.length);
+            Threads.getInstance().run(receiver, receiverParams, true, selfAccessCode);
         }
     }
 
