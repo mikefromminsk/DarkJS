@@ -24,22 +24,16 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         loadingBranch = new Branch();
-        testRootIndex();
         loadProject("C:/wamp/www/droid", "root", false);
         loadProject("C:/darkjs/root", "root", true);
-        testRootIndex();
         loadingBranch.mergeWithMaster();
+        testRootIndex();
         Secure.start(login, password);
         Secure.join();
     }
 
     private static void testRootIndex() {
-        System.out.println("start testRootIndex");
-        Node node = Files.getNodeIfExist("/root/index");
-        Files.observe(Files.getPath(loadingBranch.getRoot()), node1 -> {
-            System.out.println(Files.getPath(node1));
-        });
-        System.out.println("loading " + (node == null ? "success" : "fail"));
+        System.out.println("loading " + (Files.getNodeIfExist("/root/index") == null ? "success" : "fail"));
     }
 
     private static void loadProject(String projectPath, String localPath, boolean deleteDir) {
@@ -54,7 +48,6 @@ public class Main {
                 loadProject(file.getAbsolutePath(), localFileName, deleteDir);
             } else {
                 try {
-                    System.out.println(file.getAbsolutePath());
                     DataOutputStream dataOutputStream = new DataOutputStream(loadingBranch, Files.getNode(loadingBranch.getRoot(), localFileName));
                     FileInputStream fileInputStream = new FileInputStream(file);
                     byte[] buffer = new byte[1024];
@@ -66,10 +59,12 @@ public class Main {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                if (deleteDir)
+                    file.delete();
             }
-            if (deleteDir)
-                file.delete();
         }
+        if (deleteDir)
+            root.delete();
         if (localPath.equals("root"))
             System.out.println("finish load " + projectPath);
     }

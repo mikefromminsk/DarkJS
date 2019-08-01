@@ -12,8 +12,8 @@ AppUpdatesURL=http://www.example.com/
 DefaultDirName=C:\Darkjs
 DisableDirPage=yes
 DefaultGroupName=Darkjs
-OutputDir=C:\wamp\www\droid\app\store\
-OutputBaseFilename=darkjs64
+OutputDir=C:\Users\mgaiduk\Desktop\DarkJS\dist
+OutputBaseFilename=darkjs-setup
 Compression=lzma
 SolidCompression=yes
 
@@ -183,7 +183,7 @@ end;
 
 procedure InitializeWizard();
 begin
-  AddCustomQueryPage();
+  //AddCustomQueryPage();
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);

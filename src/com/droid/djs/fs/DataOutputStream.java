@@ -63,7 +63,6 @@ public class DataOutputStream extends OutputStream {
             out.close();
             // TODO error with uploading a empty file
             Node res = Files.putFile(node, new FileInputStream(tempFile));
-            System.out.println(Files.getPath(node));
             NodeBuilder builder = new NodeBuilder().set(res);
             Data dataNode = (Data) builder.getValueNode();
             Data parserNode = builder.getParserNode();
@@ -79,22 +78,7 @@ public class DataOutputStream extends OutputStream {
                     new JsBuilder().build(node, nashornNode);
                 }
             }
-
-        /*if (parser == null) {
-            // nothing
-        } else if (parser.equals("thread.js")) {
-            NodeBuilder value = new NodeBuilder().set(builder.getValueNode());
-            String sourceCode = value.getData().readString();
-            builder.setValue(null).commit();
-            new JsBuilder().build(res, sourceCode);
-        } else if (parser.equals("html")) {
-            Node parent = builder.set(node).getLocalParentNode();
-            parent.build(node.build());
-            builder.set(parent).commit();
-            // TODO delete local from parent
-        }*/
             tempFile.delete();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
