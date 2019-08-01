@@ -159,38 +159,5 @@ end;
 
 
 
-
-
-
-
-
 {TODO add input login pass nodename }
 
-var
-  CustomQueryPage: TInputQueryWizardPage;
-
-procedure AddCustomQueryPage();
-begin
-  CustomQueryPage := CreateInputQueryPage(
-    wpWelcome,
-    'Custom message',
-    'Custom description',
-    'Custom instructions');
-
-  { Add items (False means it's not a password edit) }
-  CustomQueryPage.Add('Custom Field:', False);
-end;
-
-procedure InitializeWizard();
-begin
-  //AddCustomQueryPage();
-end;
-
-procedure CurStepChanged(CurStep: TSetupStep);
-begin
-  if CurStep = ssPostInstall then
-  begin
-    { Read custom value }
-    MsgBox('Custom Value = ' + CustomQueryPage.Values[0], mbInformation, MB_OK);
-  end;
-end;
