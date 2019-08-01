@@ -18,7 +18,7 @@ public class RootUtils extends Utils {
 
         // TODO add dynamic count of params
         func("gui", (builder, node, ths) -> {
-            WsClientServer.instance.sendGui(node);
+            WsClientServer.getInstance().sendGui(node);
             return null;
         }, par("observer_id", NodeType.STRING),
                 par("key", NodeType.NODE),

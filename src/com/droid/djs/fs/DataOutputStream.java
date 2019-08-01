@@ -62,7 +62,7 @@ public class DataOutputStream extends OutputStream {
             // TODO error with uploading a empty file
             Node res = Files.putFile(node, new FileInputStream(tempFile));
             NodeBuilder builder = new NodeBuilder().set(res);
-            Data dataNode = builder.getSourceCodeNode();
+            Data dataNode = (Data) builder.getValueNode();
             Data parserNode = builder.getParserNode();
             if (parserNode != null && dataNode != null) {
                 String parser = parserNode.data.readString();

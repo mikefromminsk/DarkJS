@@ -177,8 +177,12 @@ public class WsClientServer extends WebSocketServer {
 
 
     @Override
-    public void stop() throws IOException, InterruptedException {
-        super.stop();
+    public void stop() {
+        try {
+            super.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (WebSocket guiClietn : gui)
             guiClietn.close();
         for (WebSocketClient client : outgoing.values())

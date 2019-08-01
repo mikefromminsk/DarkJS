@@ -278,14 +278,6 @@ public class NodeBuilder {
         return null;
     }
 
-    public Data getSourceCodeNode() {
-        if (node.sourceCode instanceof Node)
-            return (Data) node.sourceCode;
-        else if (node.sourceCode instanceof Long)
-            return (Data) (node.sourceCode = nodeStorage.get((Long) node.sourceCode));
-        return null;
-    }
-
     public Data getParserNode() {
         if (node.parser instanceof Node)
             return (Data) node.parser;
@@ -346,11 +338,6 @@ public class NodeBuilder {
 
     public NodeBuilder setLocalParent(Node localParent) {
         node.localParent = localParent;
-        return this;
-    }
-
-    public NodeBuilder setSourceCode(Node sourceCode) {
-        node.sourceCode = sourceCode;
         return this;
     }
 
@@ -653,9 +640,6 @@ public class NodeBuilder {
                 break;
             case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
-                break;
-            case SOURCE_CODE:
-                setSourceCode(linkValueNode);
                 break;
             case LOCAL:
                 addLocal(linkValueNode);

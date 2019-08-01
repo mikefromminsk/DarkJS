@@ -14,7 +14,7 @@ public class Secure {
     private static FtpServer ftp = null;
     private static WsClientServer ws = null;
 
-    public static boolean start(String login, String password, String nodeName) {
+    public static boolean start(String login, String password) {
         selfAccessCode = getAccessToken(login, password);
 
         boolean started = Threads.getInstance().run(Master.getInstance(), null, false, selfAccessCode);
@@ -24,7 +24,7 @@ public class Secure {
                 http.start();
                 ftp = new FtpServer();
                 ftp.start();
-                ws = new WsClientServer(nodeName);
+                ws = new WsClientServer();
                 ws.start();
             } catch (Exception e) {
                 if (http != null)
@@ -33,6 +33,7 @@ public class Secure {
                     ftp.stop();
                 if (ws != null)
                     ws.stop();
+                e.printStackTrace();
                 return false;
             }
         }

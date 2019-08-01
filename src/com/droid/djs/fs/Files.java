@@ -129,7 +129,6 @@ public class Files {
         Node fileNode = getNode(node, path);
         NodeBuilder builder = new NodeBuilder();
         Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
-        builder.set(fileNode).setSourceCode(dataNode).commit();
         builder.set(fileNode).setValue(dataNode).commit();
         return fileNode;
     }
@@ -142,7 +141,7 @@ public class Files {
     }
 
     public static boolean isDirectory(Node node) {
-        return (node == null || new NodeBuilder().set(node).getSourceCodeNode() == null);
+        return (node == null || new NodeBuilder().set(node).getParserNode() == null);
     }
 
     public static void replace(Node from, Node to) {
@@ -167,4 +166,22 @@ public class Files {
         Node masterLocalParent = builder.set(root).getLocalParentNode();
         builder.set(masterLocalParent).removeLocal(root);
     }
+
+    public interface FindFile {
+        void file(Node node);
+    }
+
+    public static void observe(String path, FindFile findFile) {
+        Node node = getNodeIfExist(path);
+        if (node != null)
+            observeRec(new NodeBuilder(), node, findFile);
+    }
+
+    private static void observeRec(NodeBuilder builder, Node node, FindFile findFile) {
+        Node[] locals = builder.set(node).getLocalNodes();
+        for (Node local : locals)
+            observeRec(builder, local, findFile);
+        findFile.file(node);
+    }
+
 }

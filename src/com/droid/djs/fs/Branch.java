@@ -47,10 +47,6 @@ public class Branch {
     }
 
     public Node findPackage(Node node) {
-        // if file
-        if (builder.set(node).getSourceCodeNode() != null)
-            return node;
-        // if package
         if (builder.set(node).getLocalCount() > 1)
             return node;
         else if (builder.getLocalCount() == 0)

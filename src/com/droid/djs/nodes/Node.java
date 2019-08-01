@@ -25,7 +25,6 @@ public class Node extends SuperNode {
     public Object prototype;
     public Object localParent;
     public Object parser;
-    public Object sourceCode;
     // TODO add sourceParent for GC and Files.replace
 
     public ArrayList<Object> local; // TODO rename to locals
@@ -80,8 +79,6 @@ public class Node extends SuperNode {
             linkListener.get(LinkType.PROTOTYPE, prototype, true);
         if (localParent != null)
             linkListener.get(LinkType.LOCAL_PARENT, localParent, true);
-        if (sourceCode != null)
-            linkListener.get(LinkType.SOURCE_CODE, sourceCode, true);
         if (parser != null)
             linkListener.get(LinkType.PARSER, parser, true);
         if (local != null)
