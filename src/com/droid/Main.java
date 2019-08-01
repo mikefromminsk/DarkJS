@@ -1,5 +1,6 @@
 package com.droid;
 
+import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Branch;

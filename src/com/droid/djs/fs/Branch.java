@@ -17,8 +17,7 @@ public class Branch {
     private int mergeTimer;
 
     public Branch() {
-        // TODO if 1000 Main.loadProject don`t load all files
-        this(2000);
+        this(0);
     }
 
     public Branch(int mergeTimer) {
@@ -36,14 +35,16 @@ public class Branch {
 
     public void updateTimer() {
         // TODO restart timer if after schedule event time is not up
-        timer.cancel();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mergeWithMaster();
-            }
-        }, mergeTimer);
+        if (mergeTimer != 0){
+            timer.cancel();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    mergeWithMaster();
+                }
+            }, mergeTimer);
+        }
     }
 
     public Node findPackage(Node node) {

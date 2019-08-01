@@ -42,6 +42,7 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         out.write(b, off, len);
+        branch.updateTimer();
     }
 
     @Override
@@ -52,6 +53,7 @@ public class DataOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
         out.write(b);
+        branch.updateTimer();
     }
 
 
@@ -61,6 +63,7 @@ public class DataOutputStream extends OutputStream {
             out.close();
             // TODO error with uploading a empty file
             Node res = Files.putFile(node, new FileInputStream(tempFile));
+            System.out.println(Files.getPath(node));
             NodeBuilder builder = new NodeBuilder().set(res);
             Data dataNode = (Data) builder.getValueNode();
             Data parserNode = builder.getParserNode();

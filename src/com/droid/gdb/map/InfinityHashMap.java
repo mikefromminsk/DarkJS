@@ -122,7 +122,7 @@ public class InfinityHashMap extends InfinityConstArray {
         return get(str.getBytes(), hash);
     }
 
-    public long get(byte[] hashKey, byte[] hash) {
+    public long get(byte[] hashKeyFirst8Bytes, byte[] hash) {
         TreeNode node = new TreeNode();
         long nodeIndex = 0;
         int i = 0;
@@ -147,10 +147,10 @@ public class InfinityHashMap extends InfinityConstArray {
                     HashVariants hashVariants = new HashVariants();
                     hashes.getObject(hashVariantIndex, hashVariants);
                     if (Arrays.equals(hash, hashVariants.mask)) {
-                        long first8Bytes = getFirst8Bytes(hashKey);
+                        long first8Bytes = getFirst8Bytes(hashKeyFirst8Bytes);
                         for (Hash hashl : hashVariants.hashes)
                             if (hashl.first8Bytes == first8Bytes)
-                                if (Arrays.equals(hashKey, keys.getString(hashl.keyIndex).getBytes()))
+                                if (Arrays.equals(hashKeyFirst8Bytes, keys.getString(hashl.keyIndex).getBytes()))
                                     return hashl.value;
                     }
                     return Long.MAX_VALUE;
