@@ -5,7 +5,6 @@ import com.droid.gdb.map.Crc16;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpServer;
 import com.droid.net.ws.WsClientServer;
-import com.droid.net.ws.WsServer;
 
 public class Secure {
 

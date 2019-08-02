@@ -16,12 +16,14 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
 public class WsClientServer extends WebSocketServer {
 
+    private String[] proxyServers = new String[]{
+            "172.168.0.70:9001"
+    };
 
     public static int defaultPort = 8081;
     public int port;
@@ -31,8 +33,9 @@ public class WsClientServer extends WebSocketServer {
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
     private static List<WebSocket> gui = new ArrayList<>();
-    private static Map<String, WebSocket> incoming = new HashMap<>();
-    private static Map<String, WebSocketClient> outgoing = new HashMap<>();
+    public static Map<String, WebSocket> incoming = new HashMap<>();
+    public static Map<String, WebSocketClient> outgoing = new HashMap<>();
+    private static WebSocketClient proxy;
 
     private static Map<String, List<Message>> messages = new HashMap<>();
 
@@ -105,76 +108,67 @@ public class WsClientServer extends WebSocketServer {
         }
     }
 
+    public class WsClient extends WebSocketClient {
+
+        String to;
+
+        public WsClient(String to) {
+            super(URI.create(to + "/" + nodeName));
+            this.to = to;
+        }
+
+        @Override
+        public void onOpen(ServerHandshake handshakedata) {
+            outgoing.put(to, this);
+            retraceMessages(this, to);
+        }
+
+        @Override
+        public void onMessage(String message) {
+            onTransmitMessage(message);
+        }
+
+        @Override
+        public void onClose(int code, String reason, boolean remote) {
+            outgoing.values().remove(this);
+        }
+
+        @Override
+        public void onError(Exception ex) {
+
+        }
+    }
+
     private WebSocketClient createConnect(String to) {
-        return new WebSocketClient(URI.create(to + "/" + nodeName)) {
-            @Override
-            public void onOpen(ServerHandshake handshakedata) {
-                outgoing.put(to, this);
-                List<Message> list = messages.get(to);
-                for (Message message : list)
-                    this.send(json.toJson(message));
-                messages.remove(to);
-            }
-
-            @Override
-            public void onMessage(String message) {
-                onTransmitMessage(message);
-            }
-
-            @Override
-            public void onClose(int code, String reason, boolean remote) {
-                outgoing.values().remove(this);
-            }
-
+        return new WsClient(to) {
             @Override
             public void onError(Exception ex) {
-                connectError(to, this);
+                if (proxy.isOpen()) {
+                    retraceMessages(proxy, to);
+                } else {
+                    proxy = connectToProxy(0, to);
+                    proxy.connect();
+                }
             }
         };
     }
 
-    private void connectError(String to, WebSocketClient client) {
-
-        int serverMinDifference = to.length();
-        WebSocket serverConnection = null;
-        for (String destination : incoming.keySet()) {
-            int destinationDistance = StringDistance.calculate(to, destination);
-            if (destinationDistance <= serverMinDifference) {
-                serverMinDifference = destinationDistance;
-                serverConnection = incoming.get(destination);
-            }
-        }
-        int clientMinDifference = to.length();
-        WebSocketClient clienctConnection = null;
-        for (String destination : outgoing.keySet()) {
-            int destinationDistance = StringDistance.calculate(to, destination);
-            if (destinationDistance <= clientMinDifference) {
-                clientMinDifference = destinationDistance;
-                clienctConnection = outgoing.get(destination);
-            }
-        }
-
+    private void retraceMessages(WebSocketClient proxy, String to) {
         List<Message> list = messages.get(to);
-        for (Message message : list) {
-            if (message.trace == null)
-                message.trace = new ArrayList<>();
-            message.trace.add(nodeName);
-            String messageStr = json.toJson(message);
-            if (serverConnection != null && serverMinDifference >= clientMinDifference) {
-                serverConnection.send(messageStr);
-            } else if (clienctConnection != null) {
-                clienctConnection.send(messageStr);
-            } else {
-                receiveError(to);
-            }
-        }
-    }
-
-    private void receiveError(String to) {
-        System.out.println("receiveError");
+        for (Message message : list)
+            proxy.send(json.toJson(message));
         messages.remove(to);
     }
 
+    private WebSocketClient connectToProxy(Integer index, String from) {
+        return new WsClient(proxyServers[index]) {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+                super.onOpen(handshakedata);
+
+            }
+        };
+    }
 
     @Override
     public void stop() {
@@ -213,12 +207,13 @@ public class WsClientServer extends WebSocketServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-
+        ex.printStackTrace();
     }
 
     @Override
     public void onStart() {
-
+        setConnectionLostTimeout(0);
+        setConnectionLostTimeout(100);
     }
 
     private void onTransmitMessage(String messageStr) {
