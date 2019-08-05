@@ -97,7 +97,7 @@ public class ThreadNode extends Node implements Runnable {
 
             for (int i = 0; i < Math.min(args.length, builder.set(node).getParamCount()); i++) {
                 Node destParam = builder.set(node).getParamNode(i);
-                Node sourceParam = builder.set(args[i]).getValueNode();
+                Node sourceParam = builder.set(args[i]).getValueOrSelf();
                 builder.set(destParam).setValue(sourceParam).commit();
             }
         }

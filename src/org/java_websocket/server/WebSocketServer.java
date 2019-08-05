@@ -227,7 +227,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 		}
 	}
 
-
+	public Thread thread;
 	/**
 	 * Starts the server selectorthread that binds to the currently set port number and
 	 * listeners for WebSocket connection requests. Creates a fixed thread pool with the size {@link WebSocketServer#AVAILABLE_PROCESSORS}<br>
@@ -240,7 +240,8 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 	public void start() {
 		if( selectorthread != null )
 			throw new IllegalStateException( getClass().getName() + " can only be started once." );
-		new Thread( this ).start();
+		thread = new Thread( this );
+		thread.start();
 	}
 
 	/**
@@ -654,7 +655,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 	public final void onWebsocketMessage( WebSocket conn, String message ) {
 		onMessage( conn, message );
 	}
-
 
 	@Override
 	public final void onWebsocketMessage( WebSocket conn, ByteBuffer blob ) {

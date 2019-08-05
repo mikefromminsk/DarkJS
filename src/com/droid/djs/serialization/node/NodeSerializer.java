@@ -50,7 +50,7 @@ public class NodeSerializer {
     public static final String NEW_NODE_PREFIX = "w";
     public static final String NODE_PREFIX = "n";
     public static final String TYPE_KEY = "type";
-    public static final String DATA_PREFIX = "data";
+    public static final String DATA_KEY = "data";
     public static final String STRING_PREFIX = "!";
     public static final String LINK_PREFIX = "@";
     public static final String TRUE = "true";
@@ -102,7 +102,7 @@ public class NodeSerializer {
             links.put(TYPE_KEY, node.type.toString().toLowerCase());
 
         if (node.type.ordinal() < NodeType.NODE.ordinal())
-            links.put(DATA_PREFIX, dataSimplification(builder, node));
+            links.put(DATA_KEY, dataSimplification(builder, node));
 
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
@@ -138,4 +138,10 @@ public class NodeSerializer {
         });
     }
 
+    public static List<Map<String, Map<String, Object>>> toList(Node[] args) {
+        List<Map<String, Map<String, Object>>> result = new ArrayList<>();
+        for (Node arg : args)
+            result.add(toMap(arg));
+        return result;
+    }
 }

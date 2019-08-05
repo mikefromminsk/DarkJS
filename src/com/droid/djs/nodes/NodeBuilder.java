@@ -2,8 +2,6 @@ package com.droid.djs.nodes;
 
 import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
-import com.droid.djs.fs.Files;
-import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.serialization.node.NodeSerializer;
@@ -11,7 +9,6 @@ import com.droid.djs.serialization.node.NodeSerializer;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class NodeBuilder {
 
@@ -603,7 +600,7 @@ public class NodeBuilder {
         return node;
     }
 
-    public void setLink(LinkType linkType, Node linkValueNode) {
+    public NodeBuilder setLink(LinkType linkType, Node linkValueNode) {
         switch (linkType) {
             case VALUE:
                 setValue(linkValueNode);
@@ -654,6 +651,7 @@ public class NodeBuilder {
                 addCell(linkValueNode);
                 break;
         }
+        return this;
     }
 
     public NodeBuilder removeAllNext() {

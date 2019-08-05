@@ -39,7 +39,7 @@ class JsNodeParserTest {
     void parseException() {
         Boolean parseError;
         try {
-            JsParser.parse("1d1d");
+            JsParser.fromMap("1d1d");
             parseError = false;
         } catch (ParserException e) {
             parseError = true;
