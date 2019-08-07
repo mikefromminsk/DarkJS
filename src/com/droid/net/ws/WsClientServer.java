@@ -101,6 +101,7 @@ public class WsClientServer extends WebSocketServer {
         if (receiver != null)
             Threads.getInstance().run(receiver, args, true, accessCode);
     }
+
     public String getNodeName() {
         return nodeName;
     }

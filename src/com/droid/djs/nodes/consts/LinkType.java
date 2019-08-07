@@ -18,7 +18,7 @@ public enum LinkType {
     CELL,
     SOURCE_CODE,
     LOCAL_PARENT,
-    NATIVE_FUNCTION_NUMBER,
+    NATIVE_FUNCTION,
     ACCESS_OWNER,
     ACCESS_USER,
     PARSER

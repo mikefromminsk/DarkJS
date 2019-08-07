@@ -19,7 +19,7 @@ public class Secure {
         boolean started = Threads.getInstance().run(Master.getInstance(), null, false, selfAccessCode);
         if (started) {
             try {
-                http = new HttpServer();
+                http = new HttpServer(HttpServer.debugPort);
                 http.start();
                 ftp = new FtpServer();
                 ftp.start();

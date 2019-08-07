@@ -18,7 +18,7 @@ public class NativeNode extends Node {
     public void listLinks(NodeLinkListener linkListener) {
         super.listLinks(linkListener);
         if (functionIndex != null)
-            linkListener.get(LinkType.NATIVE_FUNCTION_NUMBER, (long) (int) functionIndex, true);
+            linkListener.get(LinkType.NATIVE_FUNCTION, (long) (int) functionIndex, true);
     }
 
     public void setFunctionIndex(Integer functionIndex) {
@@ -33,7 +33,7 @@ public class NativeNode extends Node {
     @Override
     void restore(LinkType linkType, long linkData) {
         super.restore(linkType, linkData);
-        if (linkType == LinkType.NATIVE_FUNCTION_NUMBER) {
+        if (linkType == LinkType.NATIVE_FUNCTION) {
             setFunctionIndex((int) linkData);
         }
     }

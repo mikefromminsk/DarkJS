@@ -3,6 +3,8 @@ package com.droid.djs.runner.utils;
 import com.droid.djs.nodes.consts.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
+import java.util.Objects;
+
 public class MathUtils extends Utils {
 
     public final static String MATH_UTIL_NAME = "Math";
@@ -74,7 +76,8 @@ public class MathUtils extends Utils {
         func(EQ, (builder, node, ths) -> {
                     Object leftObject = firstObject(builder, node);
                     Object rightObject = secondObject(builder, node);
-                    return (leftObject != null && leftObject.equals(rightObject)) ? Utils.trueValue : Utils.falseValue;
+                    return (Objects.equals(leftObject, rightObject))
+                            ? Utils.trueValue : Utils.falseValue;
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 

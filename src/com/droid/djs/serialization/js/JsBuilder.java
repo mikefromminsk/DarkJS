@@ -314,17 +314,21 @@ public class JsBuilder {
                     }
                     return arr;
                 }
-                NodeType nodeType = NodeType.BOOL;
-                if (literalNode.isNumeric())
-                    nodeType = NodeType.NUMBER;
-                else if (literalNode.isString())
-                    nodeType = NodeType.STRING;
-                Node value = builder.create(nodeType)
-                        .setData(literalNode.getString())
-                        .commit();
-                return builder.create()
-                        .setValue(value)
-                        .commit();
+                if (literalNode.isNull()) {
+                    return builder.create().commit();
+                } else {
+                    NodeType nodeType = NodeType.BOOL;
+                    if (literalNode.isNumeric())
+                        nodeType = NodeType.NUMBER;
+                    else if (literalNode.isString())
+                        nodeType = NodeType.STRING;
+                    Node value = builder.create(nodeType)
+                            .setData(literalNode.getString())
+                            .commit();
+                    return builder.create()
+                            .setValue(value)
+                            .commit();
+                }
             }
             return null;
         } finally {

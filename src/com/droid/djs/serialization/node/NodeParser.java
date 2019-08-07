@@ -19,7 +19,7 @@ public class NodeParser {
 
     private static void setLink(NodeBuilder builder, Node node, LinkType linkType, String linkStr,
                                 Map<String, Map<String, Object>> nodes, Map<String, Node> replacementTable) {
-        if (linkType == LinkType.NATIVE_FUNCTION_NUMBER) {
+        if (linkType == LinkType.NATIVE_FUNCTION) {
             builder.set(node).setFunctionIndex(Integer.valueOf(linkStr)).commit();
         } else {
             Node linkValueNode = null;

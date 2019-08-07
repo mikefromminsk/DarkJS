@@ -62,6 +62,8 @@ public class DataOutputStream extends OutputStream {
         try {
             out.close();
             // TODO error with uploading a empty file
+
+
             Node res = Files.putFile(node, new FileInputStream(tempFile));
             NodeBuilder builder = new NodeBuilder().set(res);
             Data dataNode = (Data) builder.getValueNode();
@@ -72,8 +74,7 @@ public class DataOutputStream extends OutputStream {
                 if ("json".equals(parser)) {
                     JsonElement jsonElement = JsonParser.parse(data);
                     JsonBuilder.build(node, jsonElement);
-                }
-                if ("node.js".equals(parser)) {
+                } else if ("node.js".equals(parser)) {
                     jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
                     new JsBuilder().build(node, nashornNode);
                 }

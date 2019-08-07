@@ -24,8 +24,8 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         loadingBranch = new Branch();
-        loadProject("C:/wamp/www/droid", "root", false);
         loadProject("C:/darkjs/root", "root", true);
+        loadProject("C:/wamp/www/droid", "root", false);
         loadingBranch.mergeWithMaster();
         testRootIndex();
         Secure.start(login, password);
@@ -33,7 +33,7 @@ public class Main {
     }
 
     private static void testRootIndex() {
-        System.out.println("loading " + (Files.getNodeIfExist("/root/index") == null ? "success" : "fail"));
+        System.out.println("loading " + (Files.getNodeIfExist("/root/index") != null ? "success" : "fail"));
     }
 
     private static void loadProject(String projectPath, String localPath, boolean deleteDir) {

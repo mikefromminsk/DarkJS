@@ -56,11 +56,15 @@ abstract public class Utils {
             String functionName = funcInterface.path + funcInterface.name;
             NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
             builder.set(function).setFunctionIndex(i);
-            for (Parameter parameter : funcInterface.parameters){
+            for (Parameter parameter : funcInterface.parameters) {
                 Node param = parNode(parameter);
                 builder.set(function).addParam(param).commit();
             }
         }
+    }
+
+    public static FuncInterface getFunctionInterface(int index) {
+        return interfaces.get(index);
     }
 
     private static Node parNode(Parameter parameter) {

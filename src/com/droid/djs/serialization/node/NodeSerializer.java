@@ -5,6 +5,8 @@ import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 // TODO remove Gson library
+import com.droid.djs.runner.utils.FuncInterface;
+import com.droid.djs.runner.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
@@ -90,10 +92,9 @@ public class NodeSerializer {
     }
 
     public static void toMapRecursive(NodeBuilder builder, Map<String, Map<String, Object>> data, int level, Node node) {
-        if (node.id == 0) return;
+        if (node == null || node.id == 0) return;
         String nodeName = NODE_PREFIX + node.id;
         if (data.get(nodeName) != null) return;
-
 
         Map<String, Object> links = new LinkedHashMap<>();
         data.put(nodeName, links);
@@ -107,9 +108,10 @@ public class NodeSerializer {
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
 
-            if (linkType == LinkType.NATIVE_FUNCTION_NUMBER) {
+            if (linkType == LinkType.NATIVE_FUNCTION) {
                 String linkTypeStr = linkType.toString().toLowerCase();
-                links.put(linkTypeStr, "" + link);
+                FuncInterface funcInterface = Utils.getFunctionInterface((int) (long) link);
+                links.put(linkTypeStr, "!" + funcInterface.path  + funcInterface.name);
                 return;
             }
             // Nodes links

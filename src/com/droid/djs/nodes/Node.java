@@ -47,6 +47,8 @@ public class Node extends SuperNode {
                 linkId = (Long) link;
             else if (link instanceof Node)
                 linkId = ((Node) link).id;
+            if (linkId == null)
+                throw new NullPointerException();
             long dataLink = linkId * 256L + (long) linkType.ordinal();
             links.add(dataLink);
         });

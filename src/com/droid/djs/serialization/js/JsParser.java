@@ -1,5 +1,7 @@
 package com.droid.djs.serialization.js;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jdk.nashorn.internal.runtime.Context;
 import jdk.nashorn.internal.runtime.ErrorManager;
 import jdk.nashorn.internal.runtime.ParserException;
@@ -7,6 +9,9 @@ import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
 
 public class JsParser {
+
+    private static Gson json = new GsonBuilder().setPrettyPrinting().create();
+
     public static jdk.nashorn.internal.ir.Node parse(String sourceString) throws ParserException {
         Options options = new Options("nashorn");
         options.set("anon.functions", true);

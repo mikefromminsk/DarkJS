@@ -15,7 +15,7 @@ import java.io.OutputStream;
 
 public class FtpSession implements IFileSystem<Node> {
 
-    private Branch branch = new Branch(2000);
+    private Branch branch = new Branch(300);
     private NodeBuilder builder = new NodeBuilder();
     private Long access_token;
 

@@ -87,13 +87,12 @@ public class HttpServer extends NanoHTTPD {
                             Threads.getInstance().run(node, null, false, access_token);
 
                             builder.set(node);
-                            if (builder.isFunction() && builder.getValueNode() != null)
+                            if (builder.isFunction())
                                 builder.set(builder.getValueNode());
 
-                            String responseData = serializeNode(builder);
-                            String mimeType = getContentType(builder);
-                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mimeType, responseData);
-                            response.addHeader("content-length", "" + responseData.getBytes().length); // fix nanohttpd issue when content type is define
+                            ResponseWithType responseData = getResponse(builder);
+                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, responseData.data);
+                            response.addHeader("content-length", "" + responseData.data.length()); // fix nanohttpd issue when content type is define
                         }
                     }
                 }
@@ -119,35 +118,39 @@ public class HttpServer extends NanoHTTPD {
     }
 
     // TODO merge with serializeNode
-    String getContentType(NodeBuilder builder) {
-        String parser = builder.getParserString();
-        if (parser != null) {
-            if (parser.endsWith("json") || parser.equals("node.js"))
-                return "application/json";
-            if (parser.endsWith("js"))
+    String convertExtensionToMimeType(String extension) {
+        switch (extension) {
+            case "js":
                 return "text/javascript";
-            if (parser.endsWith("html"))
+            case "html":
                 return "text/html";
-            if (parser.endsWith("css"))
+            case "css":
                 return "text/css";
+            default:
+                return null;
         }
-        if (builder.getValueNode() instanceof Data)
-            return "";
-        return "application/json";
     }
 
     // TODO merge with getContentType
-    private String serializeNode(NodeBuilder builder) {
+    private ResponseWithType getResponse(NodeBuilder builder) {
+        if (builder.getNode() == null)
+            return new ResponseWithType("application/json", "null");
+
         String parser = builder.getParserString();
-        if (parser != null) {
-            if (parser.equals("json"))
-                return JsonSerializer.serialize(builder);
-            if (parser.equals("node.js"))
-                return NodeSerializer.toJson(builder.getNode());
-            if (builder.getValueNode() instanceof Data)
-                return ((Data) builder.getValueNode()).data.readString();
-        }
-        return NodeSerializer.toJson(builder.getNode());
+        if (parser != null)
+            switch (parser) {
+                case "json":
+                    return new ResponseWithType("application/json", JsonSerializer.serialize(builder));
+                case "node.js":
+                    return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
+                default: // node is static file
+                    if (builder.getValueNode() instanceof Data)
+                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data)builder.getValueNode()).data.readString());
+                    else
+                        return new ResponseWithType(convertExtensionToMimeType(parser), "");
+            }
+
+        return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
     }
 
     Map<String, String> parseArguments(String args) {
