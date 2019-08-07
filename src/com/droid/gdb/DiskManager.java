@@ -1,5 +1,7 @@
 package com.droid.gdb;
 
+import com.droid.djs.fs.DataOutputStream;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
@@ -47,12 +49,25 @@ public class DiskManager {
             loadProperties(properties);
             saveProperties(properties);
 
+            createFtpTempDir();
+
             mainThread = new ActionThread(cacheSize);
             Thread thread = new Thread(mainThread);
             thread.start();
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createFtpTempDir() {
+        if (!DataOutputStream.ftpTempDir.exists())
+            DataOutputStream.ftpTempDir.mkdirs();
+        else {
+            File[] files = DataOutputStream.ftpTempDir.listFiles();
+            if (files != null)
+                for (File file : files)
+                    file.delete();
         }
     }
 

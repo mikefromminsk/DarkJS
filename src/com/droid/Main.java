@@ -24,7 +24,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         loadingBranch = new Branch();
-        loadProject("C:/darkjs/root", "root", true);
+        //loadProject("C:/darkjs/root", "root", true);
         loadProject("C:/wamp/www/droid", "root", false);
         loadingBranch.mergeWithMaster();
         testRootIndex();

@@ -117,7 +117,6 @@ public class HttpServer extends NanoHTTPD {
         return response;
     }
 
-    // TODO merge with serializeNode
     String convertExtensionToMimeType(String extension) {
         switch (extension) {
             case "js":
@@ -126,12 +125,13 @@ public class HttpServer extends NanoHTTPD {
                 return "text/html";
             case "css":
                 return "text/css";
+            case "png":
+                return "image/png";
             default:
                 return null;
         }
     }
 
-    // TODO merge with getContentType
     private ResponseWithType getResponse(NodeBuilder builder) {
         if (builder.getNode() == null)
             return new ResponseWithType("application/json", "null");

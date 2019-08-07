@@ -25,8 +25,6 @@ public class DataOutputStream extends OutputStream {
     public DataOutputStream(Branch branch, Node node) {
         this.branch = branch;
         this.node = node;
-        if (!ftpTempDir.exists())
-            ftpTempDir.mkdirs();
         try {
             out = new FileOutputStream(tempFile);
         } catch (Exception e1) {
@@ -61,9 +59,6 @@ public class DataOutputStream extends OutputStream {
     public void close() {
         try {
             out.close();
-            // TODO error with uploading a empty file
-
-
             Node res = Files.putFile(node, new FileInputStream(tempFile));
             NodeBuilder builder = new NodeBuilder().set(res);
             Data dataNode = (Data) builder.getValueNode();
