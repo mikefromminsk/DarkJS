@@ -86,7 +86,11 @@ public class Bytes {
     }
 
     public static byte[] fromCharArray(char[] chars) {
-        return new String(chars).getBytes();
+        CharBuffer charBuffer = CharBuffer.wrap(chars);
+        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
+        Arrays.fill(byteBuffer.array(), (byte) 0);
+        return bytes;
     }
 
     public static char[] toCharArray(byte[] bytes) {

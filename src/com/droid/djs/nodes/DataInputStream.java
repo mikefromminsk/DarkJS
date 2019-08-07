@@ -5,6 +5,7 @@ import com.droid.djs.nodes.consts.NodeType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
 
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public class DataInputStream extends InputStream {
     public long length;
     private long currentPosition;
     private DataStorage dataStorage = DataStorage.getInstance();
-    private FileReader fileReader;
+    private FileInputStream fileReader;
 
     public DataInputStream( NodeType type, long start, long length) {
         this.type = type;
@@ -51,11 +52,11 @@ public class DataInputStream extends InputStream {
         return data;
     }
 
-    private char[] readFromFs() {
+    private byte[] readFromFs() {
         try {
             if (fileReader == null)
-                fileReader = new FileReader(DiskManager.getInstance().getFileById(start));
-            char[] buf = new char[BUFFER_SIZE];
+                fileReader = new FileInputStream(DiskManager.getInstance().getFileById(start));
+            byte[] buf = new byte[BUFFER_SIZE];
             int readiedChars = fileReader.read(buf);
             if ((readiedChars) > 0) {
                 if (readiedChars < BUFFER_SIZE)
@@ -70,23 +71,23 @@ public class DataInputStream extends InputStream {
     }
 
     public String readString() {
-        StringBuilder stringBuilder = new StringBuilder();
+        return new String(readBytes());
+    }
+
+    public byte[] readBytes() {
+        byte[] allstring = new byte[0];
         while (hasNext()) {
-            char[] buffer;
+            byte[] buffer;
             if (length < DataStorage.MAX_STORAGE_DATA_IN_DB)
-                buffer = Bytes.toCharArray(readFromDb());
+                buffer = readFromDb();
             else
                 buffer = readFromFs();
             if (buffer != null)
-                stringBuilder.append(buffer);
+                allstring = Bytes.concat(allstring, buffer);
             if (buffer == null) // TODO DANGER INFINITY LOOP
                 throw new NullPointerException();
         }
-        return stringBuilder.toString();
-    }
-
-    public char[] readChars() {
-        return readString().toCharArray();
+        return allstring;
     }
 
     public Object getObject() {
@@ -103,11 +104,8 @@ public class DataInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        // TODO !!!! rewrite
-        long oldPosition = currentPosition;
-        int _char = readChars()[(int) oldPosition];
-        currentPosition = oldPosition + 1;
-        return _char;
+        // TODO !!!!
+        return 0;
     }
 
     @Override
@@ -119,7 +117,7 @@ public class DataInputStream extends InputStream {
             return -1;
         }
         long oldPosition = currentPosition;
-        byte[] data = Bytes.fromString(readString());
+        byte[] data = readBytes();
         int minLength = Math.min(data.length, b.length);
         System.arraycopy(data, (int) oldPosition, b, 0, minLength);
         currentPosition = oldPosition + minLength;

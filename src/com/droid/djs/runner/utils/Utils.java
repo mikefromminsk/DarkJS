@@ -18,8 +18,8 @@ abstract public class Utils {
     private static List<Func> functions = new ArrayList<>();
     private static List<FuncInterface> interfaces = new ArrayList<>();
 
-    public static Node trueValue = builder.create(NodeType.BOOL).setData(true).commit();
-    public static Node falseValue = builder.create(NodeType.BOOL).setData(false).commit();
+    public static Node trueValue = builder.createBool(true);
+    public static Node falseValue = builder.createBool(false);
 
     public Utils() {
         methods();

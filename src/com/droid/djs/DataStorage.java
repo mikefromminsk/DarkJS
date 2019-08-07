@@ -40,7 +40,6 @@ public class DataStorage {
     public void add(Data node){
         try {
             if (node.externalData != null) {
-                Reader in = new InputStreamReader(node.externalData);
                 byte[] hashKey = null;
                 int hash = 0;
                 OutputStream outStream = null;
@@ -48,26 +47,24 @@ public class DataStorage {
                 NodeMetaCell nodeMetaCell = new NodeMetaCell();
                 nodeMetaCell.type = (byte) node.type.ordinal();
                 nodeMetaCell.length = 0;
-                char[] buffer = new char[MAX_STORAGE_DATA_IN_DB];
-                byte[] bytes = null;
+                byte[] buffer = new byte[MAX_STORAGE_DATA_IN_DB];
                 int readiedBytes;
                 File file = null;
-                while ((readiedBytes = in.read(buffer)) != -1) {
-                    bytes = Bytes.fromCharArray(Arrays.copyOfRange(buffer, 0, readiedBytes));
-                    hash = Crc16.getHash(hash, bytes);
+                while ((readiedBytes = node.externalData.read(buffer)) != -1) {
+                    hash = Crc16.getHash(hash, buffer);
                     nodeMetaCell.length += readiedBytes;
                     if (outStream == null) {
-                        hashKey = bytes;
+                        hashKey = buffer;
                         if (readiedBytes == MAX_STORAGE_DATA_IN_DB) {
                             nodeMetaCell.start = random.nextLong();
                             file = DiskManager.getInstance().getFileById(nodeMetaCell.start);
                             if (!file.exists())
                                 file.createNewFile();
-                            outStream = new FileOutputStream(file, false);
-                            outStream.write(bytes);
+                            outStream = new FileOutputStream(file);
+                            outStream.write(buffer);
                         }
                     } else {
-                        outStream.write(bytes);
+                        outStream.write(buffer, 0, readiedBytes);
                     }
                 }
                 if (outStream != null)
@@ -76,7 +73,7 @@ public class DataStorage {
                     long prevNodeId = dataHashTree.get(hashKey, Crc16.hashToBytes(hash));
                     if (prevNodeId == Long.MAX_VALUE) {
                         if (nodeMetaCell.length < MAX_STORAGE_DATA_IN_DB) {
-                            nodeMetaCell.start = dataStorage.add(bytes);
+                            nodeMetaCell.start = dataStorage.add(buffer);
                         }
                         node.id = NodeStorage.getInstance().meta.add(nodeMetaCell);
                         node.data = new com.droid.djs.nodes.DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
@@ -90,8 +87,8 @@ public class DataStorage {
                         node.data = new DataInputStream( node.type, nodeMetaCell.start, nodeMetaCell.length);
                     }
                 }
+                node.externalData.close();
                 node.externalData = null;
-                in.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

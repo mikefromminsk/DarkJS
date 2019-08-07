@@ -85,7 +85,7 @@ public class NodeSerializer {
             if (dataInputStream.length > DataStorage.MAX_STORAGE_DATA_IN_DB)
                 return LINK_PREFIX + node.id;
             else
-                return STRING_PREFIX + String.valueOf(dataInputStream.readChars());
+                return STRING_PREFIX + dataInputStream.readString();
         } else {
             return dataInputStream.getObject();
         }
