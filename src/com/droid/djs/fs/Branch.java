@@ -48,12 +48,10 @@ public class Branch {
     }
 
     public Node findPackage(Node node) {
-        if (builder.set(node).getLocalCount() > 1)
-            return node;
-        else if (builder.getLocalCount() == 0)
-            return null;
-        else
+        if (builder.set(node).getLocalCount() == 1)
             return findPackage(builder.getLocalNode(0));
+        else
+            return node;
     }
 
     public void mergeWithMaster() {
