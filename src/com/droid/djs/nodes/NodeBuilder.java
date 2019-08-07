@@ -56,7 +56,10 @@ public class NodeBuilder {
             if (!node.isSaved)
                 nodeStorage.addToTransaction(node);
         } else {
-            dataStorage.add((Data) node);
+            Data data = (Data) node;
+            dataStorage.add(data);
+            if (data.data == null)
+                node = null;
         }
         return node;
     }

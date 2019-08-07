@@ -80,7 +80,6 @@ public class DataStorage {
                         }
                         node.id = NodeStorage.getInstance().meta.add(nodeMetaCell);
                         node.data = new com.droid.djs.nodes.DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
-                        node.externalData = null;
                         dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                     } else {
                         if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
@@ -89,11 +88,9 @@ public class DataStorage {
                         nodeMetaCell = (NodeMetaCell) NodeStorage.getInstance().meta.get(prevNodeId, nodeMetaCell);
                         node.id = prevNodeId;
                         node.data = new DataInputStream( node.type, nodeMetaCell.start, nodeMetaCell.length);
-                        node.externalData = null;
                     }
-                } else {
-                    // TODO when inputData.length == 0
                 }
+                node.externalData = null;
                 in.close();
             }
         } catch (IOException e) {
