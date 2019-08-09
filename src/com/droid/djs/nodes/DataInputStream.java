@@ -6,7 +6,6 @@ import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
 
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -103,13 +102,13 @@ public class DataInputStream extends InputStream {
     }
 
     @Override
-    public int read() throws IOException {
+    public int read() {
         // TODO !!!!
         return 0;
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
+    public int read(byte[] b) {
         // TODO !!!! rewrite
         // Multithreading read
         if (currentPosition == length){
@@ -128,7 +127,7 @@ public class DataInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(byte[] b, int off, int len) {
         // TODO !!!! rewrite
         long oldPosition = currentPosition;
         byte[] data = Bytes.fromString(readString());
@@ -139,7 +138,7 @@ public class DataInputStream extends InputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(long n) {
         currentPosition += n;
         return n;
     }

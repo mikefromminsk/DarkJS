@@ -91,8 +91,9 @@ public class HttpServer extends NanoHTTPD {
                                 builder.set(builder.getValueNode());
 
                             ResponseWithType responseData = getResponse(builder);
-                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, responseData.data);
-                            response.addHeader("content-length", "" + responseData.data.length()); // fix nanohttpd issue when content type is define
+                            ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
+                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
+                            response.addHeader("content-length", "" + responseData.data.length); // fix nanohttpd issue when content type is define
                         }
                     }
                 }
@@ -145,7 +146,7 @@ public class HttpServer extends NanoHTTPD {
                     return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
                 default: // node is static file
                     if (builder.getValueNode() instanceof Data)
-                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data)builder.getValueNode()).data.readString());
+                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data)builder.getValueNode()).data.readBytes());
                     else
                         return new ResponseWithType(convertExtensionToMimeType(parser), "");
             }
