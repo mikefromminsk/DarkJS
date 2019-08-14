@@ -5,6 +5,7 @@ import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
+import com.droid.instance.Instance;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ public class Files {
     }
 
     public static Node getNode(String path, NodeType nodeType) {
-        return getNode(Master.getInstance(), path, nodeType);
+        return getNode(Instance.get().getMaster(), path, nodeType);
     }
 
     public static Node getNode(Node root, String path) {
@@ -44,7 +45,7 @@ public class Files {
     }
 
     public static Node getNode(String path, NodeType nodeType, Long access_token) {
-        return getNode(Master.getInstance(), path, nodeType, access_token);
+        return getNode(Instance.get().getMaster(), path, nodeType, access_token);
     }
 
     public static Node getNode(Node root, String path, NodeType nodeType, Long access_token) {
@@ -106,7 +107,7 @@ public class Files {
     }
 
     public static Node putFile(String path, InputStream data) {
-        return putFile(Master.getInstance(), path, data);
+        return putFile(Instance.get().getMaster(), path, data);
     }
 
     public static Node putFile(Long nodeId, String path, String data) {

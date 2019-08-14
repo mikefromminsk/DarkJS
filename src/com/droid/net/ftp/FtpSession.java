@@ -3,9 +3,9 @@ package com.droid.net.ftp;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
-import com.droid.djs.fs.Master;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.gdb.map.Crc16;
+import com.droid.instance.Instance;
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.nodes.*;
@@ -25,7 +25,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public Node getRoot() {
-        return Master.getInstance();
+        return Instance.get().getMaster();
     }
 
     @Override

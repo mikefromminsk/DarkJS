@@ -3,7 +3,6 @@ package com.droid.instance;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
-import com.droid.djs.fs.Master;
 import com.droid.djs.treads.Threads;
 import com.droid.gdb.map.Crc16;
 import com.droid.net.ftp.FtpServer;
@@ -64,7 +63,7 @@ public class Instance implements Runnable {
 
         testRootIndex();
 
-        Threads.getInstance().run(Master.getInstance(), null, false, instanceParameters.accessToken);
+        Threads.getInstance().run(Instance.get().getMaster(), null, false, instanceParameters.accessToken);
 
         try {
             http = new HttpServer();

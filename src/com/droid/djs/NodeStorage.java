@@ -1,7 +1,6 @@
 package com.droid.djs;
 
 import com.droid.djs.nodes.consts.NodeType;
-import com.droid.djs.fs.Master;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
@@ -9,6 +8,7 @@ import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
+import com.droid.instance.Instance;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class NodeStorage extends InfinityStringArray {
         if (fileData.sumFilesSize == 0){
             ThreadNode root = new ThreadNode();
             add(root);
-            Master.getInstance();
+            Instance.get().getMaster();
             Utils.getFunctions();
             Utils.saveInterfaces();
             transactionCommit();

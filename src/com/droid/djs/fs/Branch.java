@@ -64,12 +64,12 @@ public class Branch {
             if (branchPackage != null) {
                 String branchFilePath = Files.getPath(branchPackage);
                 branchFilePath = branchFilePath.substring(branchRootPath.length());
-                Node masterPackage = Files.getNode(Master.getInstance(), branchFilePath);
+                Node masterPackage = Files.getNode(Instance.get().getMaster(), branchFilePath);
                 Files.replace(masterPackage, branchPackage);
-                if (masterPackage == Master.getInstance())
-                    Master.removeInstance();
+                if (masterPackage == Instance.get().getMaster())
+                    Instance.get().removeInstance();
             }
-            if (root != Master.getInstance())
+            if (root != Instance.get().getMaster())
                 Files.remove(root);
             root = null;
             Instance.get().getNodeStorage().transactionCommit();

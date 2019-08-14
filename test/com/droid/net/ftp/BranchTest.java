@@ -15,12 +15,12 @@ class BranchTest {
         String testPath = "tests/BranchTest";
         String branchData = "" + new Random().nextInt();
         String masterStartData = "sdf";
-        Files.putFile(Master.getInstance(), testPath, masterStartData);
-        String str = Files.getFileString(Master.getInstance(), testPath);
+        Files.putFile(Instance.get().getMaster(), testPath, masterStartData);
+        String str = Files.getFileString(Instance.get().getMaster(), testPath);
         assertEquals(masterStartData, str);
         Files.putFile(branch.getRoot(), testPath, branchData);
         branch.mergeWithMaster();
-        String masterData = Files.getFileString(Master.getInstance(), testPath);
+        String masterData = Files.getFileString(Instance.get().getMaster(), testPath);
         assertEquals(branchData, masterData);
     }*/
 }
