@@ -28,10 +28,8 @@ public class DataStorage {
     public static DataStorage getInstance() {
         if (instance == null) {
             instance = new DataStorage();
-
             dataStorage = new InfinityFile(Instance.get().storeDir, dataStorageID);
             dataHashTree = new InfinityHashMap(Instance.get().storeDir, hashStorageID);
-
         }
         return instance;
     }
@@ -76,14 +74,14 @@ public class DataStorage {
                         if (nodeMetaCell.length < MAX_STORAGE_DATA_IN_DB) {
                             nodeMetaCell.start = dataStorage.add(buffer);
                         }
-                        node.id = NodeStorage.getInstance().meta.add(nodeMetaCell);
+                        node.id = Instance.get().getNodeStorage().meta.add(nodeMetaCell);
                         node.data = new com.droid.djs.nodes.DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
                         dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                     } else {
                         if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
                             file.delete(); // delete read file buffer
                         // TODO return instance from nodes cache
-                        nodeMetaCell = (NodeMetaCell) NodeStorage.getInstance().meta.get(prevNodeId, nodeMetaCell);
+                        nodeMetaCell = (NodeMetaCell) Instance.get().getNodeStorage().meta.get(prevNodeId, nodeMetaCell);
                         node.id = prevNodeId;
                         node.data = new DataInputStream( node.type, nodeMetaCell.start, nodeMetaCell.length);
                     }

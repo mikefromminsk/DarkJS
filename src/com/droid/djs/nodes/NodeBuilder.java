@@ -5,6 +5,7 @@ import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.serialization.node.NodeSerializer;
+import com.droid.instance.Instance;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 public class NodeBuilder {
 
-    private NodeStorage nodeStorage = NodeStorage.getInstance();
+    private NodeStorage nodeStorage = Instance.get().getNodeStorage();
     private DataStorage dataStorage = DataStorage.getInstance();
     private Node node;
 

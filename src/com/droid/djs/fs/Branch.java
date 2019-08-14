@@ -3,6 +3,7 @@ package com.droid.djs.fs;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.instance.Instance;
 
 import java.util.Random;
 import java.util.Timer;
@@ -27,7 +28,7 @@ public class Branch {
     public Node getRoot() {
         if (root == null) {
             root = Files.getNode("Branch/" + Math.abs(random.nextInt()));
-            NodeStorage.getInstance().transactionCommit();
+            Instance.get().getNodeStorage().transactionCommit();
             updateTimer();
         }
         return root;
@@ -71,7 +72,7 @@ public class Branch {
             if (root != Master.getInstance())
                 Files.remove(root);
             root = null;
-            NodeStorage.getInstance().transactionCommit();
+            Instance.get().getNodeStorage().transactionCommit();
         }
     }
 }

@@ -9,42 +9,28 @@ import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
-import com.droid.instance.Instance;
 
 import java.util.*;
 
 public class NodeStorage extends InfinityStringArray {
 
-    private static NodeStorage instance;
-
-    private static final String nodeStorageID = "node";
-
     private static final int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
-    private static ArrayList<Node> transactionNodes;
-    private static Map<Long, Node> nodesCache;
+    private static ArrayList<Node> transactionNodes = new ArrayList<>();
+    private static Map<Long, Node> nodesCache = new TreeMap<>();
 
     public NodeStorage(String infinityFileDir, String infinityFileName) {
         super(infinityFileDir, infinityFileName);
     }
 
-    private void initStorage() {
-        ThreadNode root = new ThreadNode();
-        add(root);
-        Master.getInstance();
-        Utils.getFunctions();
-        Utils.saveInterfaces();
-        transactionCommit();
-    }
-
-    public static NodeStorage getInstance() {
-        if (instance == null) {
-            nodesCache = new TreeMap<>();
-            transactionNodes = new ArrayList<>();
-            instance = new NodeStorage(Instance.get().storeDir, nodeStorageID);
-            if (instance.fileData.sumFilesSize == 0)
-                instance.initStorage();
+    public void initStorage() {
+        if (fileData.sumFilesSize == 0){
+            ThreadNode root = new ThreadNode();
+            add(root);
+            Master.getInstance();
+            Utils.getFunctions();
+            Utils.saveInterfaces();
+            transactionCommit();
         }
-        return instance;
     }
 
     public void addToTransaction(Node node) {
