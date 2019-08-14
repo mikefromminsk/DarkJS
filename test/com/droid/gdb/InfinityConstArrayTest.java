@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InfinityConstArrayTest {
-
     class TestCellParserConst implements InfinityConstArrayCell {
 
         long field1;
@@ -45,7 +44,7 @@ public class InfinityConstArrayTest {
 
     @Test
     void add() {
-        InfinityConstArray testConstArray = new InfinityConstArray("constArrayTest");
+        InfinityConstArray testConstArray = new InfinityConstArray("out/SimpleGraphDB", "constArrayTest");
         long index1 = testConstArray.add(new TestCellParserConst(258, 789));
         long index2 = testConstArray.add(new TestCellParserConst(345, 674));
         TestCellParserConst destination = new TestCellParserConst();

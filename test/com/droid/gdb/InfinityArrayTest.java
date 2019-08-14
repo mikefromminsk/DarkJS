@@ -7,20 +7,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class InfinityArrayTest {
 
-  /*  @Test
-    void testEncodingDecoding() {
-        String startData = "start data";
-        byte[] data = startData.getBytes();
-        long accessKey = InfinityArray.encodeData(data);
-        assertNotEquals(startData, new String(data));
-        InfinityArray.decodeData(data, accessKey);
-        assertEquals(startData, new String(data));
-    }*/
-
+    /*  @Test
+      void testEncodingDecoding() {
+          String startData = "create data";
+          byte[] data = startData.getBytes();
+          long accessKey = InfinityArray.encodeData(data);
+          assertNotEquals(startData, new String(data));
+          InfinityArray.decodeData(data, accessKey);
+          assertEquals(startData, new String(data));
+      }*/
     @RepeatedTest(1000)
     @Test
     void add() {
-        InfinityStringArray testArray = new InfinityStringArray("testArray");
+        InfinityStringArray testArray = new InfinityStringArray("out/SimpleGraphDB", "testArray");
         // TODO issue with multithreading access to equal infinity array
         long index = testArray.addString("tests");
         testArray.setString(index, "bests");

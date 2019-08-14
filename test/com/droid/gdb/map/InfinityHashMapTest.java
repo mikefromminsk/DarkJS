@@ -7,11 +7,10 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InfinityHashMapTest {
-
     @Test
     void put() {
         int randomInt = new Random(System.currentTimeMillis()).nextInt(1000);
-        InfinityHashMap tree = new InfinityHashMap("map" + randomInt);
+        InfinityHashMap tree = new InfinityHashMap("out/SimpleGraphDB", "map" + randomInt);
         assertEquals( TreeNode.SIZE, tree.fileData.sumFilesSize);
         tree.put("String1", "3012".getBytes(), 123);
         assertEquals( TreeNode.SIZE, tree.fileData.sumFilesSize);

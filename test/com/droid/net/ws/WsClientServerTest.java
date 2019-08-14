@@ -10,7 +10,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WsClientServerTest {
-
+/*
     @Test
     void send() throws InterruptedException {
         WsClientServer proxy = new WsClientServer(9001);
@@ -21,5 +21,5 @@ class WsClientServerTest {
         dest.start();
         from.send(dest.getNodeName(), "Console/log", new Node[]{new NodeBuilder().createString("testMessage")});
         from.thread.join();
-    }
+    }*/
 }

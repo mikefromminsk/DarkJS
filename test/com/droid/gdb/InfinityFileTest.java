@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InfinityFileTest {
-
     @Test
     void testReadFromWriteBuffer1() {
-        InfinityFile file = new InfinityFile("test1");
+        InfinityFile file = new InfinityFile("out/SimpleGraphDB", "test1");
         byte[] testData = "test".getBytes();
         long position = file.add(testData);
         byte[] readiedData = file.read(position, testData.length);

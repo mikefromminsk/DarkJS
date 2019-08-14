@@ -1,8 +1,7 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.consts.NodeType;
-import com.droid.gdb.DiskManager;
+import com.droid.instance.Instance;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +39,7 @@ class NodeStorageTest implements Runnable {
         return Min + (int) (Math.random() * ((Max - Min) + 1));
     }
 
-    public static ArrayList<String> getLog() {
+    /*public static ArrayList<String> getLog() {
         if (thread != null && thread.isAlive()) {
             // progress request
             return out;
@@ -62,7 +61,7 @@ class NodeStorageTest implements Runnable {
                 return out;
             }
         }
-    }
+    }*/
 
     @Override
     public void run() {
@@ -75,7 +74,7 @@ class NodeStorageTest implements Runnable {
 
         add("Start", "commit");
         start = time();
-        NodeStorage.getInstance().transactionCommit();
+        Instance.get().getNodeStorage().transactionCommit();
         add("Finish(ms)", time() - start);
 
         add("Start", "put " + count + " records with duplicates");
@@ -87,6 +86,6 @@ class NodeStorageTest implements Runnable {
         for (int i = 0; i < count; i++)
             builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
         add("Finish", time() - start);
-        NodeStorage.getInstance().transactionCommit();
+        Instance.get().getNodeStorage().transactionCommit();
     }
 }
