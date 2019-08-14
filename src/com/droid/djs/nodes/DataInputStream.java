@@ -4,6 +4,7 @@ import com.droid.djs.DataStorage;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
+import com.droid.instance.Instance;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class DataInputStream extends InputStream {
     private byte[] readFromFs() {
         try {
             if (fileReader == null)
-                fileReader = new FileInputStream(DiskManager.getInstance().getFileById(start));
+                fileReader = new FileInputStream(DiskManager.getInstance(Instance.get().storeDir).getFileById(start));
             byte[] buf = new byte[BUFFER_SIZE];
             int readiedChars = fileReader.read(buf);
             if ((readiedChars) > 0) {

@@ -2,11 +2,10 @@ package com.droid.net.ws;
 
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
-import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
+import com.droid.instance.Instance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.java_websocket.WebSocket;
@@ -69,9 +68,9 @@ public class WsClientServer extends WebSocketServer {
 
     public void send(String nodename, String receiverPath, Node[] args) {
         if (isThisNode(nodename)) {
-            onDestinationMessage(receiverPath, args, Secure.selfAccessCode);
+            onDestinationMessage(receiverPath, args, Instance.get().accessToken);
         } else {
-            onTransmitMessage(new Message(nodename, receiverPath, NodeSerializer.toList(args), Secure.selfAccessCode));
+            onTransmitMessage(new Message(nodename, receiverPath, NodeSerializer.toList(args), Instance.get().accessToken));
         }
     }
 

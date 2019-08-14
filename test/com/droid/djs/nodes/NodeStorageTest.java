@@ -39,6 +39,11 @@ class NodeStorageTest implements Runnable {
         return Min + (int) (Math.random() * ((Max - Min) + 1));
     }
 
+    @Override
+    public void run() {
+
+    }
+
     /*public static ArrayList<String> getLog() {
         if (thread != null && thread.isAlive()) {
             // progress request
@@ -62,7 +67,7 @@ class NodeStorageTest implements Runnable {
             }
         }
     }*/
-
+/*
     @Override
     public void run() {
         NodeBuilder builder = new NodeBuilder();
@@ -87,5 +92,5 @@ class NodeStorageTest implements Runnable {
             builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
         add("Finish", time() - start);
         Instance.get().getNodeStorage().transactionCommit();
-    }
+    }*/
 }

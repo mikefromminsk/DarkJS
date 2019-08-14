@@ -7,6 +7,7 @@ import com.droid.gdb.DiskManager;
 import com.droid.gdb.InfinityFile;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
+import com.droid.instance.Instance;
 
 import java.io.*;
 import java.util.Arrays;
@@ -28,8 +29,8 @@ public class DataStorage {
         if (instance == null) {
             instance = new DataStorage();
 
-            dataStorage = new InfinityFile(dataStorageID);
-            dataHashTree = new InfinityHashMap(hashStorageID);
+            dataStorage = new InfinityFile(Instance.get().storeDir, dataStorageID);
+            dataHashTree = new InfinityHashMap(Instance.get().storeDir, hashStorageID);
 
         }
         return instance;
@@ -57,7 +58,7 @@ public class DataStorage {
                         hashKey = buffer;
                         if (readiedBytes == MAX_STORAGE_DATA_IN_DB) {
                             nodeMetaCell.start = random.nextLong();
-                            file = DiskManager.getInstance().getFileById(nodeMetaCell.start);
+                            file = DiskManager.getInstance(Instance.get().storeDir).getFileById(nodeMetaCell.start);
                             if (!file.exists())
                                 file.createNewFile();
                             outStream = new FileOutputStream(file);

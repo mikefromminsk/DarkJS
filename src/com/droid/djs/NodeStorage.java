@@ -9,6 +9,7 @@ import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
+import com.droid.instance.Instance;
 
 import java.util.*;
 
@@ -22,9 +23,8 @@ public class NodeStorage extends InfinityStringArray {
     private static ArrayList<Node> transactionNodes;
     private static Map<Long, Node> nodesCache;
 
-
-    public NodeStorage(String infinityFileID) {
-        super(infinityFileID);
+    public NodeStorage(String infinityFileDir, String infinityFileName) {
+        super(infinityFileDir, infinityFileName);
     }
 
     private void initStorage() {
@@ -40,7 +40,7 @@ public class NodeStorage extends InfinityStringArray {
         if (instance == null) {
             nodesCache = new TreeMap<>();
             transactionNodes = new ArrayList<>();
-            instance = new NodeStorage(nodeStorageID);
+            instance = new NodeStorage(Instance.get().storeDir, nodeStorageID);
             if (instance.fileData.sumFilesSize == 0)
                 instance.initStorage();
         }

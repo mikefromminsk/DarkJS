@@ -1,45 +1,42 @@
 package com.droid.net.http;
 
 
-import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
-import com.droid.djs.nodes.*;
 import com.droid.djs.fs.Files;
-import com.droid.djs.runner.utils.NodeUtils;
+import com.droid.djs.nodes.Data;
+import com.droid.djs.nodes.Node;
+import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.json.JsonSerializer;
 import com.droid.djs.serialization.node.NodeSerializer;
-import com.droid.djs.treads.Secure;
 import com.droid.djs.treads.Threads;
+import com.droid.gdb.map.Crc16;
+import com.droid.instance.Instance;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class HttpServer extends NanoHTTPD {
 
     public static final String FORM_DATA = "application/x-www-form-urlencoded";
-    public static int defaultPort = 80;
-    public static int debugPort = 8080;
+    public static int defaultPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
 
     public HttpServer() {
-        this(defaultPort);
-    }
-
-    public HttpServer(int port) {
-        super(port);
+        super(defaultPort + Instance.get().instanceID);
     }
 
     @Override
     public Response serve(IHTTPSession session) {
         super.serve(session);
-        Response response = null;
         long startRequestTime = new Date().getTime();
+        Response response = null;
+        Instance.connectThreadByPortAdditional(getListeningPort() - defaultPort);
         try {
             String requestContentType = session.getHeaders().get(Headers.CONTENT_TYPE);
             if (requestContentType != null)
@@ -67,7 +64,7 @@ public class HttpServer extends NanoHTTPD {
                         authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
                         String login = authorization.substring(0, authorization.indexOf(":"));
                         String password = authorization.substring(authorization.indexOf(":") + 1);
-                        Long access_token = Secure.getAccessToken(login, password);
+                        Long access_token = (long) Crc16.getHash(login + password);
 
                         node = Files.getNode(session.getUri(), null, access_token);
 
@@ -110,6 +107,8 @@ public class HttpServer extends NanoHTTPD {
             }
         }
 
+        Instance.disconnectThread();
+
         if (response == null)
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "response is empty");
 
@@ -146,7 +145,7 @@ public class HttpServer extends NanoHTTPD {
                     return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
                 default: // node is static file
                     if (builder.getValueNode() instanceof Data)
-                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data)builder.getValueNode()).data.readBytes());
+                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data) builder.getValueNode()).data.readBytes());
                     else
                         return new ResponseWithType(convertExtensionToMimeType(parser), "");
             }

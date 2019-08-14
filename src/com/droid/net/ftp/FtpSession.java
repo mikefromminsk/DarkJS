@@ -5,7 +5,7 @@ import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.Files;
 import com.droid.djs.fs.Master;
 import com.droid.djs.fs.DataOutputStream;
-import com.droid.djs.treads.Secure;
+import com.droid.gdb.map.Crc16;
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.nodes.*;
@@ -20,7 +20,7 @@ public class FtpSession implements IFileSystem<Node> {
     private Long access_token;
 
     public FtpSession(String username, String password) {
-        access_token = Secure.getAccessToken(username, password);
+        access_token = (long) Crc16.getHash(username +  password);
     }
 
     @Override
