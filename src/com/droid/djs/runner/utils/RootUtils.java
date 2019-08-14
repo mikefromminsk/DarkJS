@@ -2,6 +2,7 @@ package com.droid.djs.runner.utils;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.instance.Instance;
 import com.droid.net.ws.WsClientServer;
 
 public class RootUtils extends Utils {
@@ -18,7 +19,7 @@ public class RootUtils extends Utils {
 
         // TODO add dynamic count of params
         func("gui", (builder, node, ths) -> {
-            WsClientServer.getInstance().sendGui(node);
+            Instance.get().getWsClientServer().sendGui(node);
             return null;
         }, par("observer_id", NodeType.STRING),
                 par("key", NodeType.NODE),

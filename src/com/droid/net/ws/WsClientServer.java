@@ -4,7 +4,6 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
-import com.droid.djs.treads.Threads;
 import com.droid.instance.Instance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,22 +32,12 @@ public class WsClientServer extends WebSocketServer {
 
     private static List<Message> messageBuffer = new ArrayList<>();
 
-    public WsClientServer() {
-        this(defaultPort);
-    }
-
     public WsClientServer(Integer port) {
         super(new InetSocketAddress(port == null ? defaultPort : port));
         this.nodeName = "node" + port;
-        instance = this;
+        start();
         proxy = new WsProxyClient();
         proxy.connect();
-    }
-
-    private static WsClientServer instance;
-
-    public static WsClientServer getInstance() {
-        return instance;
     }
 
     @Override
@@ -144,7 +133,6 @@ public class WsClientServer extends WebSocketServer {
         }
         for (WebSocket guiClietn : gui)
             guiClietn.close();
-        instance = null;
     }
 
     @Override

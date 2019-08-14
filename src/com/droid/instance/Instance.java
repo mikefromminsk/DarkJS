@@ -36,15 +36,14 @@ public class Instance implements Runnable {
     public static void connectThread(InstanceParameters instanceParameters) {
         parameters.put(Thread.currentThread().getId(), instanceParameters);
     }
-    public static InstanceParameters find(int addToPortNumber) {
-        for (Long threadID: parameters.keySet())
-            if (parameters.get(threadID).instanceID == addToPortNumber)
-                return parameters.get(threadID);
-        return null;
-    }
 
     public static void connectThreadByPortAdditional(int addToPort) {
-        connectThread(find(addToPort));
+        for (Long threadID : parameters.keySet())
+            if (parameters.get(threadID).instanceID == addToPort){
+                connectThread(parameters.get(threadID));
+                return;
+            }
+        throw new NullPointerException();
     }
 
     public static void disconnectThread() {
@@ -54,34 +53,30 @@ public class Instance implements Runnable {
 
     @Override
     public void run() {
-        connectThread(instanceParameters);
-
-        loadingBranch = new Branch();
-        loadProject(intallDir, "root", false);
-        loadingBranch.mergeWithMaster();
-
-        testRootIndex();
-
-        Instance.get().getThreads().run(Instance.get().getMaster(), null, false, instanceParameters.accessToken);
-
         try {
-            http = new HttpServer();
-            http.start();
-            ftp = new FtpServer();
-            ftp.start();
-            ws = new WsClientServer();
-            ws.start();
+            connectThread(instanceParameters);
+
+            loadingBranch = new Branch();
+            loadProject(intallDir, "root", false);
+            loadingBranch.mergeWithMaster();
+
+            testRootIndex();
+
+            Instance.get().getThreads().run(Instance.get().getMaster(), null, false, instanceParameters.accessToken);
+
+            Instance.get().getFtpServer();
+            Instance.get().getHttpServer();
+            Instance.get().getWsClientServer();
 
             //waiting
-            http.join();
+            Instance.get().getHttpServer().join();
         } catch (Exception e) {
-            if (http != null)
-                http.stop();
-            if (ftp != null)
-                ftp.stop();
-            if (ws != null)
-                ws.stop();
             e.printStackTrace();
+        } finally {
+            Instance.get().getFtpServer().stop();
+            Instance.get().getHttpServer().stop();
+            Instance.get().getWsClientServer().stop();
+            disconnectThread();
         }
     }
 
@@ -90,6 +85,7 @@ public class Instance implements Runnable {
     }
 
     private Branch loadingBranch;
+
     private void loadProject(String projectPath, String localPath, boolean deleteDir) {
         File root = new File(projectPath);
         File[] list = root.listFiles();

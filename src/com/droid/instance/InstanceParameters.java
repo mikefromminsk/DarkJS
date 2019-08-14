@@ -7,6 +7,9 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.treads.Threads;
+import com.droid.net.ftp.FtpServer;
+import com.droid.net.http.HttpServer;
+import com.droid.net.ws.WsClientServer;
 
 public class InstanceParameters {
     public int instanceID;
@@ -63,6 +66,29 @@ public class InstanceParameters {
     // TODO change to change instance
     public void removeMaster(){
         master = null;
+    }
+
+
+
+    private HttpServer httpServer;
+    public HttpServer getHttpServer() {
+        if (httpServer == null)
+            httpServer = new HttpServer(HttpServer.defaultPort + instanceID);
+        return httpServer;
+    }
+
+    private FtpServer ftpServer;
+    public FtpServer getFtpServer() {
+        if (ftpServer == null)
+            ftpServer = new FtpServer(FtpServer.defaultPort + instanceID);
+        return ftpServer;
+    }
+
+    private WsClientServer wsClientServer;
+    public WsClientServer getWsClientServer() {
+        if (wsClientServer == null)
+            wsClientServer = new WsClientServer(WsClientServer.defaultPort + instanceID);
+        return wsClientServer;
     }
 
 }

@@ -13,6 +13,7 @@ import com.droid.instance.Instance;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.InvalidParameterException;
@@ -27,8 +28,13 @@ public class HttpServer extends NanoHTTPD {
     public static int defaultPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
 
-    public HttpServer() {
-        super(defaultPort + Instance.get().instanceID);
+    public HttpServer(Integer port) {
+        super(port == null ? defaultPort : port);
+        try {
+            start(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

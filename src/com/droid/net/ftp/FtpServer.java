@@ -13,31 +13,17 @@ public class FtpServer implements IFTPListener {
     public static NodeBuilder builder = new NodeBuilder();
     private FTPServer server = new FTPServer();
     public static int defaultPort = 21;
-    private int port;
 
-    public FtpServer() {
-        port = defaultPort;
-    }
-
-    public FtpServer(int port) {
-        this.port = port;
-    }
-
-    public FtpServer start() {
+    public FtpServer(Integer port) {
         server.setAuthenticator(new FtpAuthenticator());
-        server.addListener(new FtpServer());
-        server.setTimeout(3000); // 10 minutes
-        server.setBufferSize(1024 * 5); // 5 kilobytes
+        server.addListener(this);
+        server.setTimeout(3000);
+        server.setBufferSize(1024 * 5);
         try {
-            server.listen(InetAddress.getByName("localhost"), port);
+            server.listen(InetAddress.getByName("localhost"), (port == null ? defaultPort : port));
         } catch (IOException e) {
             e.printStackTrace();
-       }
-        return this;
-    }
-
-    public void join() throws InterruptedException {
-        server.join();
+        }
     }
 
     public void stop() {
