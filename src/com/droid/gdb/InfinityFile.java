@@ -11,23 +11,22 @@ public class InfinityFile {
 
     private final static String INFINITY_FILE_PART_PREFIX = "part";
     private long partSize;
-    protected String infinityFileID;
     public InfinityFileData fileData;
     private ActionThread mainThread;
     private static Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
+    public DiskManager diskManager;
+    protected String infinityFileName;
 
-    public InfinityFile(String infinityFileID) {
-        this.infinityFileID = infinityFileID;
-        if (infinityFileID.startsWith("_"))
-            throw new NullPointerException();
-        DiskManager diskManager = DiskManager.getInstance();
+    public InfinityFile(String infinityFileDir, String infinityFileName) {
+        this.infinityFileName = infinityFileName;
+        diskManager = DiskManager.getInstance(infinityFileDir);
         this.mainThread = diskManager.mainThread;
         this.partSize = diskManager.partSize;
 
-        fileData = infinityFileCache.get(infinityFileID);
+        fileData = infinityFileCache.get(infinityFileName);
         if (fileData == null) {
             fileData = new InfinityFileData();
-            Map<String, String> fileSettings = diskManager.properties.getSection(infinityFileID);
+            Map<String, String> fileSettings = diskManager.properties.getSection(infinityFileName);
             if (fileSettings != null)
                 for (int i = 0; fileSettings.containsKey(INFINITY_FILE_PART_PREFIX + i); i++) {
                     try {
@@ -39,7 +38,7 @@ public class InfinityFile {
                         e.printStackTrace();
                     }
                 }
-            infinityFileCache.put(infinityFileID, fileData);
+            infinityFileCache.put(infinityFileName, fileData);
         }
 
     }
@@ -48,11 +47,10 @@ public class InfinityFile {
         // TODO create file in action thread
         if (index == fileData.files.size()) {
             try {
-                DiskManager diskManager = DiskManager.getInstance();
                 String partName = INFINITY_FILE_PART_PREFIX + index;
-                String newFileName = infinityFileID + "." + partName;
+                String newFileName = infinityFileName + "." + partName;
                 File partFile = new File(diskManager.dbDir.getAbsolutePath(), newFileName);
-                diskManager.properties.put(infinityFileID, partName, partFile.getAbsolutePath());
+                diskManager.properties.put(infinityFileName, partName, partFile.getAbsolutePath());
                 RandomAccessFile partRandomAccessFile = new RandomAccessFile(partFile, "rw");
                 fileData.files.add(partRandomAccessFile);
                 return partRandomAccessFile;

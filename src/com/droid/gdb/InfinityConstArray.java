@@ -2,8 +2,8 @@ package com.droid.gdb;
 
 public class InfinityConstArray extends InfinityFile {
 
-    public InfinityConstArray(String infinityFileID) {
-        super(infinityFileID);
+    public InfinityConstArray(String infinityFileDir, String infinityFileID) {
+        super(infinityFileDir, infinityFileID);
     }
 
     public InfinityConstArrayCell get(long index, InfinityConstArrayCell dest) {

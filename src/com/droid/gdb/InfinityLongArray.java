@@ -1,8 +1,8 @@
 package com.droid.gdb;
 
 public class InfinityLongArray extends InfinityConstArray {
-    public InfinityLongArray(String infinityFileID) {
-        super(infinityFileID);
+    public InfinityLongArray(String infinityFileDir, String infinityFileName) {
+        super(infinityFileDir, infinityFileName);
     }
 
     LongCell longCell = new LongCell();

@@ -3,31 +3,19 @@ package com.droid.gdb;
 import com.droid.djs.fs.DataOutputStream;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.*;
+import java.io.IOException;
 import java.util.Random;
 
 public class DiskManager {
 
-    private static DiskManager instance;
-    public IniFile properties = null;
+    public IniFile properties;
     public ActionThread mainThread;
 
-    public final static File dbDir = new File("out/SimpleGraphDB");
-    public final static File propertiesFile = new File(dbDir, "settings.properties");
+    public File dbDir;
     public Integer partSize;
     public Integer cacheSize;
     public Integer device_id;
-
-    public static DiskManager getInstance() {
-        if (instance == null) {
-            try {
-                instance = new DiskManager();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return instance;
-    }
 
     public final static String SECTION = "_manager_";
     public final static String PART_SIZE_KEY = "part_size";
@@ -36,28 +24,37 @@ public class DiskManager {
     public final static Integer CACHE_SIZE_DEFAULT = 4096;
     public final static String DEVICE_ID_KEY = "device_id";
 
-    private DiskManager() throws FileNotFoundException {
+    public DiskManager(String dbDirPath) throws IOException {
+        dbDir = new File(dbDirPath);
         // TODO double save settings
         // TODO problem when DiskManager getFunctions without saving data rights
 
         if (!dbDir.isDirectory())
             if (!dbDir.mkdirs())
-                throw new FileNotFoundException();
-        try {
-            properties = new IniFile(propertiesFile);
+                throw new IOException();
 
-            loadProperties(properties);
-            saveProperties(properties);
+        properties = new IniFile(new File(dbDir, "settings.properties"));
 
-            createFtpTempDir();
+        loadProperties(properties);
+        saveProperties(properties);
 
-            mainThread = new ActionThread(cacheSize);
-            Thread thread = new Thread(mainThread);
-            thread.start();
+        createFtpTempDir();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mainThread = new ActionThread(cacheSize);
+        Thread thread = new Thread(mainThread);
+        thread.start();
+    }
+
+    private static Map<String, DiskManager> diskManagers = new HashMap<>();
+    public static DiskManager getInstance(String dbDirPath) {
+        DiskManager manager = diskManagers.get(dbDirPath);
+        if (manager == null)
+            try {
+                diskManagers.put(dbDirPath, manager = new DiskManager(dbDirPath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        return manager;
     }
 
     private void createFtpTempDir() {
@@ -81,13 +78,6 @@ public class DiskManager {
         properties.put(SECTION, PART_SIZE_KEY, "" + this.partSize);
         properties.put(SECTION, CACHE_SIZE_KEY, "" + this.cacheSize);
         properties.put(SECTION, DEVICE_ID_KEY, "" + this.device_id);
-    }
-
-    public void addDisk(String rootDir) {
-    }
-
-    public void diskTesting() {
-        // TODO testing of all disks
     }
 
     public File getFileById(long fileId) {

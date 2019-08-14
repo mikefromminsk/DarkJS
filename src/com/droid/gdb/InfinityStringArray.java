@@ -2,7 +2,6 @@ package com.droid.gdb;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class InfinityStringArray extends InfinityFile {
 
@@ -10,16 +9,18 @@ public class InfinityStringArray extends InfinityFile {
 
     public InfinityConstArray meta;
     private Map<Long, InfinityLongArray> garbageCollector = new HashMap<>();
+    private String infinityFileDir;
 
-    public InfinityStringArray(String infinityFileID) {
-        super(infinityFileID);
-        meta = new InfinityConstArray(infinityFileID + ".meta");
+    public InfinityStringArray(String infinityFileDir, String infinityFileName) {
+        super(infinityFileDir, infinityFileName);
+        this.infinityFileDir = infinityFileDir;
+        meta = new InfinityConstArray(infinityFileDir, infinityFileName + ".meta");
         // TODO change all file types to with string length equal 4
-        Map<String, String> garbage = DiskManager.getInstance().properties.getSection(infinityFileID + ".garbage");
+        Map<String, String> garbage = diskManager.properties.getSection(infinityFileName + ".garbage");
         if (garbage != null)
             for (String key : garbage.keySet()) {
                 Long sectorSize = Long.valueOf(key);
-                InfinityLongArray garbageBySize = new InfinityLongArray(garbage.get(key));
+                InfinityLongArray garbageBySize = new InfinityLongArray(infinityFileDir, garbage.get(key));
                 garbageCollector.put(sectorSize, garbageBySize);
             }
     }
@@ -90,13 +91,13 @@ public class InfinityStringArray extends InfinityFile {
         InfinityLongArray garbageBySize = garbageCollector.get(sectorSize);
         if (true) return;
         if (garbageBySize == null) {
-            String garbageName = infinityFileID + ".garbage";
+            String garbageName = infinityFileName + ".garbage";
             String garbageNameWithSize = garbageName + sectorSize;
-            garbageBySize = new InfinityLongArray(garbageNameWithSize);
+            garbageBySize = new InfinityLongArray(infinityFileDir, garbageNameWithSize);
             garbageBySize.addLong(1);
             garbageBySize.addLong(index);
             garbageCollector.put(sectorSize, garbageBySize);
-            DiskManager.getInstance().properties.put(garbageName, "" + sectorSize, garbageNameWithSize);
+            diskManager.properties.put(garbageName, "" + sectorSize, garbageNameWithSize);
         } else {
             long lastContentIndex = garbageBySize.getLong(0);
             if (lastContentIndex < garbageBySize.fileData.sumFilesSize / Long.BYTES) {

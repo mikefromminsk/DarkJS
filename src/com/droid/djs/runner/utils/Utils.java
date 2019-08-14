@@ -34,7 +34,6 @@ abstract public class Utils {
             new NodeUtils();
             new Net();
             new Console();
-            new Instance();
         }
         return functions;
     }

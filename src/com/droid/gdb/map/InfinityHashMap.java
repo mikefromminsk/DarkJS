@@ -13,10 +13,10 @@ public class InfinityHashMap extends InfinityConstArray {
     private InfinityStringArray keys;
     private InfinityStringArray hashes;
 
-    public InfinityHashMap(String infinityFileID) {
-        super(infinityFileID);
-        keys = new InfinityStringArray(infinityFileID + ".keys");
-        hashes = new InfinityStringArray(infinityFileID + ".hashes");
+    public InfinityHashMap(String infinityFileDir, String infinityFileName) {
+        super(infinityFileDir, infinityFileName);
+        keys = new InfinityStringArray(infinityFileDir, infinityFileName + ".keys");
+        hashes = new InfinityStringArray(infinityFileDir,infinityFileName + ".hashes");
         if (fileData.sumFilesSize == 0)
             add(new TreeNode("****".getBytes(), new long[TreeNode.LINKS_COUNT]));
     }
