@@ -20,7 +20,7 @@ public class FtpSession implements IFileSystem<Node> {
     private Long access_token;
 
     public FtpSession(String username, String password) {
-        access_token = (long) Crc16.getHash(username +  password);
+        access_token = Crc16.getHash(username +  password);
     }
 
     @Override

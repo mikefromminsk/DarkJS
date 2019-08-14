@@ -28,13 +28,9 @@ public class HttpServer extends NanoHTTPD {
     public static int defaultPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
 
-    public HttpServer(Integer port) {
+    public HttpServer(Integer port) throws IOException {
         super(port == null ? defaultPort : port);
-        try {
-            start(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        start(0);
     }
 
     @Override
@@ -70,7 +66,7 @@ public class HttpServer extends NanoHTTPD {
                         authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
                         String login = authorization.substring(0, authorization.indexOf(":"));
                         String password = authorization.substring(authorization.indexOf(":") + 1);
-                        Long access_token = (long) Crc16.getHash(login + password);
+                        Long access_token = Crc16.getHash(login + password);
 
                         node = Files.getNode(session.getUri(), null, access_token);
 

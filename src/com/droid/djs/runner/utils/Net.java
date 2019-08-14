@@ -3,7 +3,6 @@ package com.droid.djs.runner.utils;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.instance.Instance;
-import com.droid.net.ws.WsClientServer;
 
 import java.util.Arrays;
 
@@ -23,7 +22,7 @@ public class Net extends Utils {
                     String path = secondString(builder, node);
                     Node[] messageParams = builder.set(node).getParams();
                     Node[] receiverParams = Arrays.copyOfRange(messageParams, 2, messageParams.length);
-                    Instance.get().getWsClientServer().send(to, path, receiverParams);
+                    Instance.get().startWsClientServer().send(to, path, receiverParams);
                     return builder.createBool(true);
                 }, par("to", NodeType.STRING),
                 par("receiver", NodeType.STRING),

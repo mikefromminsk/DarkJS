@@ -4,7 +4,7 @@ import com.droid.gdb.Bytes;
 
 public class Crc16 {
 
-    public static byte[] hashToBytes(int hash){
+    public static byte[] hashToBytes(int hash) {
         String hashStr = Integer.toHexString(hash);
         // TODO bug with InfinityHashMap.java - letters in hash
         hashStr = hashStr.replace('a', '0');
@@ -14,7 +14,7 @@ public class Crc16 {
         hashStr = hashStr.replace('e', '0');
         hashStr = hashStr.replace('f', '0');
         // TODO issue when toHexString return 3 letters
-        if (hashStr.length() != 4){
+        if (hashStr.length() != 4) {
             hashStr = ("0000" + hashStr).substring(hashStr.length());
         }
         return Bytes.fromString(hashStr);
@@ -28,7 +28,7 @@ public class Crc16 {
         return hashToBytes(getHash(0, data));
     }
 
-    public static int getHash(String str) {
+    public static long getHash(String str) {
         return getHash(0, str.getBytes());
     }
 
