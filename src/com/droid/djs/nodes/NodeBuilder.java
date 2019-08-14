@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class NodeBuilder {
 
     private NodeStorage nodeStorage = Instance.get().getNodeStorage();
-    private DataStorage dataStorage = DataStorage.getInstance();
+    private DataStorage dataStorage = Instance.get().getDataStorage();
     private Node node;
 
     public NodeBuilder create() {

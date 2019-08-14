@@ -19,7 +19,7 @@ public class DataInputStream extends InputStream {
     public long start;
     public long length;
     private long currentPosition;
-    private DataStorage dataStorage = DataStorage.getInstance();
+    private DataStorage dataStorage = Instance.get().getDataStorage();
     private FileInputStream fileReader;
 
     public DataInputStream( NodeType type, long start, long length) {

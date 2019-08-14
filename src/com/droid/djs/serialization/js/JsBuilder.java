@@ -7,6 +7,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.utils.MathUtils;
+import com.droid.instance.Instance;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 
@@ -226,7 +227,7 @@ public class JsBuilder {
                 String name = identNode.getName();
 
                 Node ident = null;
-                Long titleId = DataStorage.getInstance().getDataId(name.getBytes());
+                Long titleId = Instance.get().getDataStorage().getDataId(name.getBytes());
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
                     Node findNode = builder.set(node).findLocal(titleId);

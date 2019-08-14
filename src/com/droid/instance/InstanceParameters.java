@@ -1,10 +1,8 @@
 package com.droid.instance;
 
 
+import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
-
-import java.util.ArrayList;
-import java.util.TreeMap;
 
 public class InstanceParameters {
     public int instanceID;
@@ -21,12 +19,21 @@ public class InstanceParameters {
         this.proxyHost = proxyHost;
     }
 
-    NodeStorage instance;
+    NodeStorage nodeStorage;
     public NodeStorage getNodeStorage() {
-        if (instance == null) {
-            instance = new NodeStorage(Instance.get().storeDir, "node");
-            instance.initStorage();
+        if (nodeStorage == null) {
+            nodeStorage = new NodeStorage(Instance.get().storeDir, "node");
+            nodeStorage.initStorage();
         }
-        return instance;
+        return nodeStorage;
     }
+
+    DataStorage dataStorage;
+    public DataStorage getDataStorage() {
+        if (dataStorage == null)
+            dataStorage = new DataStorage();
+        return dataStorage;
+    }
+
+
 }

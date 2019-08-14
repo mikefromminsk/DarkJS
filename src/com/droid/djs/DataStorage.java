@@ -17,24 +17,14 @@ public class DataStorage {
 
     public static final int MAX_STORAGE_DATA_IN_DB = 2048;
 
-    private static final String dataStorageID = "data";
-    private static final String hashStorageID = "hash";
-
+    private static Random random = new Random();
     private static InfinityFile dataStorage;
     private static InfinityHashMap dataHashTree;
 
-    private static DataStorage instance;
-
-    public static DataStorage getInstance() {
-        if (instance == null) {
-            instance = new DataStorage();
-            dataStorage = new InfinityFile(Instance.get().storeDir, dataStorageID);
-            dataHashTree = new InfinityHashMap(Instance.get().storeDir, hashStorageID);
-        }
-        return instance;
+    public DataStorage() {
+        dataStorage = new InfinityFile(Instance.get().storeDir, "data");
+        dataHashTree = new InfinityHashMap(Instance.get().storeDir, "hash");
     }
-
-    private static Random random = new Random();
 
     public void add(Data node){
         try {
