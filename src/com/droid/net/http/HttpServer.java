@@ -81,7 +81,7 @@ public class HttpServer extends NanoHTTPD {
                             for (String argsKey : args.keySet())
                                 setParam(node, argsKey, args.get(argsKey));
 
-                            Threads.getInstance().run(node, null, false, access_token);
+                            Instance.get().getThreads().run(node, null, false, access_token);
 
                             builder.set(node);
                             if (builder.isFunction())

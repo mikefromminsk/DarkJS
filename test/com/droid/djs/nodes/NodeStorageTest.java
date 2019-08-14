@@ -60,7 +60,7 @@ class NodeStorageTest implements Runnable {
                 // first request
                 add("partSize", DiskManager.getInstance().partSize);
                 add("cacheSize", DiskManager.getInstance().cacheSize);
-                add("Start", "put " + count + " records without duplicates");
+                add("Start", "connectThread " + count + " records without duplicates");
                 thread = new Thread(new NodeStorageTest());
                 thread.start();
                 return out;
@@ -82,12 +82,12 @@ class NodeStorageTest implements Runnable {
         Instance.get().getNodeStorage().transactionCommit();
         add("Finish(ms)", time() - start);
 
-        add("Start", "put " + count + " records with duplicates");
+        add("Start", "connectThread " + count + " records with duplicates");
         for (int i = 0; i < count; i++)
             builder.create(NodeType.STRING).setData("" + i).commit();
         add("Finish", time() - start);
 
-        add("Start", "random put " + count + " records with duplicates");
+        add("Start", "random connectThread " + count + " records with duplicates");
         for (int i = 0; i < count; i++)
             builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
         add("Finish", time() - start);

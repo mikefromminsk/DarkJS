@@ -6,6 +6,7 @@ import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.treads.Threads;
 
 public class InstanceParameters {
     public int instanceID;
@@ -38,6 +39,14 @@ public class InstanceParameters {
         return dataStorage;
     }
 
+
+    private Threads threads;
+    public Threads getThreads() {
+        if (threads == null)
+            threads = new Threads();
+        return threads;
+    }
+
     private Node master = null;
     public Node getMaster() {
         if (master == null){
@@ -52,7 +61,7 @@ public class InstanceParameters {
     }
 
     // TODO change to change instance
-    public void removeInstance(){
+    public void removeMaster(){
         master = null;
     }
 

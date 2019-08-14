@@ -98,7 +98,7 @@ public class WsClientServer extends WebSocketServer {
         System.out.println("out " + receiverPath);
         Node receiver = Files.getNodeIfExist(receiverPath);
         if (receiver != null)
-            Threads.getInstance().run(receiver, args, true, accessCode);
+            Instance.get().getThreads().run(receiver, args, true, accessCode);
     }
 
     public String getNodeName() {

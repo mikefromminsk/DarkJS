@@ -1,6 +1,5 @@
 package com.droid.djs.fs;
 
-import com.droid.djs.NodeStorage;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.instance.Instance;
@@ -67,7 +66,7 @@ public class Branch {
                 Node masterPackage = Files.getNode(Instance.get().getMaster(), branchFilePath);
                 Files.replace(masterPackage, branchPackage);
                 if (masterPackage == Instance.get().getMaster())
-                    Instance.get().removeInstance();
+                    Instance.get().removeMaster();
             }
             if (root != Instance.get().getMaster())
                 Files.remove(root);

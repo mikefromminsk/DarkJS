@@ -3,7 +3,6 @@ package com.droid.instance;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
-import com.droid.djs.treads.Threads;
 import com.droid.gdb.map.Crc16;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpServer;
@@ -34,7 +33,7 @@ public class Instance implements Runnable {
         instanceParameters = new InstanceParameters(addToPortNumber, storageDir, nodename, accessToken, proxyhost);
     }
 
-    public static void put(InstanceParameters instanceParameters) {
+    public static void connectThread(InstanceParameters instanceParameters) {
         parameters.put(Thread.currentThread().getId(), instanceParameters);
     }
     public static InstanceParameters find(int addToPortNumber) {
@@ -45,7 +44,7 @@ public class Instance implements Runnable {
     }
 
     public static void connectThreadByPortAdditional(int addToPort) {
-        put(find(addToPort));
+        connectThread(find(addToPort));
     }
 
     public static void disconnectThread() {
@@ -55,7 +54,7 @@ public class Instance implements Runnable {
 
     @Override
     public void run() {
-        put(instanceParameters);
+        connectThread(instanceParameters);
 
         loadingBranch = new Branch();
         loadProject(intallDir, "root", false);
@@ -63,7 +62,7 @@ public class Instance implements Runnable {
 
         testRootIndex();
 
-        Threads.getInstance().run(Instance.get().getMaster(), null, false, instanceParameters.accessToken);
+        Instance.get().getThreads().run(Instance.get().getMaster(), null, false, instanceParameters.accessToken);
 
         try {
             http = new HttpServer();

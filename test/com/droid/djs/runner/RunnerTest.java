@@ -35,7 +35,7 @@ class RunnerTest {
                 for (File script : list) {
 
                     sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = Threads.getInstance().runScript("tests/" + script.getName(), sourceCode,
+                    Node module = Instance.get().getThreads().runScript("tests/" + script.getName(), sourceCode,
                             Instance.getAccessToken(Main.login, Main.password));
 
                     Node testVar = builder.set(module).findLocal("test");

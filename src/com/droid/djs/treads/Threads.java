@@ -12,16 +12,8 @@ import java.util.List;
 
 public class Threads {
 
-    private NodeBuilder builder = new NodeBuilder();
-    private static Threads instance;
-
-    public static Threads getInstance() {
-        if (instance == null)
-            instance = new Threads();
-        return instance;
-    }
-
     private ThreadNode findThread(Node node) {
+        NodeBuilder builder = new NodeBuilder();
         Node item = node;
         while (item.type != NodeType.THREAD)
             item = builder.set(item).getLocalParentNode();

@@ -642,7 +642,7 @@ public abstract class NanoHTTPD {
         }
 
         /**
-         * Decodes the Multipart Body data and put it into Key/Value pairs.
+         * Decodes the Multipart Body data and connectThread it into Key/Value pairs.
          */
         private void decodeMultipartFormData(String boundary, String encoding, ByteBuffer fbuf, Map<String, String> parms, Map<String, String> files) throws ResponseException {
             try {

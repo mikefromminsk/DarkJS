@@ -10,6 +10,7 @@ import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.treads.Threads;
+import com.droid.instance.Instance;
 
 public class Runner {
 
@@ -207,7 +208,7 @@ public class Runner {
             ThreadNode threadNode = (ThreadNode) node;
             if (Thread.currentThread() != threadNode.thread) {
                 //TODO params for threads
-                Threads.getInstance().run(node, null, true, null);
+                Instance.get().getThreads().run(node, null, true, null);
                 return;
             }
         }

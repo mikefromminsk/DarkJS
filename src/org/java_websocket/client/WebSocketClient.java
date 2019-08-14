@@ -260,7 +260,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 
 	/**
 	 * @since 1.4.1
-	 * Clears all previously put headers.
+	 * Clears all previously connectThread headers.
 	 */
 	public void clearHeaders() {
 		headers = null;

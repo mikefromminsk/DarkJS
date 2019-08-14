@@ -156,7 +156,7 @@ public class SSLSocketChannel implements WrappedByteChannel, ByteChannel {
 
 		int bytesRead = socketChannel.read( peerNetData );
 		/*
-		 * If bytesRead are 0 put we still have some data in peerNetData still to an unwrap (for testcase 1.1.6)
+		 * If bytesRead are 0 connectThread we still have some data in peerNetData still to an unwrap (for testcase 1.1.6)
 		 */
 		if( bytesRead > 0 || peerNetData.hasRemaining() ) {
 			peerNetData.flip();

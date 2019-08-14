@@ -3,10 +3,11 @@ package com.droid.djs.nodes;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.Runner;
+import com.droid.instance.Instance;
+import com.droid.instance.InstanceParameters;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class ThreadNode extends Node implements Runnable {
@@ -15,10 +16,11 @@ public class ThreadNode extends Node implements Runnable {
     private Runner runner = new Runner();
     public Long access_owner = null;
     private ArrayList<Long> access_user = null;
-
+    private InstanceParameters instanceParameters;
 
     public ThreadNode() {
         super(NodeType.THREAD);
+        instanceParameters = Instance.get();
     }
 
     @Override
@@ -105,6 +107,7 @@ public class ThreadNode extends Node implements Runnable {
 
     @Override
     public void run() {
+        Instance.connectThread(instanceParameters);
         while (!runQueue.isEmpty()) {
             RunData data = runQueue.pollFirst();
             if (data != null)
@@ -112,6 +115,7 @@ public class ThreadNode extends Node implements Runnable {
             else
                 runQueue.clear();
         }
+        Instance.disconnectThread();
     }
 
 }
