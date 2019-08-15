@@ -12,7 +12,7 @@ import java.util.Map;
 public class Instance implements Runnable {
 
     private InstanceParameters instanceParameters;
-    private String installDir;
+    private File installDir;
     private static Map<Long, InstanceParameters> parameters = new HashMap<>();
 
     public static InstanceParameters get() {
@@ -24,8 +24,13 @@ public class Instance implements Runnable {
         new Thread(this).start();
     }
 
-    public Instance(InstanceParameters instanceParameters, String installDir) {
+    public Instance(InstanceParameters instanceParameters, File installDir) {
         this.installDir = installDir;
+        this.instanceParameters = instanceParameters;
+        new Thread(this).start();
+    }
+
+    public Instance(InstanceParameters instanceParameters, String code) {
         this.instanceParameters = instanceParameters;
         new Thread(this).start();
     }
@@ -126,17 +131,14 @@ public class Instance implements Runnable {
 
     private Branch loadingBranch;
 
-    private void loadProject(String projectPath, String localPath, boolean deleteDir) {
+    private void loadProject(File root, String localPath, boolean deleteDir) {
         try {
-            File root = new File(projectPath);
             File[] list = root.listFiles();
             if (list == null) return;
-            if (localPath.equals("root"))
-                System.out.println("create load " + projectPath);
             for (File file : list) {
                 String localFileName = localPath + "/" + file.getName();
                 if (file.isDirectory()) {
-                    loadProject(file.getAbsolutePath(), localFileName, deleteDir);
+                    loadProject(file, localFileName, deleteDir);
                 } else {
                     DataOutputStream dataOutputStream = new DataOutputStream(loadingBranch,
                             Files.getNode(loadingBranch.getRoot(), localFileName));
@@ -153,8 +155,6 @@ public class Instance implements Runnable {
             }
             if (deleteDir)
                 root.delete();
-            if (localPath.equals("root"))
-                System.out.println("finish load " + projectPath);
         } catch (Exception e) {
             e.printStackTrace();
         }

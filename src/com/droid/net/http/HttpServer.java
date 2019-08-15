@@ -102,11 +102,6 @@ public class HttpServer extends NanoHTTPD {
         } catch (Exception e) {
             e.printStackTrace();
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
-        } finally {
-            if (response != null) {
-                response.addHeader("Access-Control-Allow-Origin", "*");
-                response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-            }
         }
 
         Instance.disconnectThread();
