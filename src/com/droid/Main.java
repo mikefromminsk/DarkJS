@@ -1,16 +1,14 @@
 package com.droid;
 
 import com.droid.instance.Instance;
-import com.droid.instance.InstanceParameters;
 
 public class Main {
 
     public static void main(String[] args) {
-        new Thread(new Instance(new InstanceParameters(
+        new Instance(
                 0,
                 "out/SimpleGraphDB",
-                null,
-                null,
-                "john", "123"), "C:/wamp/www/droid")).start();
+                "C:/wamp/www/droid",
+                null, null, "john", "123");
     }
 }

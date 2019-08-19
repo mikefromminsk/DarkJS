@@ -1206,7 +1206,7 @@ public abstract class NanoHTTPD {
             REQUEST_TIMEOUT(408, "Request Timeout"),
             CONFLICT(409, "Conflict"),
             RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
-            INTERNAL_ERROR(500, "Internal HttpServer Error"),
+            INTERNAL_ERROR(500, "Internal HttpClientServer Error"),
             NOT_IMPLEMENTED(501, "Not Implemented"),
             UNSUPPORTED_HTTP_VERSION(505, "HTTP Version Not Supported");
 

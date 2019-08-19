@@ -769,5 +769,4 @@ public class NodeBuilder {
         return getNextCount() > 0 || getType() == NodeType.NATIVE_FUNCTION;
     }
 
-
 }

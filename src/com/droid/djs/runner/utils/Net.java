@@ -18,8 +18,8 @@ public class Net extends Utils {
         // TODO dynamic params
         func("send", (builder, node, ths) -> {
                     System.out.println("Net.send");
-                    String to = firstString(builder, node);
-                    String path = secondString(builder, node);
+                    String to = firstString(builder);
+                    String path = secondString(builder);
                     Node[] messageParams = builder.set(node).getParams();
                     Node[] receiverParams = Arrays.copyOfRange(messageParams, 2, messageParams.length);
                     Instance.get().startWsClientServer().send(to, path, receiverParams);

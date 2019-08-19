@@ -12,7 +12,7 @@ public class NodeUtils extends Utils {
     @Override
     public void methods() {
         func("get", (builder, node, ths) -> {
-            String path = firstString(builder, node);
+            String path = firstString(builder);
             return Files.getNodeIfExist(path);
         }, par("path", NodeType.STRING));
 

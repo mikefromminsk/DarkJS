@@ -1,5 +1,6 @@
 package com.droid.djs.runner.utils;
 
+import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Files;
@@ -82,51 +83,59 @@ abstract public class Utils {
         return new Parameter(name, nodeType);
     }
 
-    Object getObject(int index, NodeBuilder builder, Node node) {
-        return toObject(builder, builder.set(node).getParamNode(index));
+    Object getObject(NodeBuilder builder, int index) {
+        Node prev = builder.getNode();
+        builder.set(builder.getParamNode(index));
+        Object obj = toObject(builder);
+        builder.set(prev);
+        return obj;
     }
 
-    Object firstObject(NodeBuilder builder, Node node) {
-        return getObject(0, builder, node);
+    Object firstObject(NodeBuilder builder) {
+        return getObject(builder, 0);
     }
 
-    Object secondObject(NodeBuilder builder, Node node) {
-        return getObject(1, builder, node);
+    Object secondObject(NodeBuilder builder) {
+        return getObject(builder, 1);
     }
 
-    String getString(int index, NodeBuilder builder, Node node) {
-        Object leftObj = getObject(index, builder, node);
+    String getString(NodeBuilder builder, int index) {
+        Object leftObj = getObject(builder, index);
         if (leftObj != null)
             return (String) leftObj;
         return null;
     }
 
-    String firstString(NodeBuilder builder, Node node) {
-        return getString(0, builder, node);
+    String firstString(NodeBuilder builder) {
+        return getString(builder, 0);
     }
 
-    String secondString(NodeBuilder builder, Node node) {
-        return getString(1, builder, node);
+    String secondString(NodeBuilder builder) {
+        return getString(builder, 1);
     }
 
-    Double getNumber(int index, NodeBuilder builder, Node node, Double def) {
-        Object leftObj = getObject(index, builder, node);
+    Double getNumber(NodeBuilder builder, Double def, int index) {
+        Object leftObj = getObject(builder, index);
         if (leftObj != null)
             return (Double) leftObj;
         return def;
     }
 
-    protected Object toObject(NodeBuilder builder, Node node) {
-        builder.set(node);
-        if (node != null) node = builder.set(node).getValueOrSelf();
+    protected Object toObject(NodeBuilder builder) {
+        Node node = builder.getNode();
+        if (node != null) node = builder.getValueOrSelf();
         Object obj = null;
-        if (node != null && node.type.ordinal() < NodeType.NODE.ordinal())
-            obj = builder.set(node).getData().getObject();
+        if (node instanceof Data)
+            obj = ((Data) node).data.getObject();
         return obj;
     }
 
     public static String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    Node getNode(NodeBuilder builder, int i) {
+        return builder.getParams()[i];
     }
 
     public abstract String name();

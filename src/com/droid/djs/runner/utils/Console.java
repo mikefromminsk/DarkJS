@@ -11,7 +11,7 @@ public class Console extends Utils {
     @Override
     public void methods() {
         func("log", (builder, node, ths) -> {
-            String message = firstString(builder, node);
+            String message = firstString(builder);
             System.out.println(message);
             return builder.createBool(true);
         }, par("message", NodeType.STRING));

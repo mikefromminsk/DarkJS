@@ -12,7 +12,7 @@ public class ThreadUtils extends Utils {
     @Override
     public void methods() {
         func("sleep", (builder, node, ths) -> {
-            Object left = firstObject(builder, node);
+            Object left = firstObject(builder);
             if (left instanceof Double) {
                 try {
                     Thread.sleep((long) (double) left);

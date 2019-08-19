@@ -27,8 +27,12 @@ public class DataOutputStream extends OutputStream {
         this.node = node;
         try {
             out = new FileOutputStream(tempFile);
-        } catch (Exception e1) {
+        } catch (Exception ignore) {
         }
+    }
+
+    public DataOutputStream(Node node) {
+        this(new Branch(), node);
     }
 
     @Override

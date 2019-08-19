@@ -9,6 +9,6 @@ class HttpServerTest {
 /*
     @Test
     void startStore(){
-        HttpServer store = new HttpServer(8081);
+        HttpClientServer store = new HttpClientServer(8081);
     }*/
 }

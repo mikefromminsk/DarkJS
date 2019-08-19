@@ -7,6 +7,7 @@ import com.droid.djs.nodes.DataInputStream;
 // TODO remove Gson library
 import com.droid.djs.runner.utils.FuncInterface;
 import com.droid.djs.runner.utils.Utils;
+import com.droid.djs.serialization.json.JsonSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.droid.djs.nodes.*;
@@ -111,7 +112,7 @@ public class NodeSerializer {
             if (linkType == LinkType.NATIVE_FUNCTION) {
                 String linkTypeStr = linkType.toString().toLowerCase();
                 FuncInterface funcInterface = Utils.getFunctionInterface((int) (long) link);
-                links.put(linkTypeStr, "!" + funcInterface.path  + funcInterface.name);
+                links.put(linkTypeStr, "!" + funcInterface.path + funcInterface.name);
                 return;
             }
             // Nodes links
@@ -145,5 +146,41 @@ public class NodeSerializer {
         for (Node arg : args)
             result.add(toMap(arg));
         return result;
+    }
+
+    private static String convertExtensionToMimeType(String extension) {
+        switch (extension) {
+            case "js":
+                return "text/javascript";
+            case "html":
+                return "text/html";
+            case "css":
+                return "text/css";
+            case "png":
+                return "image/png";
+            default:
+                return null;
+        }
+    }
+
+    public static HttpResponse getResponse(Node node) {
+        NodeBuilder builder = new NodeBuilder().set(node);
+        if (builder.getNode() == null)
+            return new HttpResponse("application/json", "null");
+
+        String parser = builder.getParserString();
+        if (parser != null)
+            switch (parser) {
+                case "json":
+                    return new HttpResponse("application/json", JsonSerializer.serialize(builder));
+                case "node.js":
+                    return new HttpResponse("application/json", NodeSerializer.toJson(builder.getNode()));
+                default: // node is static file
+                    if (builder.getValueNode() instanceof Data)
+                        return new HttpResponse(convertExtensionToMimeType(parser), ((Data) builder.getValueNode()).data.readBytes());
+                    else
+                        return new HttpResponse(convertExtensionToMimeType(parser), "");
+            }
+        return new HttpResponse("application/json", NodeSerializer.toJson(builder.getNode()));
     }
 }

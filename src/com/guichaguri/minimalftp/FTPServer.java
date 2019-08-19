@@ -30,7 +30,7 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 
 /**
- * FTP HttpServer
+ * FTP HttpClientServer
  * @author Guilherme Chaguri
  */
 public class FTPServer implements Closeable {
@@ -196,7 +196,7 @@ public class FTPServer implements Closeable {
      */
     public void listen(InetAddress address, int port) throws IOException {
         if(auth == null) throw new NullPointerException("The Authenticator is null");
-        if(socket != null) throw new IOException("HttpServer already started");
+        if(socket != null) throw new IOException("HttpClientServer already started");
 
         socket = Utils.createServer(port, 50, address, ssl, !explicitSecurity);
 
@@ -232,7 +232,7 @@ public class FTPServer implements Closeable {
      */
     public void listenSync(InetAddress address, int port) throws IOException {
         if(auth == null) throw new NullPointerException("The Authenticator is null");
-        if(socket != null) throw new IOException("HttpServer already started");
+        if(socket != null) throw new IOException("HttpClientServer already started");
 
         socket = Utils.createServer(port, 50, address, ssl, !explicitSecurity);
 

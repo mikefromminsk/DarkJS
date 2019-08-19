@@ -13,7 +13,7 @@ public class StringPrototype extends Utils {
     @Override
     public void methods() {
         func("reverse", (builder, node, ths) -> {
-            Object thsObject = toObject(builder, ths);
+            Object thsObject = toObject(builder.set(ths));
             if (thsObject instanceof String) {
                 String newString = new StringBuilder().append((String) thsObject).reverse().toString();
                 return builder.create(NodeType.STRING).setData(newString).commit();
@@ -21,7 +21,7 @@ public class StringPrototype extends Utils {
             return null;
         });
         func("trim", (builder, node, ths) -> {
-            Object thsObject = toObject(builder, ths);
+            Object thsObject = toObject(builder.set(ths));
             if (thsObject instanceof String) {
                 return builder.create(NodeType.STRING).setData(((String) thsObject).trim()).commit();
             }

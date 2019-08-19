@@ -6,29 +6,27 @@ import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.json.JsonSerializer;
+import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.NodeSerializer;
-import com.droid.djs.treads.Threads;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.net.*;
 import java.security.InvalidParameterException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class HttpServer extends NanoHTTPD {
+public class HttpClientServer extends NanoHTTPD {
 
     public static final String FORM_DATA = "application/x-www-form-urlencoded";
     public static int defaultPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
 
-    public HttpServer(Integer port) throws IOException {
+    public HttpClientServer(Integer port) throws IOException {
         super(port == null ? defaultPort : port);
         start(0);
     }
@@ -89,7 +87,7 @@ public class HttpServer extends NanoHTTPD {
                             if (builder.isFunction())
                                 builder.set(builder.getValueNode());
 
-                            ResponseWithType responseData = getResponse(builder);
+                            HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
                             ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
                             response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
                             response.addHeader("content-length", "" + responseData.data.length); // fix nanohttpd issue when content type is define
@@ -112,42 +110,6 @@ public class HttpServer extends NanoHTTPD {
         System.out.println(session.getUri() + " (" + (new Date().getTime() - startRequestTime) + ")");
 
         return response;
-    }
-
-    String convertExtensionToMimeType(String extension) {
-        switch (extension) {
-            case "js":
-                return "text/javascript";
-            case "html":
-                return "text/html";
-            case "css":
-                return "text/css";
-            case "png":
-                return "image/png";
-            default:
-                return null;
-        }
-    }
-
-    private ResponseWithType getResponse(NodeBuilder builder) {
-        if (builder.getNode() == null)
-            return new ResponseWithType("application/json", "null");
-
-        String parser = builder.getParserString();
-        if (parser != null)
-            switch (parser) {
-                case "json":
-                    return new ResponseWithType("application/json", JsonSerializer.serialize(builder));
-                case "node.js":
-                    return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
-                default: // node is static file
-                    if (builder.getValueNode() instanceof Data)
-                        return new ResponseWithType(convertExtensionToMimeType(parser), ((Data) builder.getValueNode()).data.readBytes());
-                    else
-                        return new ResponseWithType(convertExtensionToMimeType(parser), "");
-            }
-
-        return new ResponseWithType("application/json", NodeSerializer.toJson(builder.getNode()));
     }
 
     Map<String, String> parseArguments(String args) {
@@ -193,5 +155,37 @@ public class HttpServer extends NanoHTTPD {
 
             builder.set(param).setValue(valueNode).commit();
         }
+    }
+
+    public static String serializeParameters(Map<String, String> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            result.append("&");
+        }
+
+        String resultString = result.toString();
+        return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
+    }
+
+    public void request(String urlStr, Node argObj) throws IOException {
+        // TODO add args
+        request(urlStr, new HashMap<>());
+    }
+
+    public void request(String urlStr, Map<String, String> parameters) throws IOException {
+        parameters.put("param1", "val");
+        urlStr = !urlStr.contains("http://") ? "http://" + urlStr : urlStr;
+        URL url = new URL(urlStr);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        out.writeBytes(serializeParameters(parameters));
+        out.flush();
+        out.close();
     }
 }
