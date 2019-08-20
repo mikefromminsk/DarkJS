@@ -122,7 +122,7 @@ public class Instance extends InstanceParameters implements Runnable {
                     if (inputStream != null) {
                         loadStream(loadingBranch, path, inputStream);
                         Node module = Files.getNode(loadingBranch.getRoot(), path);
-                        Instance.get().getThreads().run(module, null);
+                        Instance.get().getThreads().run(module);
                     } else
                         loadDirectory(loadingBranch, new File(path), "root");
                 }

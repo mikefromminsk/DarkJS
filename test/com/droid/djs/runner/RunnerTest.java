@@ -43,7 +43,7 @@ class RunnerTest {
                     builder.createString("test");
                     builder.set(Files.getNode("root"));
                     for (Node test : builder.getLocalNodes()) {
-                        Instance.get().getThreads().run(test, null);
+                        Instance.get().getThreads().run(test);
                         Node testVar = builder.set(test).findLocal("test");
                         notNull(testVar, test);
                         Node testValue = builder.set(testVar).getValueNode();

@@ -33,6 +33,10 @@ public class Threads {
         return findThread(node).run(node, args, false, Instance.get().accessToken);
     }
 
+    public boolean run(Node node) {
+        return findThread(node).run(node, null, false, Instance.get().accessToken);
+    }
+
     private JsBuilder jsBuilder = new JsBuilder();
 
     public Node runScript(String path, String sourceCode, Long code) {
