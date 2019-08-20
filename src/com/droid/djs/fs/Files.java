@@ -16,7 +16,7 @@ public class Files {
     public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
         String path = "";
-        while (builder.getLocalParentNode().id != 0L) {
+        while (builder.getLocalParentNode() != null && builder.getLocalParentNode().id != 0L) {
             path = "/" + builder.getTitleString() + path;
             Node localParent = builder.getLocalParentNode();
             builder.set(localParent);

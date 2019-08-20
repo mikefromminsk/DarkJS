@@ -12,6 +12,7 @@ import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,13 +22,8 @@ public class JsBuilder {
     private ArrayList<Node> localStack = new ArrayList<>();
 
     Node jsLine(Node module, jdk.nashorn.internal.ir.Node statement) {
-        // TODO delete addToLocalStack true by default
-        return jsLine(module, statement, true);
-    }
-
-    Node jsLine(Node module, jdk.nashorn.internal.ir.Node statement, boolean addToLocalStack) {
         try {
-            if (addToLocalStack && module != null)
+            if (module != null)
                 localStack.add(module);
 
             if (statement instanceof VarNode) {
@@ -332,8 +328,7 @@ public class JsBuilder {
             }
             return null;
         } finally {
-            if (addToLocalStack)
-                localStack.remove(module);
+            localStack.remove(module);
         }
 
     }
@@ -362,6 +357,7 @@ public class JsBuilder {
                 localStack.add(parent);
                 parent = builder.set(parent).getLocalParentNode();
             }
+            Collections.reverse(localStack);
         }
     }
 

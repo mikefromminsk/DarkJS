@@ -35,12 +35,11 @@ class RunnerTest {
     }
 
     @Test
-    void run() throws IOException {
+    void run() throws IOException, InterruptedException {
         new Instance("out/runTests", true)
                 .load("test_res/run")
                 .call(() -> {
                     NodeBuilder builder = new NodeBuilder();
-                    builder.createString("test");
                     builder.set(Files.getNode("root"));
                     for (Node test : builder.getLocalNodes()) {
                         Instance.get().getThreads().run(test);
@@ -52,8 +51,6 @@ class RunnerTest {
                         notNull(testData, test);
                         isTrue(testData, test);
                     }
-                }).stop();
-        System.out.println("run end");
-
+                }).call(null);
     }
 }

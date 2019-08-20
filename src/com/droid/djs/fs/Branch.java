@@ -54,6 +54,7 @@ public class Branch {
             return node;
     }
 
+    // TODO issue when in run folder only one file
     public void mergeWithMaster() {
         if (timer != null)
             timer.cancel();

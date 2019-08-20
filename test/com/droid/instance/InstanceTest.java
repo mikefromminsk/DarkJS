@@ -6,6 +6,8 @@ import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.NodeSerializer;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InstanceTest {
@@ -23,13 +25,13 @@ class InstanceTest {
                 .stop();
     }*/
     @Test
-    void test() {
-        Instance server = new Instance("out/storeServer")
+    void test() throws IOException {
+        Instance server = new Instance("out/storeServer", true)
                 .setNodeName("store.node")
                 .load("/root/storeserver.node.js", "var serverData = 12")
                 .startAndWaitInit();
 
-        Instance cleint = new Instance("out/storeClient")
+        Instance cleint = new Instance("out/storeClient", true)
                 .setProxyHost("localhost", server.portAdding)
                 .load("/root/storeclient.node.js",
                         "function getCode(){\n" +
