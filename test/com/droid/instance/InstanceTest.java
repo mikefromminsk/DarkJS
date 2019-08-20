@@ -26,18 +26,21 @@ class InstanceTest {
     void test() {
         Instance server = new Instance("out/storeServer")
                 .setNodeName("store.node")
-                .load("/root/storetest.node.js", "var serverData = 12")
+                .load("/root/storeserver.node.js", "var serverData = 12")
                 .startAndWaitInit();
+
         Instance cleint = new Instance("out/storeClient")
                 .setProxyHost("localhost", server.portAdding)
-                .load("/root/storetest.node,js",
-                        "function getCode(appName){\n" +
-                                "    var code = get(\"store.node/root/storetest/storeData\" + appName)\n" +
+                .load("/root/storeclient.node.js",
+                        "function getCode(){\n" +
+                                "    return get(\"store.node/root/storeserver/storeData\")\n" +
                                 "}")
                 .start();
-        HttpResponse response = cleint.call("/root/storetest/getCode", "chat");
 
-        assertEquals("12", response.data);
+        HttpResponse response = cleint.call("/root/storeclient/getCode", "chat");
+        System.out.println(response.data);
+
+        assertNotEquals(-1, new String(response.data).indexOf("12.0"));
         server.stop();
         cleint.stop();
     }

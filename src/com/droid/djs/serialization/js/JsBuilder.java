@@ -227,12 +227,11 @@ public class JsBuilder {
                 String name = identNode.getName();
 
                 Node ident = null;
-                Long titleId = Instance.get().getDataStorage().getDataId(name.getBytes());
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
-                    Node findNode = builder.set(node).findLocal(titleId);
+                    Node findNode = builder.set(node).findLocal(name);
                     if (findNode == null)
-                        findNode = builder.set(node).findParam(titleId);
+                        findNode = builder.set(node).findParam(name);
                     if (findNode != null) {
                         ident = findNode;
                         break;

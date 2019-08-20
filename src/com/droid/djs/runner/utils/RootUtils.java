@@ -37,7 +37,7 @@ public class RootUtils extends Utils {
                             e.printStackTrace();
                         }*/
                     }
-                    return null;
+                    return builder.createBool(true);
                 },
                 par("url", NodeType.STRING),
                 par("args", NodeType.NODE),

@@ -36,11 +36,21 @@ public class Instance extends InstanceParameters implements Runnable {
         this.storeDir = storeDir;
     }
 
-    public Instance(String storeDir, boolean removePreviosFiles) {
-        this.storeDir = storeDir;
-        if (removePreviosFiles){
+    private boolean deleteDirectory(File directoryToBeDeleted) {
+        if (!directoryToBeDeleted.exists())
+            return true;
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null)
+            for (File file : allContents)
+                deleteDirectory(file);
+        return directoryToBeDeleted.delete();
+    }
 
-        }
+    public Instance(String storeDir, boolean removeExistDir) throws IOException {
+        this.storeDir = storeDir;
+        if (removeExistDir)
+            if (!deleteDirectory(new File(storeDir)))
+                throw new IOException();
     }
 
     public Instance setProxyHost(String proxyHost, int proxyPortAdding) {
@@ -51,6 +61,10 @@ public class Instance extends InstanceParameters implements Runnable {
 
     public Instance setNodeName(String nodename) {
         this.nodename = nodename;
+        return this;
+    }
+
+    public Instance setAccessCode(String john, String s) {
         return this;
     }
 
@@ -69,7 +83,7 @@ public class Instance extends InstanceParameters implements Runnable {
 
     public void stop() {
         if (instanceThread != null) {
-            instanceThread.stop();
+            instanceThread.interrupt();
             instanceThread = null;
         }
     }
@@ -115,7 +129,7 @@ public class Instance extends InstanceParameters implements Runnable {
                 loadingBranch.mergeWithMaster();
             }
 
-            testRootIndex();
+            //testRootIndex();
 
             Instance.get().getThreads().run(Instance.get().getMaster(), null, false, accessToken);
 
@@ -134,14 +148,14 @@ public class Instance extends InstanceParameters implements Runnable {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
             notify(onInitializing);
             onInitializing = null;
             notify(onStart);
             onStart = null;
             notify(onFinish);
             onFinish = null;
-        } finally {
-            Instance.get().closeAllPorts();
+            //Instance.get().closeAllPorts();
             disconnectThread();
         }
     }

@@ -2,6 +2,7 @@ package com.droid.djs.nodes;
 
 import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.serialization.node.NodeSerializer;
@@ -561,37 +562,27 @@ public class NodeBuilder {
     }
 
     public Node findLocal(String title) {
-        return findLocal(title.getBytes());
+        if (node.id == null)
+            commit();
+        //TODO reomve Files.getNodeIfExist
+        return Files.getNodeIfExist(node, title);
     }
 
-    public Node findLocal(byte[] title) {
-        if (node.id == null) commit();
-        Long titleId = dataStorage.getDataId(title);
-        return findLocal(titleId);
-    }
-
-    public Node findLocal(Long titleId) {
-        if (titleId != null) {
-            for (int i = 0; i < getLocalCount(); i++) {
-                Node local = getLocalNode(i);
-                Long localNodeId = local.title instanceof Node ? ((Node) local.title).id : (Long) local.title;
-                if (titleId.equals(localNodeId))
-                    return local;
+    public Node findParam(String findTitle) {
+        if (node.id == null)
+            commit();
+        Node[] params = getParams();
+        Node prev = node;
+        Node findNode = null;
+        for (Node param : params) {
+            node = param;
+            if (findTitle.equals(getTitleString())) {
+                findNode = node;
+                break;
             }
         }
-        return null;
-    }
-
-    public Node findParam(Long titleId) {
-        if (titleId != null) {
-            for (int i = 0; i < getParamCount(); i++) {
-                Node param = getParamNode(i);
-                Long paramNodeId = param.title instanceof Node ? ((Node) param.title).id : (Long) param.title;
-                if (titleId.equals(paramNodeId))
-                    return param;
-            }
-        }
-        return null;
+        node = prev;
+        return findNode;
     }
 
 

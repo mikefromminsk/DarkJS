@@ -7,6 +7,7 @@ import com.droid.djs.serialization.json.JsonParser;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.io.*;

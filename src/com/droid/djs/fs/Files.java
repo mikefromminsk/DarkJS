@@ -32,6 +32,10 @@ public class Files {
         return getNode(path, null);
     }
 
+    public static Node getNodeIfExist(Node root, String path) {
+        return getNode(root, path, null);
+    }
+
     public static Node getNode(String path, NodeType nodeType) {
         return getNode(Instance.get().getMaster(), path, nodeType);
     }

@@ -91,8 +91,11 @@ public class DataStorage {
     }
 
     public Long getDataId(byte[] title) {
-        if (title != null)
-            return dataHashTree.get(title, Crc16.getHashBytes(title));
+        if (title != null){
+            long titleId = dataHashTree.get(title, Crc16.getHashBytes(title));
+            if (titleId == Long.MAX_VALUE)
+                return null;
+        }
         return null;
     }
 }

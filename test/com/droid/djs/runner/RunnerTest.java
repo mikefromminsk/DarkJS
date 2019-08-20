@@ -1,6 +1,7 @@
 package com.droid.djs.runner;
 
 import com.droid.Main;
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.serialization.node.NodeSerializer;
@@ -20,42 +21,39 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RunnerTest {
 
-/*
+    void notNull(Object obj, Node test){
+        if (obj == null)
+            System.out.println(NodeSerializer.toJson(test));
+        assertNotNull(obj);
+    }
+
+    void isTrue(Boolean bool, Node test){
+        if (bool == null || !bool)
+            System.out.println(NodeSerializer.toJson(test));
+        assertNotNull(bool);
+        assertTrue(bool);
+    }
+
     @Test
-    void run() {
-        String sourceCode = null;
-        NodeBuilder builder = new NodeBuilder();
+    void run() throws IOException {
+        new Instance("out/runTests", true)
+                .load("test_res/run")
+                .call(() -> {
+                    NodeBuilder builder = new NodeBuilder();
+                    builder.createString("test");
+                    builder.set(Files.getNode("root"));
+                    for (Node test : builder.getLocalNodes()) {
+                        Instance.get().getThreads().run(test, null);
+                        Node testVar = builder.set(test).findLocal("test");
+                        notNull(testVar, test);
+                        Node testValue = builder.set(testVar).getValueNode();
+                        notNull(testValue, test);
+                        Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
+                        notNull(testData, test);
+                        isTrue(testData, test);
+                    }
+                }).stop();
+        System.out.println("run end");
 
-        try {
-            File nodesTestsDir = new File("test_res/run/");
-            File[] tests = nodesTestsDir.listFiles();
-            if (tests != null) {
-                List<File> list = Arrays.asList(tests);
-                Collections.reverse(list);
-                for (File script : list) {
-
-                    sourceCode = FileUtils.readFileToString(script, StandardCharsets.UTF_8);
-                    Node module = Instance.get().getThreads().runScript("tests/" + script.getName(), sourceCode,
-                            Instance.getAccessToken(Main.login, Main.password));
-
-                    Node testVar = builder.set(module).findLocal("test");
-                    if (testVar == null)
-                        System.out.println(NodeSerializer.toJson(module));
-                    assertNotNull(testVar);
-                    Node testValue = builder.set(testVar).getValueNode();
-                    if (testValue == null)
-                        System.out.println(NodeSerializer.toJson(module));
-                    assertNotNull(testValue);
-                    Boolean testData = (Boolean) builder.set(testValue).getData().getObject();
-                    if (testData == null || !testData)
-                        System.out.println(NodeSerializer.toJson(module));
-                    assertTrue(testData);
-                }
-            } else {
-                fail("tests not found");
-            }
-        } catch (IOException e) {
-            fail(e);
-        }
-    }*/
+    }
 }
