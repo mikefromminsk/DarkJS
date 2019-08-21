@@ -4,10 +4,16 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class NodeParser {
+
+    private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
     private static Double parseDouble(String str) {
         try {
@@ -93,5 +99,11 @@ public class NodeParser {
         for (Map<String, Map<String, Object>> map : args)
             result.add(fromMap(map));
         return result.toArray(new Node[0]);
+    }
+
+    public static Node fromJson(String response) {
+        Type mapType = new TypeToken<Map<String, Map>>(){}.getType();
+        Map<String, Map<String, Object>> responseObj = json.fromJson(response, mapType);
+        return fromMap(responseObj);
     }
 }

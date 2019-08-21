@@ -64,7 +64,10 @@ public class Instance extends InstanceParameters implements Runnable {
         return this;
     }
 
-    public Instance setAccessCode(String john, String s) {
+    public Instance setAccessCode(String login, String password) {
+        this.login = login;
+        this.password = password;
+        this.accessToken = Crc16.getHash(login + password);
         return this;
     }
 
@@ -82,6 +85,7 @@ public class Instance extends InstanceParameters implements Runnable {
     }
 
     public void stop() {
+        getThreads().stopAllThreads();
         if (instanceThread != null) {
             instanceThread.interrupt();
             instanceThread = null;
@@ -119,19 +123,15 @@ public class Instance extends InstanceParameters implements Runnable {
                 Branch loadingBranch = new Branch();
                 for (String path : loadList.keySet()) {
                     InputStream inputStream = loadList.get(path);
-                    if (inputStream != null) {
+                    if (inputStream != null)
                         loadStream(loadingBranch, path, inputStream);
-                        Node module = Files.getNode(loadingBranch.getRoot(), path);
-                        Instance.get().getThreads().run(module);
-                    } else
-                        loadDirectory(loadingBranch, new File(path), "root");
+                    else
+                        loadDirectory(loadingBranch, new File(path), "");
                 }
                 loadingBranch.mergeWithMaster();
             }
 
             //testRootIndex();
-
-            Instance.get().getThreads().run(Instance.get().getMaster(), null, false, accessToken);
 
             Instance.get().startHttpServerOnFreePort();
             Instance.get().startFtpServer();
@@ -163,10 +163,7 @@ public class Instance extends InstanceParameters implements Runnable {
     void notify(Object obj) {
         if (obj != null)
             synchronized (obj) {
-                try {
-                    obj.notify();
-                } catch (Exception ignore) {
-                }
+                obj.notify();
             }
     }
 
@@ -175,7 +172,8 @@ public class Instance extends InstanceParameters implements Runnable {
             synchronized (obj) {
                 try {
                     obj.wait();
-                } catch (Exception ignore) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
     }
@@ -189,8 +187,7 @@ public class Instance extends InstanceParameters implements Runnable {
         return this;
     }
 
-    public HttpResponse call(String nodePath, Object... parameters) {
-        HttpResponse[] response = {null};
+    public Instance call(String nodePath, Object... parameters) {
         call(() -> {
             NodeBuilder builder = new NodeBuilder();
             Node[] nodeParameters = new Node[parameters.length];
@@ -205,13 +202,12 @@ public class Instance extends InstanceParameters implements Runnable {
             }
             Node calledFunction = Files.getNode(nodePath);
             Instance.get().getThreads().run(calledFunction, nodeParameters, false, accessToken);
-            response[0] = NodeSerializer.getResponse(calledFunction);
         });
-        return response[0];
+        return this;
     }
 
     private static void testRootIndex() {
-        System.out.println("loading " + (Files.getNodeIfExist("/root/index") != null ? "success" : "fail"));
+        System.out.println("loading " + (Files.getNodeIfExist("index") != null ? "success" : "fail"));
     }
 
     private Map<String, InputStream> loadList = new HashMap<>();
@@ -258,5 +254,9 @@ public class Instance extends InstanceParameters implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void join() throws InterruptedException {
+        instanceThread.join();
     }
 }

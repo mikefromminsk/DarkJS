@@ -8,10 +8,16 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.serialization.js.JsBuilder;
 import com.droid.instance.Instance;
+import com.droid.instance.InstanceParameters;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Threads {
+
+    private List<Thread> threadList = new ArrayList<>();
 
     private ThreadNode findThread(Node node) {
         NodeBuilder builder = new NodeBuilder();
@@ -37,13 +43,13 @@ public class Threads {
         return findThread(node).run(node, null, false, Instance.get().accessToken);
     }
 
-    private JsBuilder jsBuilder = new JsBuilder();
-
-    public Node runScript(String path, String sourceCode, Long code) {
-        Node node = Files.getNode(path);
-        Node module = jsBuilder.build(node, JsParser.parse(sourceCode));
-        run(module, null, false, code);
-        return node;
+    public void registration(Thread thread) {
+        threadList.add(thread);
     }
 
+    public void stopAllThreads() {
+        for (Thread thread : threadList)
+            if (thread.isAlive())
+                thread.stop();
+    }
 }

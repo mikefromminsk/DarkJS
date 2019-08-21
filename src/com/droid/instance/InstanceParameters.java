@@ -3,9 +3,14 @@ package com.droid.instance;
 
 import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.runner.Func;
+import com.droid.djs.runner.prototypes.StringPrototype;
+import com.droid.djs.runner.utils.*;
 import com.droid.djs.treads.Threads;
 import com.droid.net.ftp.FtpServer;
 import com.droid.net.http.HttpClientServer;
@@ -13,20 +18,44 @@ import com.droid.net.ws.WsClientServer;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InstanceParameters {
     public int portAdding;
     public String storeDir;
     public String nodename;
-    public Long accessToken;
     public String proxyHost;
     public int proxyPortAdding;
+    public Long accessToken;
+    public String login;
+    public String password;
+
+    public List<Func> functions = new ArrayList<>();
+    public List<FuncInterface> interfaces = new ArrayList<>();
+
+    public List<Func> getFunctions() {
+        if (functions.size() == 0) {
+            new StringPrototype();
+            new ThreadUtils();
+            new MathUtils();
+            new RootUtils();
+            new NodeUtils();
+            new Net();
+            new Console();
+            Utils.saveInterfaces();
+        }
+        return functions;
+    }
 
     private NodeStorage nodeStorage;
     public NodeStorage getNodeStorage() {
         if (nodeStorage == null) {
             nodeStorage = new NodeStorage(Instance.get().storeDir, "node");
-            nodeStorage.initStorage();
+            if (nodeStorage.isEmpty()){
+                nodeStorage.add(new ThreadNode());
+                getFunctions();
+            }
         }
         return nodeStorage;
     }
@@ -47,14 +76,8 @@ public class InstanceParameters {
 
     private Node master = null;
     public Node getMaster() {
-        if (master == null){
-            NodeBuilder builder = new NodeBuilder().get(0L);
-            master = builder.getLocalNode(0);
-            if (master == null){
-                master = builder.create(NodeType.THREAD).commit();
-                builder.get(0L).addLocal(master).commit();
-            }
-        }
+        if (master == null)
+            master = Files.getNode(new NodeBuilder().get(0L).getNode(), "master");
         return master;
     }
 
@@ -104,5 +127,4 @@ public class InstanceParameters {
         if (wsClientServer != null)
             wsClientServer.stop();
     }
-
 }

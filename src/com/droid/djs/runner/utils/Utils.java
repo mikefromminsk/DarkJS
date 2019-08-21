@@ -8,66 +8,44 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.Func;
 import com.droid.djs.runner.prototypes.StringPrototype;
+import com.droid.instance.Instance;
 
 import java.util.*;
 
 abstract public class Utils {
 
-    private static NodeBuilder builder = new NodeBuilder();
-    public static String DEFAULT_PROTOTYPES_DIR = "defaultPrototypes/";
-    private static Node defaultPrototypesDir;
-    private static List<Func> functions = new ArrayList<>();
-    private static List<FuncInterface> interfaces = new ArrayList<>();
-
-    public static Node trueValue = builder.createBool(true);
-    public static Node falseValue = builder.createBool(false);
+    public static String DEFAULT_PROTOTYPES_DIR = "Prototype/";
 
     public Utils() {
         methods();
     }
 
-    public static List<Func> getFunctions() {
-        if (functions.size() == 0) {
-            new StringPrototype();
-            new ThreadUtils();
-            new MathUtils();
-            new RootUtils();
-            new NodeUtils();
-            new Net();
-            new Console();
-        }
-        return functions;
-    }
-
-    public static Node getDefaultPrototypesDir() {
-        if (defaultPrototypesDir == null)
-            defaultPrototypesDir = Files.getNode(DEFAULT_PROTOTYPES_DIR);
-        return defaultPrototypesDir;
-    }
-
     public void func(String name, Func func, Parameter... args) {
-        functions.add(func);
-        interfaces.add(new FuncInterface((name().endsWith("/") ? name() : name() + "/"), name, Arrays.asList(args)));
+        Instance.get().functions.add(func);
+        Instance.get().interfaces.add(new FuncInterface((name().endsWith("/") ? name() : name() + "/"), name, Arrays.asList(args)));
     }
 
     public static void saveInterfaces() {
+        NodeBuilder builder = new NodeBuilder();
+        Node root = new NodeBuilder().get(0L).getNode();
+        List<FuncInterface> interfaces = Instance.get().interfaces;
         for (int i = 0; i < interfaces.size(); i++) {
             FuncInterface funcInterface = interfaces.get(i);
             String functionName = funcInterface.path + funcInterface.name;
-            NativeNode function = (NativeNode) Files.getNode(functionName, NodeType.NATIVE_FUNCTION);
+            NativeNode function = (NativeNode) Files.getNode(root, functionName, NodeType.NATIVE_FUNCTION);
             builder.set(function).setFunctionIndex(i);
             for (Parameter parameter : funcInterface.parameters) {
-                Node param = parNode(parameter);
+                Node param = parNode(builder, parameter);
                 builder.set(function).addParam(param).commit();
             }
         }
     }
 
     public static FuncInterface getFunctionInterface(int index) {
-        return interfaces.get(index);
+        return Instance.get().interfaces.get(index);
     }
 
-    private static Node parNode(Parameter parameter) {
+    private static Node parNode(NodeBuilder builder, Parameter parameter) {
         Node title = builder.createString(parameter.name);
         Node defValue;
         if (parameter.nodeType == NodeType.NUMBER)

@@ -28,21 +28,25 @@ class InstanceTest {
     void test() throws IOException {
         Instance server = new Instance("out/storeServer", true)
                 .setNodeName("store.node")
-                .load("/root/storeserver.node.js", "var serverData = 12")
-                .startAndWaitInit();
+                .setAccessCode("john", "1234")
+                .load("server.node.js", "var serverData = 12")
+                .call("server")
+                .call(() -> Files.observe("", node -> System.out.println(Files.getPath(node))));
 
         Instance cleint = new Instance("out/storeClient", true)
                 .setProxyHost("localhost", server.portAdding)
-                .load("/root/storeclient.node.js",
+                .setAccessCode("john", "1234")
+                .load("client.node.js",
                         "function getCode(){\n" +
-                                "    return get(\"store.node/root/storeserver/storeData\")\n" +
+                                "    return get(\"store.node/server/serverData\")\n" +
                                 "}")
-                .start();
+                .call("client/getCode")
+                .call(() -> {
+                    Files.observe("", node -> System.out.println(Files.getPath(node)));
+                    String data = NodeSerializer.toJson(Files.getNode("client/getCode"));
+                    assertNotEquals(-1, data.indexOf("12.0"));
+                });
 
-        HttpResponse response = cleint.call("/root/storeclient/getCode", "chat");
-        System.out.println(response.data);
-
-        assertNotEquals(-1, new String(response.data).indexOf("12.0"));
         server.stop();
         cleint.stop();
     }

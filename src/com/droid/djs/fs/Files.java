@@ -15,13 +15,14 @@ public class Files {
 
     public static String getPath(Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
-        String path = "";
-        while (builder.getLocalParentNode() != null && builder.getLocalParentNode().id != 0L) {
-            path = "/" + builder.getTitleString() + path;
+        StringBuilder path = new StringBuilder();
+        Node master = Instance.get().getMaster();
+        while (builder.getLocalParentNode() != null && builder.getNode() != master) {
+            path.insert(0, "/" + builder.getTitleString());
             Node localParent = builder.getLocalParentNode();
             builder.set(localParent);
         }
-        return "".equals(path) ? "/" : path;
+        return "".equals(path.toString()) ? "/" : path.toString();
     }
 
     public static Node getNode(String path) {
@@ -184,9 +185,9 @@ public class Files {
 
     private static void observeRec(NodeBuilder builder, Node node, FindFile findFile) {
         Node[] locals = builder.set(node).getLocalNodes();
-        for (Node local : locals)
+        for (Node local : locals){
+            findFile.file(local);
             observeRec(builder, local, findFile);
-        findFile.file(node);
+        }
     }
-
 }

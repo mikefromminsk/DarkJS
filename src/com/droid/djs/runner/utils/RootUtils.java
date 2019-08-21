@@ -17,32 +17,13 @@ public class RootUtils extends Utils {
         func("get",
                 (builder, node, ths) -> {
                     String url = getString(builder, 0);
-                    Node argObj = getNode(builder, 1);
-                    Node successCallback = getNode(builder, 2);
-                    Node errorCallback = getNode(builder, 3);
-                    if (successCallback == null){
-                        try {
-                            Instance.get().getHttpClientServer().request(url, argObj);
-                        } catch (IOException e) {
-                            if (errorCallback != null)
-                                Instance.get().getThreads().run(errorCallback, new Node[]{builder.createString(e.getMessage())}, true);
-                            e.printStackTrace();
-                        }
-                    }else{
-                        /*try {
-                            Instance.get().startWsClientServer().request(url, argObj);
-                        } catch (IOException e) {
-                            if (errorCallback != null)
-                                Instance.get().getThreads().run(errorCallback, new Node[]{builder.createString(e.getMessage())}, true);
-                            e.printStackTrace();
-                        }*/
+                    try {
+                        Instance.get().getHttpClientServer().request(url);
+                    } catch (IOException e) {
+                        return null;
                     }
                     return builder.createBool(true);
-                },
-                par("url", NodeType.STRING),
-                par("args", NodeType.NODE),
-                par("success", NodeType.NODE),
-                par("error", NodeType.NODE));
+                }, par("url", NodeType.STRING));
 
         func("data", (builder, node, ths) -> {
             return null;

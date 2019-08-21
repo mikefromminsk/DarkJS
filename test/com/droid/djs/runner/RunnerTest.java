@@ -35,7 +35,7 @@ class RunnerTest {
     }
 
     @Test
-    void run() throws IOException, InterruptedException {
+    void run() throws IOException {
         new Instance("out/runTests", true)
                 .load("test_res/run")
                 .call(() -> {

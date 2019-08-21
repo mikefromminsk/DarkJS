@@ -77,7 +77,7 @@ public class MathUtils extends Utils {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     return (Objects.equals(leftObject, rightObject))
-                            ? Utils.trueValue : Utils.falseValue;
+                            ? builder.createBool(true) : builder.createBool(false);
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
@@ -150,7 +150,7 @@ public class MathUtils extends Utils {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
-                return ((Double) leftObject > (Double) rightObject) ? trueValue : falseValue;
+                return ((Double) leftObject > (Double) rightObject) ? builder.createBool(true) : builder.createBool(false);
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
@@ -158,7 +158,7 @@ public class MathUtils extends Utils {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
-                return ((Double) leftObject >= (Double) rightObject) ? trueValue : falseValue;
+                return ((Double) leftObject >= (Double) rightObject) ? builder.createBool(true) : builder.createBool(false);
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
@@ -166,7 +166,7 @@ public class MathUtils extends Utils {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
-                return ((Double) leftObject < (Double) rightObject) ? trueValue : falseValue;
+                return ((Double) leftObject < (Double) rightObject) ? builder.createBool(true) : builder.createBool(false);
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
@@ -175,7 +175,7 @@ public class MathUtils extends Utils {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
-                return ((Double) leftObject <= (Double) rightObject) ? trueValue : falseValue;
+                return ((Double) leftObject <= (Double) rightObject) ? builder.createBool(true) : builder.createBool(false);
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 

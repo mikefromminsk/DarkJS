@@ -6,31 +6,22 @@ import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.Data;
-import com.droid.djs.runner.utils.Utils;
 import com.droid.gdb.*;
-import com.droid.instance.Instance;
 
 import java.util.*;
 
 public class NodeStorage extends InfinityStringArray {
 
     private static final int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
-    private static ArrayList<Node> transactionNodes = new ArrayList<>();
-    private static Map<Long, Node> nodesCache = new TreeMap<>();
+    private ArrayList<Node> transactionNodes = new ArrayList<>();
+    private Map<Long, Node> nodesCache = new TreeMap<>();
 
     public NodeStorage(String infinityFileDir, String infinityFileName) {
         super(infinityFileDir, infinityFileName);
     }
 
-    public void initStorage() {
-        if (fileData.sumFilesSize == 0){
-            ThreadNode root = new ThreadNode();
-            add(root);
-            Instance.get().getMaster();
-            Utils.getFunctions();
-            Utils.saveInterfaces();
-            transactionCommit();
-        }
+    public boolean isEmpty(){
+        return  fileData.sumFilesSize == 0;
     }
 
     public void addToTransaction(Node node) {
@@ -113,5 +104,6 @@ public class NodeStorage extends InfinityStringArray {
             metaCell.length = data.length;
         }
         node.id = meta.add(metaCell);
+        nodesCache.put(node.id, node);
     }
 }

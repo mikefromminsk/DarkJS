@@ -7,15 +7,14 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.json.JsonSerializer;
 import com.droid.djs.serialization.node.HttpResponse;
+import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
+import com.sun.net.httpserver.HttpServer;
 import org.nanohttpd.NanoHTTPD;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -171,21 +170,39 @@ public class HttpClientServer extends NanoHTTPD {
         return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
     }
 
-    public void request(String urlStr, Node argObj) throws IOException {
-        // TODO add args
-        request(urlStr, new HashMap<>());
+    public void request(String urlStr) throws IOException {
+        urlStr = !urlStr.contains("://") ? "http://" + urlStr : urlStr;
+        URL url = new URL(urlStr);
+        url = new URL("http", url.getHost(), defaultPort, url.getFile());
+        try {
+            request(url, new HashMap<>());
+        } catch (UnknownHostException e) {
+            url = new URL("http", Instance.get().proxyHost, (defaultPort + Instance.get().portAdding), url.getFile());
+            request(url, new HashMap<>());
+            e.printStackTrace();
+        }
     }
 
-    public void request(String urlStr, Map<String, String> parameters) throws IOException {
-        parameters.put("param1", "val");
-        urlStr = !urlStr.contains("http://") ? "http://" + urlStr : urlStr;
-        URL url = new URL(urlStr);
+    String convertStreamInString(InputStream inputStream) {
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
+    public void request(URL url, Map<String, String> parameters) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
+        String authData = Instance.get().login  + ":" +  Instance.get().password;
+        authData = Base64.getEncoder().encodeToString(authData.getBytes());
+        con.addRequestProperty(Headers.AUTHORIZATION, BASIC_AUTH_PREFIX + authData);
         con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        OutputStream outputStream = con.getOutputStream();
+        DataOutputStream out = new DataOutputStream(outputStream);
         out.writeBytes(serializeParameters(parameters));
         out.flush();
         out.close();
+
+        String response = convertStreamInString(con.getInputStream());
+        Node node = NodeParser.fromJson(response);
+
     }
 }

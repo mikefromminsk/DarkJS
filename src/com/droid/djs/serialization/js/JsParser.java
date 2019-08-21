@@ -10,8 +10,6 @@ import jdk.nashorn.internal.runtime.options.Options;
 
 public class JsParser {
 
-    private static Gson json = new GsonBuilder().setPrettyPrinting().create();
-
     public static jdk.nashorn.internal.ir.Node parse(String sourceString) throws ParserException {
         Options options = new Options("nashorn");
         options.set("anon.functions", true);

@@ -6,21 +6,19 @@ import com.droid.djs.runner.Runner;
 import com.droid.instance.Instance;
 import com.droid.instance.InstanceParameters;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class ThreadNode extends Node implements Runnable {
 
-    public Thread thread;
+    public Thread thread = new Thread(this);
     private Runner runner = new Runner();
     public Long access_owner = null;
     private ArrayList<Long> access_user = null;
-    private InstanceParameters instanceParameters;
 
     public ThreadNode() {
         super(NodeType.THREAD);
-        instanceParameters = Instance.get();
+        Instance.get().getThreads().registration(thread);
+        thread.start();
     }
 
     @Override
@@ -48,16 +46,6 @@ public class ThreadNode extends Node implements Runnable {
         }
     }
 
-    class RunData {
-        Node node;
-        Map<String, String> args;
-
-        public RunData(Node node, Map<String, String> args) {
-            this.node = node;
-            this.args = args;
-        }
-    }
-
     public boolean checkAccess(Long access_token) {
         boolean secure_enabled = access_owner != null || access_user != null;
         if (secure_enabled) {
@@ -69,30 +57,40 @@ public class ThreadNode extends Node implements Runnable {
         return true;
     }
 
+    class RunData {
+        Boolean callerIsBlocked;
+        InstanceParameters instanceParameters;
+        Node node;
+        Map<String, String> args;
+
+        public RunData(Boolean callerIsBlocked, InstanceParameters instanceParameters, Node node, Map<String, String> args) {
+            this.callerIsBlocked = callerIsBlocked;
+            this.instanceParameters = instanceParameters;
+            this.node = node;
+            this.args = args;
+        }
+    }
+
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
     public boolean run(Node node, Node[] args, boolean async, Long access_token) {
+        System.out.println(Thread.currentThread().getId() + " run " + Instance.get().storeDir);
         if (!checkAccess(access_token))
             return false;
 
         setParams(node, args);
 
-        runQueue.add(new RunData(node, null));
-        if (thread == null || !thread.isAlive()) {
-            thread = new Thread(this);
-            thread.start();
-        }
-        if (!async) {
-            try {
-                thread.join();
-            } catch (InterruptedException ignored) {
-            }
-        }
+        RunData runData = new RunData(async ? null : true, Instance.get(), node, null);
+        runQueue.add(runData);
+
+        notify(runQueue);
+        wait(runData.callerIsBlocked);
+
         return true;
     }
 
     private void setParams(Node node, Node[] args) {
-        if (args != null){
+        if (args != null) {
             NodeBuilder builder = new NodeBuilder();
             for (Node param : builder.set(node).getParams())
                 builder.set(param).setValue(null);
@@ -105,17 +103,42 @@ public class ThreadNode extends Node implements Runnable {
         }
     }
 
+    void notify(Object obj) {
+        if (obj != null)
+            synchronized (obj) {
+                obj.notify();
+            }
+    }
+
+    void wait(Object obj) {
+        if (obj != null)
+            synchronized (obj) {
+                try {
+                    obj.wait();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
     @Override
     public void run() {
-        Instance.connectThread(instanceParameters);
-        while (!runQueue.isEmpty()) {
-            RunData data = runQueue.pollFirst();
-            if (data != null)
-                runner.start(data.node);
-            else
-                runQueue.clear();
+        // TODO create timer of ThreadNode live
+        ThreadNode node = this;
+        while (true) {
+            System.out.println(Thread.currentThread().getId() + " run loop");
+            while (!runQueue.isEmpty()) {
+                RunData runData = runQueue.pollFirst();
+                if (runData != null) {
+                    Instance.connectThread(runData.instanceParameters);
+                    runner.start(runData.node);
+                    Instance.disconnectThread();
+                    notify(runData.callerIsBlocked);
+                } else
+                    runQueue.clear();
+            }
+            wait(runQueue);
         }
-        Instance.disconnectThread();
     }
 
 }

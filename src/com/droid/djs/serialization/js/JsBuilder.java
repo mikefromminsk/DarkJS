@@ -153,7 +153,7 @@ public class JsBuilder {
                             .setSet(right)
                             .commit();
                 } else {
-                    NativeNode nativeFunc = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
+                    NativeNode nativeFunc = (NativeNode) Files.getNodeIfExist(new NodeBuilder().get(0L).getNode(), MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
                     return builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionIndex(nativeFunc.getFunctionIndex())
                             .addParam(left)

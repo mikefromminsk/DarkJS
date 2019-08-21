@@ -10,6 +10,7 @@ import java.util.Random;
 public class DiskManager {
 
     public IniFile properties;
+    public Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
     public ActionThread mainThread;
 
     public File dbDir;
@@ -53,7 +54,7 @@ public class DiskManager {
                 diskManagers.put(dbDirPath, manager = new DiskManager(dbDirPath));
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+             }
         return manager;
     }
 

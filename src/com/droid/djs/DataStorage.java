@@ -17,16 +17,16 @@ public class DataStorage {
 
     public static final int MAX_STORAGE_DATA_IN_DB = 2048;
 
-    private static Random random = new Random();
-    private static InfinityFile dataStorage;
-    private static InfinityHashMap dataHashTree;
+    private Random random = new Random();
+    private InfinityFile dataStorage;
+    private InfinityHashMap dataHashTree;
 
     public DataStorage() {
         dataStorage = new InfinityFile(Instance.get().storeDir, "data");
         dataHashTree = new InfinityHashMap(Instance.get().storeDir, "hash");
     }
 
-    public void add(Data node){
+    public void add(Data node) {
         try {
             if (node.externalData != null) {
                 byte[] hashKey = null;
@@ -73,7 +73,7 @@ public class DataStorage {
                         // TODO return instance from nodes cache
                         nodeMetaCell = (NodeMetaCell) Instance.get().getNodeStorage().meta.get(prevNodeId, nodeMetaCell);
                         node.id = prevNodeId;
-                        node.data = new DataInputStream( node.type, nodeMetaCell.start, nodeMetaCell.length);
+                        node.data = new DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
                     }
                 }
                 node.externalData.close();
@@ -91,7 +91,7 @@ public class DataStorage {
     }
 
     public Long getDataId(byte[] title) {
-        if (title != null){
+        if (title != null) {
             long titleId = dataHashTree.get(title, Crc16.getHashBytes(title));
             if (titleId == Long.MAX_VALUE)
                 return null;

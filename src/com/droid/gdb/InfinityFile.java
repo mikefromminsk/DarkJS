@@ -13,7 +13,6 @@ public class InfinityFile {
     private long partSize;
     public InfinityFileData fileData;
     private ActionThread mainThread;
-    private static Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
     public DiskManager diskManager;
     protected String infinityFileName;
 
@@ -23,7 +22,7 @@ public class InfinityFile {
         this.mainThread = diskManager.mainThread;
         this.partSize = diskManager.partSize;
 
-        fileData = infinityFileCache.get(infinityFileName);
+        fileData = diskManager.infinityFileCache.get(infinityFileName);
         if (fileData == null) {
             fileData = new InfinityFileData();
             Map<String, String> fileSettings = diskManager.properties.getSection(infinityFileName);
@@ -38,7 +37,7 @@ public class InfinityFile {
                         e.printStackTrace();
                     }
                 }
-            infinityFileCache.put(infinityFileName, fileData);
+            diskManager.infinityFileCache.put(infinityFileName, fileData);
         }
 
     }

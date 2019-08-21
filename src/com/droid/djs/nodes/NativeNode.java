@@ -4,6 +4,7 @@ import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.Func;
 import com.droid.djs.runner.utils.Utils;
+import com.droid.instance.Instance;
 
 public class NativeNode extends Node {
 
@@ -23,7 +24,7 @@ public class NativeNode extends Node {
 
     public void setFunctionIndex(Integer functionIndex) {
         this.functionIndex = functionIndex;
-        func = Utils.getFunctions().get(functionIndex);
+        func = Instance.get().getFunctions().get(functionIndex);
     }
 
     public Integer getFunctionIndex(){

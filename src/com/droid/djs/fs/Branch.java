@@ -26,7 +26,7 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = Files.getNode("Branch/" + Math.abs(random.nextInt()));
+            root = Files.getNode(new NodeBuilder().get(0L).getNode(), "Branch/" + Math.abs(random.nextInt()));
             Instance.get().getNodeStorage().transactionCommit();
             updateTimer();
         }
@@ -35,7 +35,7 @@ public class Branch {
 
     public void updateTimer() {
         // TODO restart timer if after schedule event time is not up
-        if (mergeTimer != 0){
+        if (mergeTimer != 0) {
             timer.cancel();
             timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -60,17 +60,15 @@ public class Branch {
             timer.cancel();
         if (root != null) {
             Node branchPackage = findPackage(root);
-            String branchRootPath = Files.getPath(root);
             if (branchPackage != null) {
+                String branchRootPath = Files.getPath(root);
                 String branchFilePath = Files.getPath(branchPackage);
                 branchFilePath = branchFilePath.substring(branchRootPath.length());
-                Node masterPackage = Files.getNode(Instance.get().getMaster(), branchFilePath);
+                Node masterPackage = Files.getNode(branchFilePath);
                 Files.replace(masterPackage, branchPackage);
                 if (masterPackage == Instance.get().getMaster())
                     Instance.get().removeMaster();
             }
-            if (root != Instance.get().getMaster())
-                Files.remove(root);
             root = null;
             Instance.get().getNodeStorage().transactionCommit();
         }

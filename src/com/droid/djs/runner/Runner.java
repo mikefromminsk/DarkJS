@@ -12,6 +12,8 @@ import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.treads.Threads;
 import com.droid.instance.Instance;
 
+import static com.droid.djs.runner.utils.Utils.DEFAULT_PROTOTYPES_DIR;
+
 public class Runner {
 
     private NodeBuilder builder = new NodeBuilder();
@@ -23,7 +25,7 @@ public class Runner {
     }
 
     Node getNodePrototype(NodeType nodeType){
-        return Files.getNode(Utils.getDefaultPrototypesDir(), Utils.capitalize(nodeType.toString()));
+        return Files.getNode(DEFAULT_PROTOTYPES_DIR + Utils.capitalize(nodeType.toString()));
     }
 
     private Node propCalledNode = null;
