@@ -148,39 +148,38 @@ public class NodeSerializer {
         return result;
     }
 
-    private static String convertExtensionToMimeType(String extension) {
-        switch (extension) {
-            case "js":
-                return "text/javascript";
-            case "html":
-                return "text/html";
-            case "css":
-                return "text/css";
-            case "png":
-                return "image/png";
-            default:
-                return null;
-        }
-    }
 
     public static HttpResponse getResponse(Node node) {
         NodeBuilder builder = new NodeBuilder().set(node);
         if (builder.getNode() == null)
-            return new HttpResponse("application/json", "null");
+            return new HttpResponse(HttpResponseType.NULL, "");
 
         String parser = builder.getParserString();
-        if (parser != null)
+        if (parser != null) {
+            parser = parser.toLowerCase();
             switch (parser) {
                 case "json":
-                    return new HttpResponse("application/json", JsonSerializer.serialize(builder));
+                    return new HttpResponse(HttpResponseType.JSON, JsonSerializer.serialize(builder));
                 case "node.js":
-                    return new HttpResponse("application/json", NodeSerializer.toJson(builder.getNode()));
+                    return new HttpResponse(HttpResponseType.JSON, NodeSerializer.toJson(builder.getNode()));
                 default: // node is static file
                     if (builder.getValueNode() instanceof Data)
-                        return new HttpResponse(convertExtensionToMimeType(parser), ((Data) builder.getValueNode()).data.readBytes());
+                        return new HttpResponse(HttpResponseType.fromParserName(parser), ((Data) builder.getValueNode()).data.readBytes());
                     else
-                        return new HttpResponse(convertExtensionToMimeType(parser), "");
+                        return new HttpResponse(HttpResponseType.fromParserName(parser), "");
             }
-        return new HttpResponse("application/json", NodeSerializer.toJson(builder.getNode()));
+        }
+        if (builder.isData()) {
+            String contentType;
+            if (builder.isNumber()) {
+                contentType = HttpResponseType.NUMBER_10;
+            } else if (builder.isBoolean()) {
+                contentType = HttpResponseType.BOOLEAN;
+            } else {
+                contentType = HttpResponseType.TEXT;
+            }
+            return new HttpResponse(contentType, ((Data) builder.getNode()).data.readString());
+        }
+        return new HttpResponse(HttpResponseType.JSON, NodeSerializer.toJson(builder.getNode()));
     }
 }

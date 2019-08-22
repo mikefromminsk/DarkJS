@@ -36,7 +36,7 @@ public class NodeBuilder {
     }
 
     public Node createBool(Boolean bool) {
-        return create(NodeType.BOOL).setData(bool).commit();
+        return create(NodeType.BOOLEAN).setData(bool).commit();
     }
 
     public NodeBuilder get(Long id) {
@@ -677,7 +677,7 @@ public class NodeBuilder {
     }
 
     public boolean isBoolean() {
-        return node.type == NodeType.BOOL;
+        return node.type == NodeType.BOOLEAN;
     }
 
     public boolean isVar() {

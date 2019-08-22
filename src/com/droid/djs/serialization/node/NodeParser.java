@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -61,7 +62,7 @@ public class NodeParser {
 
             NodeType nodeType = nodeTypeStr != null ? NodeType.valueOf(nodeTypeStr.toUpperCase()) : NodeType.NODE;
 
-            if (nodeType == NodeType.BOOL) {
+            if (nodeType == NodeType.BOOLEAN) {
                 if (nodeDataStr.equals(NodeSerializer.TRUE))
                     node = builder.createBool(true);
                 else
@@ -106,5 +107,15 @@ public class NodeParser {
         Type mapType = new TypeToken<Map<String, Map>>(){}.getType();
         Map<String, Map<String, Object>> responseObj = json.fromJson(response, mapType);
         return fromMap(responseObj);
+    }
+
+    static String streamToString(InputStream inputStream) {
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
+    public static Node fromStream(InputStream inputStream) {
+        // TODO add code parse like stream
+        return fromJson(streamToString(inputStream));
     }
 }

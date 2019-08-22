@@ -9,7 +9,6 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
-import com.droid.djs.treads.Threads;
 import com.droid.instance.Instance;
 
 import static com.droid.djs.runner.utils.Utils.DEFAULT_PROTOTYPES_DIR;
@@ -265,7 +264,7 @@ public class Runner {
             run(ifNode, calledNodeId);
             Node ifNodeData = builder.set(ifNode).getValueNode();
             DataInputStream dataInputStream = builder.set(ifNodeData).getData();
-            if (ifNode.type == NodeType.BOOL && (Boolean) dataInputStream.getObject())
+            if (ifNode.type == NodeType.BOOLEAN && (Boolean) dataInputStream.getObject())
                 run(builder.set(node).getTrueNode(), calledNodeId);
             else if (builder.set(node).getElse() != null)
                 run(builder.set(node).getElseNode(), calledNodeId);
@@ -277,7 +276,7 @@ public class Runner {
             run(ifNode, calledNodeId);
             Node ifNodeData = builder.set(ifNode).getValueNode();
             DataInputStream dataInputStream = builder.set(ifNodeData).getData();
-            while (ifNodeData.type == NodeType.BOOL && (Boolean) dataInputStream.getObject()) {
+            while (ifNodeData.type == NodeType.BOOLEAN && (Boolean) dataInputStream.getObject()) {
                 run(builder.set(node).getWhileNode(), calledNodeId);
                 if (exitNode != null) {
                     if (exitNode.equals(node))

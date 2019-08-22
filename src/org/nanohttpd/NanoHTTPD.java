@@ -144,12 +144,6 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public abstract class NanoHTTPD {
 
-    public static class Headers {
-        public final static String CONTENT_TYPE = "content-type";
-        public static final String AUTHORIZATION = "authorization";
-        public static final String AUTHENTICATE = "WWW-Authenticate";
-    }
-
     /**
      * Pluggable strategy for asynchronously executing requests.
      */

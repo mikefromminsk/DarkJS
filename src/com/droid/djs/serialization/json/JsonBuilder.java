@@ -1,7 +1,6 @@
 package com.droid.djs.serialization.json;
 
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
@@ -26,7 +25,7 @@ public class JsonBuilder {
         if (je.isJsonPrimitive()) {
             JsonPrimitive primitive = je.getAsJsonPrimitive();
             if (primitive.isBoolean())
-                return builder.create(NodeType.BOOL).setData(primitive.getAsBoolean()).commit();
+                return builder.create(NodeType.BOOLEAN).setData(primitive.getAsBoolean()).commit();
             if (primitive.isString())
                 return builder.create(NodeType.STRING).setData(primitive.getAsString()).commit();
             if (primitive.isNumber())

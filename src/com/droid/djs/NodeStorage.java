@@ -53,7 +53,7 @@ public class NodeStorage extends InfinityStringArray {
 
     public Node newNode(NodeType nodeType) {
         switch (nodeType) {
-            case BOOL:
+            case BOOLEAN:
             case NUMBER:
             case STRING:
                 return new Data(nodeType);

@@ -71,12 +71,18 @@ public class DataOutputStream extends OutputStream {
             if (parserNode != null && dataNode != null) {
                 String parser = parserNode.data.readString();
                 String data = dataNode.data.readString();
+                boolean parserExist = true;
                 if ("json".equals(parser)) {
                     JsonElement jsonElement = JsonParser.parse(data);
                     JsonBuilder.build(node, jsonElement);
                 } else if ("node.js".equals(parser)) {
                     jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
                     new JsBuilder().build(node, nashornNode);
+                } else {
+                    parserExist = false;
+                }
+                if (parserExist){
+                    new NodeBuilder().set(node).setValue(null);
                 }
             }
             tempFile.delete();

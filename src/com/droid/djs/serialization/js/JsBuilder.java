@@ -1,13 +1,11 @@
 package com.droid.djs.serialization.js;
 
-import com.droid.djs.DataStorage;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.utils.MathUtils;
-import com.droid.instance.Instance;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 
@@ -313,7 +311,7 @@ public class JsBuilder {
                 if (literalNode.isNull()) {
                     return builder.create().commit();
                 } else {
-                    NodeType nodeType = NodeType.BOOL;
+                    NodeType nodeType = NodeType.BOOLEAN;
                     if (literalNode.isNumeric())
                         nodeType = NodeType.NUMBER;
                     else if (literalNode.isString())

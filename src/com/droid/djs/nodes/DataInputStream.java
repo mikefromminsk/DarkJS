@@ -94,7 +94,7 @@ public class DataInputStream extends InputStream {
     public Object getObject() {
         String string = readString();
         switch (type) {
-            case BOOL:
+            case BOOLEAN:
                 return Boolean.valueOf(string);
             case NUMBER:
                 return Double.valueOf(string);

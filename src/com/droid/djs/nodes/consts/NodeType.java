@@ -3,7 +3,7 @@ package com.droid.djs.nodes.consts;
 public enum NodeType {
     STRING,
     NUMBER,
-    BOOL,
+    BOOLEAN,
     NODE,
     ARRAY,
     OBJECT, // TODO delete and add link type CloneObject

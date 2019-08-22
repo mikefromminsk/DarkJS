@@ -29,12 +29,10 @@ class InstanceTest {
         Instance server = new Instance("out/storeServer", true)
                 .setNodeName("store.node")
                 .setAccessCode("john", "1234")
-                .load("server.node.js", "var serverData = 12")
-                .call("server")
-                .call(() -> {
-                    String data = NodeSerializer.toJson(Files.getNode("server/serverData"));
-                    assertNotEquals(-1, data.indexOf("12.0"));
-                });
+                .load("server.node.js", "var serverData = 12");
+        server.run("server");
+        HttpResponse serverResponse = server.get("server/serverData");
+        assertEquals("12", new String(serverResponse.data));
 
         Instance cleint = new Instance("out/storeClient", true)
                 .setProxyHost("localhost", server.portAdding)
@@ -42,11 +40,9 @@ class InstanceTest {
                 .load("client.node.js",
                         "function getCode(){\n" +
                                 "    return get(\"store.node/server/serverData\")\n" +
-                                "}")
-                .call("client/getCode")
-                .call(() -> {
-                    String data = NodeSerializer.toJson(Files.getNode("client/getCode"));
-                    assertNotEquals(-1, data.indexOf("12.0"));
-                });
+                                "}");
+
+        HttpResponse getCodeResponse = cleint.get("client/getCode");
+        assertEquals("12", new String(getCodeResponse.data));
     }
 }

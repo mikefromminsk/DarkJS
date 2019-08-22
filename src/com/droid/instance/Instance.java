@@ -5,6 +5,8 @@ import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.serialization.node.HttpResponse;
+import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.DiskManager;
 import com.droid.gdb.map.Crc16;
 
@@ -193,7 +195,8 @@ public class Instance extends InstanceParameters implements Runnable {
         return this;
     }
 
-    public Instance call(String nodePath, Object... parameters) {
+    public HttpResponse get(String nodePath, Object... parameters) {
+        final HttpResponse[] calledFunctionResponse = new HttpResponse[1];
         call(() -> {
             NodeBuilder builder = new NodeBuilder();
             Node[] nodeParameters = new Node[parameters.length];
@@ -206,14 +209,19 @@ public class Instance extends InstanceParameters implements Runnable {
                 else if (obj instanceof Boolean)
                     nodeParameters[i] = builder.createBool((Boolean) obj);
             }
-            Node calledFunction = Files.getNodeIfExist(nodePath);
-            Instance.get().getThreads().run(calledFunction, nodeParameters, false, accessToken);
+            Node node = Files.getNodeIfExist(nodePath);
+
+            Instance.get().getThreads().run(node, nodeParameters, false, accessToken);
+
+            node = builder.set(node).getValueNode();
+
+            calledFunctionResponse[0] = NodeSerializer.getResponse(node);
         });
-        return this;
+        return calledFunctionResponse[0];
     }
 
-    private static void testRootIndex() {
-        System.out.println("loading " + (Files.getNodeIfExist("index") != null ? "success" : "fail"));
+    public void run(String nodePath, Object... parameters) {
+        get(nodePath, parameters);
     }
 
     private Map<String, InputStream> loadList = new HashMap<>();

@@ -4,7 +4,9 @@ package com.droid.net.http;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.serialization.node.HttpResponse;
+import com.droid.djs.serialization.node.HttpResponseType;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.map.Crc16;
@@ -17,6 +19,12 @@ import java.security.InvalidParameterException;
 import java.util.*;
 
 public class HttpClientServer extends NanoHTTPD {
+
+    public static class Headers {
+        public final static String CONTENT_TYPE = "content-type";
+        public static final String AUTHORIZATION = "authorization";
+        public static final String AUTHENTICATE = "WWW-Authenticate";
+    }
 
     public static final String FORM_DATA = "application/x-www-form-urlencoded";
     public static int defaultPort = 8080;
@@ -70,8 +78,7 @@ public class HttpClientServer extends NanoHTTPD {
                         Instance.get().getThreads().run(node, null, false, access_token);
 
                         builder.set(node);
-                        if (builder.isFunction())
-                            builder.set(builder.getValueNode());
+                        builder.set(builder.getValueNode());
 
                         HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
                         ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
@@ -173,11 +180,6 @@ public class HttpClientServer extends NanoHTTPD {
         }
     }
 
-    String convertStreamInString(InputStream inputStream) {
-        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
-
     public Node request(URL url, Map<String, String> parameters) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -191,7 +193,18 @@ public class HttpClientServer extends NanoHTTPD {
         out.flush();
         out.close();
 
-        String response = convertStreamInString(con.getInputStream());
-        return NodeParser.fromJson(response);
+        InputStream inputStream = con.getInputStream();
+
+        String contentType = con.getHeaderField(Headers.CONTENT_TYPE);
+        NodeBuilder builder = new NodeBuilder();
+        switch (contentType){
+            case HttpResponseType.TEXT: return builder.create(NodeType.STRING).setData(inputStream).commit();
+            case HttpResponseType.NUMBER_10: return builder.create(NodeType.NUMBER).setData(inputStream).commit();
+            case HttpResponseType.BOOLEAN: return builder.create(NodeType.BOOLEAN).setData(inputStream).commit();
+            case HttpResponseType.NULL: return null;
+            case HttpResponseType.JSON: return NodeParser.fromStream(inputStream);
+        }
+        // TODO case when http type is not support
+        return null;
     }
 }
