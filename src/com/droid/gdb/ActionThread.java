@@ -77,7 +77,7 @@ public class ActionThread implements Runnable {
     public void write(RandomAccessFile file, int offset, byte[] data) {
         if (data == null || data.length == 0)
             return;
-        // TODO merge strings net more 512 byte in mainThread and max in achieveTread
+        // TODO merge strings net more 512 byte in actionThread and max in achieveTread
 
         Map<Integer, CacheData> cachedFile = cache.get(file);
         if (cachedFile == null) {

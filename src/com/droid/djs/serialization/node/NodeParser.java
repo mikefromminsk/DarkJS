@@ -74,14 +74,15 @@ public class NodeParser {
                 node = builder.create(nodeType).commit();
                 replacementTable.put(nodeName, node);
                 for (String linkName : links.keySet()) {
-                    LinkType linkType = LinkType.valueOf(linkName);
+                    LinkType linkType = LinkType.valueOf(linkName.toUpperCase());
                     Object obj = links.get(linkName);
                     if (obj instanceof ArrayList) {
                         for (Object item : (ArrayList) obj)
                             if (item instanceof String)
                                 setLink(builder, node, linkType, (String) item, nodes, replacementTable);
                     } else {
-                        setLink(builder, node, linkType, (String) obj, nodes, replacementTable);
+                        String objStr = obj instanceof String ? (String) obj : String.valueOf(obj);
+                        setLink(builder, node, linkType, objStr, nodes, replacementTable);
                     }
                 }
             }

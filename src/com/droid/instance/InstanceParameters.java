@@ -77,7 +77,7 @@ public class InstanceParameters {
     private Node master = null;
     public Node getMaster() {
         if (master == null)
-            master = Files.getNode(new NodeBuilder().get(0L).getNode(), "master");
+            master = Files.getNodeFromRoot("master");
         return master;
     }
 

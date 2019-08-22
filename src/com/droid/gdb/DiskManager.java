@@ -11,7 +11,8 @@ public class DiskManager {
 
     public IniFile properties;
     public Map<String, InfinityFileData> infinityFileCache = new HashMap<>();
-    public ActionThread mainThread;
+    public ActionThread actionThread;
+    public Thread actionThreadInstance;
 
     public File dbDir;
     public Integer partSize;
@@ -36,14 +37,14 @@ public class DiskManager {
 
         properties = new IniFile(new File(dbDir, "settings.properties"));
 
-        loadProperties(properties);
-        saveProperties(properties);
+        loadProperties();
+        saveProperties();
 
         createFtpTempDir();
 
-        mainThread = new ActionThread(cacheSize);
-        Thread thread = new Thread(mainThread);
-        thread.start();
+        actionThread = new ActionThread(cacheSize);
+        actionThreadInstance = new Thread(actionThread);
+        actionThreadInstance.start();
     }
 
     private static Map<String, DiskManager> diskManagers = new HashMap<>();
@@ -58,6 +59,12 @@ public class DiskManager {
         return manager;
     }
 
+    public static void removeInstance(DiskManager diskManager){
+        diskManager.saveProperties();
+        diskManager.actionThreadInstance.interrupt();
+        diskManagers.values().remove(diskManager);
+    }
+
     private void createFtpTempDir() {
         if (!DataOutputStream.ftpTempDir.exists())
             DataOutputStream.ftpTempDir.mkdirs();
@@ -69,13 +76,13 @@ public class DiskManager {
         }
     }
 
-    private void loadProperties(IniFile properties) {
+    private void loadProperties() {
         this.partSize = properties.getInt(SECTION, PART_SIZE_KEY, PART_SIZE_DEFAULT);
         this.cacheSize = properties.getInt(SECTION, CACHE_SIZE_KEY, CACHE_SIZE_DEFAULT);
         this.device_id = properties.getInt(SECTION, DEVICE_ID_KEY, Math.abs(new Random().nextInt()));
     }
 
-    private void saveProperties(IniFile properties) {
+    private void saveProperties() {
         properties.put(SECTION, PART_SIZE_KEY, "" + this.partSize);
         properties.put(SECTION, CACHE_SIZE_KEY, "" + this.cacheSize);
         properties.put(SECTION, DEVICE_ID_KEY, "" + this.device_id);

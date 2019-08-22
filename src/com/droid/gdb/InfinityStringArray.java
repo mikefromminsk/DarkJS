@@ -1,5 +1,6 @@
 package com.droid.gdb;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,5 +153,12 @@ public class InfinityStringArray extends InfinityFile {
         byte[] result = new byte[getSectorLength(data.length)];
         System.arraycopy(data, 0, result, 0, data.length);
         return result;
+    }
+
+    public void close() throws IOException {
+        super.close();
+        meta.close();
+        for (Long id: garbageCollector.keySet())
+            garbageCollector.get(id).close();
     }
 }

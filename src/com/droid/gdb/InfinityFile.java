@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
 import java.util.Map;
 
 public class InfinityFile {
@@ -19,7 +18,7 @@ public class InfinityFile {
     public InfinityFile(String infinityFileDir, String infinityFileName) {
         this.infinityFileName = infinityFileName;
         diskManager = DiskManager.getInstance(infinityFileDir);
-        this.mainThread = diskManager.mainThread;
+        this.mainThread = diskManager.actionThread;
         this.partSize = diskManager.partSize;
 
         fileData = diskManager.infinityFileCache.get(infinityFileName);
@@ -119,11 +118,11 @@ public class InfinityFile {
             int startInFirstFile = (int) (start % partSize);
             int lengthInFirstFile = (int) (length - lengthInSecondFile);
 
-            byte[] dataToFirstFile =new byte[lengthInFirstFile];
+            byte[] dataToFirstFile = new byte[lengthInFirstFile];
             byte[] dataToSecondFile = new byte[lengthInSecondFile];
 
             System.arraycopy(data, 0, dataToFirstFile, 0, lengthInFirstFile);
-            System.arraycopy(data,  lengthInFirstFile, dataToSecondFile, 0, lengthInSecondFile);
+            System.arraycopy(data, lengthInFirstFile, dataToSecondFile, 0, lengthInSecondFile);
 
             mainThread.write(firstWriteFile, startInFirstFile, dataToFirstFile);
             mainThread.write(secondWriteFile, startInSecondFile, dataToSecondFile);
@@ -135,5 +134,11 @@ public class InfinityFile {
         long lastSumFileSize = fileData.sumFilesSize;
         write(lastSumFileSize, data);
         return lastSumFileSize;
+    }
+
+    public void close() throws IOException {
+        for (RandomAccessFile file : fileData.files)
+            file.close();
+        diskManager.infinityFileCache.remove(infinityFileName);
     }
 }

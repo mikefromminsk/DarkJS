@@ -58,12 +58,12 @@ public class ThreadNode extends Node implements Runnable {
     }
 
     class RunData {
-        Boolean callerIsBlocked;
+        Object callerIsBlocked;
         InstanceParameters instanceParameters;
         Node node;
         Map<String, String> args;
 
-        public RunData(Boolean callerIsBlocked, InstanceParameters instanceParameters, Node node, Map<String, String> args) {
+        public RunData(Object callerIsBlocked, InstanceParameters instanceParameters, Node node, Map<String, String> args) {
             this.callerIsBlocked = callerIsBlocked;
             this.instanceParameters = instanceParameters;
             this.node = node;
@@ -74,17 +74,16 @@ public class ThreadNode extends Node implements Runnable {
     private LinkedList<RunData> runQueue = new LinkedList<>();
 
     public boolean run(Node node, Node[] args, boolean async, Long access_token) {
-        System.out.println(Thread.currentThread().getId() + " run " + Instance.get().storeDir);
         if (!checkAccess(access_token))
             return false;
 
         setParams(node, args);
 
-        RunData runData = new RunData(async ? null : true, Instance.get(), node, null);
+        RunData runData = new RunData(async ? null : 1, Instance.get(), node, null);
         runQueue.add(runData);
 
         notify(runQueue);
-        wait(runData.callerIsBlocked);
+        wait(runData);
 
         return true;
     }
@@ -124,16 +123,14 @@ public class ThreadNode extends Node implements Runnable {
     @Override
     public void run() {
         // TODO create timer of ThreadNode live
-        ThreadNode node = this;
         while (true) {
-            System.out.println(Thread.currentThread().getId() + " run loop");
             while (!runQueue.isEmpty()) {
                 RunData runData = runQueue.pollFirst();
                 if (runData != null) {
                     Instance.connectThread(runData.instanceParameters);
                     runner.start(runData.node);
                     Instance.disconnectThread();
-                    notify(runData.callerIsBlocked);
+                    notify(runData);
                 } else
                     runQueue.clear();
             }

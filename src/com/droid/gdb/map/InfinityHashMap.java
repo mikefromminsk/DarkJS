@@ -4,6 +4,7 @@ import com.droid.gdb.Bytes;
 import com.droid.gdb.InfinityConstArray;
 import com.droid.gdb.InfinityStringArray;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class InfinityHashMap extends InfinityConstArray {
@@ -167,6 +168,12 @@ public class InfinityHashMap extends InfinityConstArray {
         byte[] firstly8Bytes = new byte[Long.BYTES];
         System.arraycopy(bytes, 0, firstly8Bytes, 0, bytes.length);
         return Bytes.toLong(firstly8Bytes);
+    }
+
+    public void close() throws IOException {
+        super.close();
+        keys.close();
+        hashes.close();
     }
 
 }

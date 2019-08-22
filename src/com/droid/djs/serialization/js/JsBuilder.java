@@ -105,7 +105,7 @@ public class JsBuilder {
                 TokenType tokenType = unaryNode.tokenType();
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = jsLine(module, unaryNode.getExpression());
-                    NativeNode nativeNode = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(tokenType));
+                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(tokenType));
                     Node func = builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionIndex(nativeNode.getFunctionIndex())
                             .addParam(variable)
@@ -116,7 +116,7 @@ public class JsBuilder {
                             .setSet(func)
                             .commit();
                 } else if (tokenType.toString().equals("-")) {
-                    NativeNode nativeNode = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.UNARY_MINUS);
+                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.UNARY_MINUS);
                     Node expression = jsLine(module, unaryNode.getExpression());
                     return builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionIndex(nativeNode.getFunctionIndex())
@@ -141,7 +141,7 @@ public class JsBuilder {
                             binaryNode.tokenType() == TokenType.ASSIGN_SUB ||
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
-                        NativeNode nativeFunc = (NativeNode) Files.getNode(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
+                        NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist(MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create(NodeType.NATIVE_FUNCTION)
                                 .setFunctionIndex(nativeFunc.getFunctionIndex())
                                 .addParam(left)
@@ -153,7 +153,7 @@ public class JsBuilder {
                             .setSet(right)
                             .commit();
                 } else {
-                    NativeNode nativeFunc = (NativeNode) Files.getNodeIfExist(new NodeBuilder().get(0L).getNode(), MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
+                    NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist( MathUtils.MATH_UTIL_NAME + "/" + MathUtils.convertTokenTypeToFuncName(binaryNode.tokenType()));
                     return builder.create(NodeType.NATIVE_FUNCTION)
                             .setFunctionIndex(nativeFunc.getFunctionIndex())
                             .addParam(left)

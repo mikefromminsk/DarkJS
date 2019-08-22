@@ -2,16 +2,13 @@ package com.droid.net.http;
 
 
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.serialization.json.JsonSerializer;
 import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
-import com.sun.net.httpserver.HttpServer;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.*;
@@ -48,49 +45,38 @@ public class HttpClientServer extends NanoHTTPD {
                     response = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "Need basic auth");
                     response.addHeader(Headers.AUTHENTICATE, "Basic realm=\"Access to the site\"");
                 } else {
-                    Node node = null;
-                    try {
-                        node = Files.getNodeIfExist(session.getUri());
-                    } catch (Exception e) {
-                        System.out.println("uri error with: " + session.getUri());
-                        e.printStackTrace();
-                    }
+
+                    authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
+                    authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
+                    String login = authorization.substring(0, authorization.indexOf(":"));
+                    String password = authorization.substring(authorization.indexOf(":") + 1);
+                    Long access_token = Crc16.getHash(login + password);
+
+                    Node node = Files.getNodeIfExist(session.getUri(), access_token);
 
                     if (node == null) {
                         response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
                     } else {
-                        authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
-                        authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
-                        String login = authorization.substring(0, authorization.indexOf(":"));
-                        String password = authorization.substring(authorization.indexOf(":") + 1);
-                        Long access_token = Crc16.getHash(login + password);
+                        Map<String, String> args = parseArguments(session.getQueryParameterString());
 
-                        node = Files.getNode(session.getUri(), null, access_token);
+                        NodeBuilder builder = new NodeBuilder().set(node);
 
-                        if (node == null) {
-                            response = newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Access denied");
-                        } else {
-                            Map<String, String> args = parseArguments(session.getQueryParameterString());
+                        for (Node param : builder.getParams())
+                            builder.set(param).setValue(null).commit();
 
-                            NodeBuilder builder = new NodeBuilder().set(node);
+                        for (String argsKey : args.keySet())
+                            setParam(node, argsKey, args.get(argsKey));
 
-                            for (Node param : builder.getParams())
-                                builder.set(param).setValue(null).commit();
+                        Instance.get().getThreads().run(node, null, false, access_token);
 
-                            for (String argsKey : args.keySet())
-                                setParam(node, argsKey, args.get(argsKey));
+                        builder.set(node);
+                        if (builder.isFunction())
+                            builder.set(builder.getValueNode());
 
-                            Instance.get().getThreads().run(node, null, false, access_token);
-
-                            builder.set(node);
-                            if (builder.isFunction())
-                                builder.set(builder.getValueNode());
-
-                            HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
-                            ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
-                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
-                            response.addHeader("content-length", "" + responseData.data.length); // fix nanohttpd issue when content type is define
-                        }
+                        HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
+                        ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
+                        response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
+                        response.addHeader("content-length", "" + responseData.data.length); // fix nanohttpd issue when content type is define
                     }
                 }
             } else if (session.getMethod() == Method.POST) {
@@ -170,16 +156,20 @@ public class HttpClientServer extends NanoHTTPD {
         return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
     }
 
-    public void request(String urlStr) throws IOException {
+    public Node request(String urlStr) throws IOException {
         urlStr = !urlStr.contains("://") ? "http://" + urlStr : urlStr;
         URL url = new URL(urlStr);
         url = new URL("http", url.getHost(), defaultPort, url.getFile());
         try {
-            request(url, new HashMap<>());
-        } catch (UnknownHostException e) {
-            url = new URL("http", Instance.get().proxyHost, (defaultPort + Instance.get().portAdding), url.getFile());
-            request(url, new HashMap<>());
-            e.printStackTrace();
+            return request(url, new HashMap<>());
+        } catch (UnknownHostException ignore) {
+            url = new URL("http", Instance.get().proxyHost, (defaultPort + Instance.get().proxyPortAdding), url.getFile());
+            try {
+                return request(url, new HashMap<>());
+            }catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -188,10 +178,10 @@ public class HttpClientServer extends NanoHTTPD {
         return s.hasNext() ? s.next() : "";
     }
 
-    public void request(URL url, Map<String, String> parameters) throws IOException {
+    public Node request(URL url, Map<String, String> parameters) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        String authData = Instance.get().login  + ":" +  Instance.get().password;
+        String authData = Instance.get().login + ":" + Instance.get().password;
         authData = Base64.getEncoder().encodeToString(authData.getBytes());
         con.addRequestProperty(Headers.AUTHORIZATION, BASIC_AUTH_PREFIX + authData);
         con.setDoOutput(true);
@@ -202,7 +192,6 @@ public class HttpClientServer extends NanoHTTPD {
         out.close();
 
         String response = convertStreamInString(con.getInputStream());
-        Node node = NodeParser.fromJson(response);
-
+        return NodeParser.fromJson(response);
     }
 }

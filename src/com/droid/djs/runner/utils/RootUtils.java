@@ -18,11 +18,10 @@ public class RootUtils extends Utils {
                 (builder, node, ths) -> {
                     String url = getString(builder, 0);
                     try {
-                        Instance.get().getHttpClientServer().request(url);
+                        return Instance.get().getHttpClientServer().request(url);
                     } catch (IOException e) {
                         return null;
                     }
-                    return builder.createBool(true);
                 }, par("url", NodeType.STRING));
 
         func("data", (builder, node, ths) -> {

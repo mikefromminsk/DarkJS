@@ -98,4 +98,11 @@ public class DataStorage {
         }
         return null;
     }
+
+    public void close() throws IOException {
+        dataStorage.close();
+        dataHashTree.close();
+    }
+
+    // TODO create transactionNodes for DataStorage and put it to all NodeStorage places
 }

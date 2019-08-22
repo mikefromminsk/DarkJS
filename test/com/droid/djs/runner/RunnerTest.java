@@ -8,6 +8,7 @@ import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.instance.Instance;
 import com.droid.djs.treads.Threads;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -34,6 +35,7 @@ class RunnerTest {
         assertTrue(bool);
     }
 
+    //TODO @RepeatedTest(100)
     @Test
     void run() throws IOException {
         new Instance("out/runTests", true)
@@ -51,6 +53,6 @@ class RunnerTest {
                         notNull(testData, test);
                         isTrue(testData, test);
                     }
-                }).call(null);
+                }).stop();
     }
 }

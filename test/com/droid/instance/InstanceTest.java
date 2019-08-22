@@ -31,7 +31,10 @@ class InstanceTest {
                 .setAccessCode("john", "1234")
                 .load("server.node.js", "var serverData = 12")
                 .call("server")
-                .call(() -> Files.observe("", node -> System.out.println(Files.getPath(node))));
+                .call(() -> {
+                    String data = NodeSerializer.toJson(Files.getNode("server/serverData"));
+                    assertNotEquals(-1, data.indexOf("12.0"));
+                });
 
         Instance cleint = new Instance("out/storeClient", true)
                 .setProxyHost("localhost", server.portAdding)
@@ -42,12 +45,8 @@ class InstanceTest {
                                 "}")
                 .call("client/getCode")
                 .call(() -> {
-                    Files.observe("", node -> System.out.println(Files.getPath(node)));
                     String data = NodeSerializer.toJson(Files.getNode("client/getCode"));
                     assertNotEquals(-1, data.indexOf("12.0"));
                 });
-
-        server.stop();
-        cleint.stop();
     }
 }

@@ -27,12 +27,11 @@ abstract public class Utils {
 
     public static void saveInterfaces() {
         NodeBuilder builder = new NodeBuilder();
-        Node root = new NodeBuilder().get(0L).getNode();
         List<FuncInterface> interfaces = Instance.get().interfaces;
         for (int i = 0; i < interfaces.size(); i++) {
             FuncInterface funcInterface = interfaces.get(i);
             String functionName = funcInterface.path + funcInterface.name;
-            NativeNode function = (NativeNode) Files.getNode(root, functionName, NodeType.NATIVE_FUNCTION);
+            NativeNode function = (NativeNode) Files.getNodeFromRoot(functionName, NodeType.NATIVE_FUNCTION);
             builder.set(function).setFunctionIndex(i);
             for (Parameter parameter : funcInterface.parameters) {
                 Node param = parNode(builder, parameter);

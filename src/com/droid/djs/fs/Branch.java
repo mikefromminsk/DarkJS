@@ -26,7 +26,7 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = Files.getNode(new NodeBuilder().get(0L).getNode(), "Branch/" + Math.abs(random.nextInt()));
+            root = Files.getNode("Branch/" + Math.abs(random.nextInt()));
             Instance.get().getNodeStorage().transactionCommit();
             updateTimer();
         }
@@ -48,7 +48,7 @@ public class Branch {
     }
 
     public Node findPackage(Node node) {
-        if (builder.set(node).getLocalCount() == 1)
+        if (builder.set(node).getLocalCount() == 1 && !builder.isFunction())
             return findPackage(builder.getLocalNode(0));
         else
             return node;

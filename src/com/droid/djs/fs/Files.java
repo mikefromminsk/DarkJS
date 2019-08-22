@@ -37,6 +37,22 @@ public class Files {
         return getNode(root, path, null);
     }
 
+    public static Node getNodeIfExist(String uri, Long access_token) {
+        return getNode(Instance.get().getMaster(), uri, null, access_token);
+    }
+
+    public static Node getNodeFromRoot(String uri) {
+        return getNode(new NodeBuilder().get(0L).getNode(), uri);
+    }
+
+    public static Node getNodeFromRoot(String uri, NodeType nodeType) {
+        return getNode(new NodeBuilder().get(0L).getNode(), uri, nodeType);
+    }
+
+    public static Node getNodeFromRootIfExist(String uri) {
+        return getNodeIfExist(new NodeBuilder().get(0L).getNode(), uri);
+    }
+
     public static Node getNode(String path, NodeType nodeType) {
         return getNode(Instance.get().getMaster(), path, nodeType);
     }

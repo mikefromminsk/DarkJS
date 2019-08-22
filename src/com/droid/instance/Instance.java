@@ -5,8 +5,7 @@ import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.serialization.node.HttpResponse;
-import com.droid.djs.serialization.node.NodeSerializer;
+import com.droid.gdb.DiskManager;
 import com.droid.gdb.map.Crc16;
 
 import java.io.*;
@@ -37,13 +36,13 @@ public class Instance extends InstanceParameters implements Runnable {
     }
 
     private boolean deleteDirectory(File directoryToBeDeleted) {
-        if (!directoryToBeDeleted.exists())
-            return true;
         File[] allContents = directoryToBeDeleted.listFiles();
         if (allContents != null)
             for (File file : allContents)
                 deleteDirectory(file);
-        return directoryToBeDeleted.delete();
+        if (!directoryToBeDeleted.delete())
+            System.out.println("cannot delete file " + directoryToBeDeleted.getAbsolutePath());
+        return true;
     }
 
     public Instance(String storeDir, boolean removeExistDir) throws IOException {
@@ -74,21 +73,16 @@ public class Instance extends InstanceParameters implements Runnable {
     public Instance start() {
         if (instanceThread == null || !instanceThread.isAlive()) {
             instanceThread = new Thread(this);
+            System.out.println("start instance " + storeDir);
             instanceThread.start();
         }
         return this;
     }
 
-    public Instance startAndWaitInit() {
-        call(null);
-        return this;
-    }
-
     public void stop() {
-        getThreads().stopAllThreads();
         if (instanceThread != null) {
             instanceThread.interrupt();
-            instanceThread = null;
+            wait(onStop);
         }
     }
 
@@ -113,6 +107,7 @@ public class Instance extends InstanceParameters implements Runnable {
     private Object onInitializing = new Object();
     private Object onStart = new Object();
     private Object onFinish = new Object();
+    private Object onStop = new Object();
 
     @Override
     public void run() {
@@ -173,7 +168,18 @@ public class Instance extends InstanceParameters implements Runnable {
                 try {
                     obj.wait();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    getThreads().stopAllThreads();
+                    try {
+                        getNodeStorage().transactionCommit();
+                        getNodeStorage().close();
+                        getDataStorage().close();
+                        DiskManager.removeInstance(getNodeStorage().diskManager);
+                    } catch (IOException e1) {
+                        e.printStackTrace();
+                    } finally {
+                        notify(onStop);
+                    }
+                    System.out.println("stop instance " + storeDir);
                 }
             }
     }
@@ -200,7 +206,7 @@ public class Instance extends InstanceParameters implements Runnable {
                 else if (obj instanceof Boolean)
                     nodeParameters[i] = builder.createBool((Boolean) obj);
             }
-            Node calledFunction = Files.getNode(nodePath);
+            Node calledFunction = Files.getNodeIfExist(nodePath);
             Instance.get().getThreads().run(calledFunction, nodeParameters, false, accessToken);
         });
         return this;
@@ -254,9 +260,5 @@ public class Instance extends InstanceParameters implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void join() throws InterruptedException {
-        instanceThread.join();
     }
 }
