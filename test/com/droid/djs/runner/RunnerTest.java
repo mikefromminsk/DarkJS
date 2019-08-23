@@ -41,8 +41,7 @@ class RunnerTest {
         new Instance("out/runTests", true)
                 .load("test_res/run")
                 .call(() -> {
-                    NodeBuilder builder = new NodeBuilder();
-                    builder.set(Files.getNode("root"));
+                    NodeBuilder builder = new NodeBuilder().set(Instance.get().getMaster());
                     for (Node test : builder.getLocalNodes()) {
                         Instance.get().getThreads().run(test);
                         Node testVar = builder.set(test).findLocal("test");

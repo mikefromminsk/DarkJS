@@ -668,6 +668,10 @@ public class NodeBuilder {
         return node.type.ordinal() < NodeType.NODE.ordinal();
     }
 
+    public boolean isDataVariable() {
+        return getValueNode() != null && getValueNode().type.ordinal() < NodeType.NODE.ordinal();
+    }
+
     public boolean isString() {
         return node.type == NodeType.STRING;
     }
@@ -684,12 +688,16 @@ public class NodeBuilder {
         return node.type == NodeType.NODE;
     }
 
+    public boolean isFunction() {
+        return getNextCount() > 0 || isNativeFunction();
+    }
+
     public boolean isArray() {
-        return node.type == NodeType.ARRAY;
+        return getCellCount() > 0;
     }
 
     public boolean isObject() {
-        return node.type == NodeType.OBJECT;
+        return getLocalCount() > 0 && !isFunction();
     }
 
     public boolean isNativeFunction() {
@@ -756,8 +764,7 @@ public class NodeBuilder {
         }
     }
 
-    public boolean isFunction() {
-        return getNextCount() > 0 || getType() == NodeType.NATIVE_FUNCTION;
+    public Integer getFunctionId() {
+        return ((NativeNode) node).getFunctionIndex();
     }
-
 }

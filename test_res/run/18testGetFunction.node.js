@@ -1,1 +1,1 @@
-var test = get("store.node/root") == true
+var test = get("store.node/root", "test") == true

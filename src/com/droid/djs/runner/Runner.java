@@ -19,10 +19,6 @@ public class Runner {
     private final static boolean SET_VALUE_FROM_VALUE = false;
     private final static boolean SET_VALUE_FROM_RETURN = true;
 
-    public void start(Node node) {
-        run(node);
-    }
-
     Node getNodePrototype(NodeType nodeType){
         return Files.getNode(DEFAULT_PROTOTYPES_DIR + Utils.capitalize(nodeType.toString()));
     }
@@ -196,14 +192,27 @@ public class Runner {
         }
     }
 
-    private void run(Node node) {
+    public void run(Node node) {
         run(node, null);
     }
 
     private Node exitNode = null;
 
     private void run(Node node, Node calledNodeId) {
-        //System.out.println("t" + Thread.currentThread().getId() + " n" + node.id);
+        {
+            NodeBuilder builder = new NodeBuilder().set(node);
+            String message = null;
+            if (builder.isData())
+                message = builder.getData().readString();
+            else
+                message = Files.getPath(node);
+            if (message == null || message.equals("/"))
+                message = builder.getTitleString();
+            if (message == null)
+                message = ""; //"n" + node.id;
+            System.out.println("t" + Thread.currentThread().getId() + " " + message);
+        }
+
 
         if (node.type == NodeType.THREAD) {
             ThreadNode threadNode = (ThreadNode) node;

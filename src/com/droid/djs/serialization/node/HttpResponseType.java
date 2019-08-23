@@ -5,7 +5,7 @@ public class HttpResponseType {
     public static final String CSS = "text/css";
     public static final String JS = "text/javascript";
     public static final String PNG = "image/png";
-    public static final String NUMBER_10 = "number/10";
+    public static final String NUMBER_BASE10 = "number/base10";
     public static final String JSON = "application/json";
     public static final String BOOLEAN = "boolean/text";
     public static final String TEXT = "text/plain";

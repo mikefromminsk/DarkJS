@@ -1,9 +1,11 @@
 package com.droid.djs.serialization.node;
 
+import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.runner.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -27,7 +29,10 @@ public class NodeParser {
     private static void setLink(NodeBuilder builder, Node node, LinkType linkType, String linkStr,
                                 Map<String, Map<String, Object>> nodes, Map<String, Node> replacementTable) {
         if (linkType == LinkType.NATIVE_FUNCTION) {
-            builder.set(node).setFunctionIndex(Integer.valueOf(linkStr)).commit();
+            linkStr = linkStr.substring(1);
+            Node selfNativeFunction = Files.getNodeFromRootIfExist(linkStr);
+            Integer functionId = builder.set(selfNativeFunction).getFunctionId();
+            builder.set(node).setFunctionIndex(functionId).commit();
         } else {
             Node linkValueNode = null;
 
@@ -62,14 +67,17 @@ public class NodeParser {
 
             NodeType nodeType = nodeTypeStr != null ? NodeType.valueOf(nodeTypeStr.toUpperCase()) : NodeType.NODE;
 
+            links.remove(NodeSerializer.TYPE_KEY);
+            links.remove(NodeSerializer.DATA_KEY);
+
             if (nodeType == NodeType.BOOLEAN) {
                 if (nodeDataStr.equals(NodeSerializer.TRUE))
                     node = builder.createBool(true);
                 else
                     node = builder.createBool(false);
-            } else if (nodeType == NodeType.NUMBER){
+            } else if (nodeType == NodeType.NUMBER) {
                 node = builder.createNumber(parseDouble(nodeDataStr));
-            } else if (nodeType == NodeType.STRING){
+            } else if (nodeType == NodeType.STRING) {
                 node = builder.createString(nodeDataStr);
             } else {
                 node = builder.create(nodeType).commit();
@@ -104,7 +112,8 @@ public class NodeParser {
     }
 
     public static Node fromJson(String response) {
-        Type mapType = new TypeToken<Map<String, Map>>(){}.getType();
+        Type mapType = new TypeToken<Map<String, Map>>() {
+        }.getType();
         Map<String, Map<String, Object>> responseObj = json.fromJson(response, mapType);
         return fromMap(responseObj);
     }

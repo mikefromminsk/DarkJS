@@ -24,7 +24,7 @@ class InstanceTest {
                 })
                 .stop();
     }*/
-    @Test
+/*    @Test
     void test() throws IOException {
         Instance server = new Instance("out/storeServer", true)
                 .setNodeName("store.node")
@@ -44,5 +44,34 @@ class InstanceTest {
 
         HttpResponse getCodeResponse = cleint.get("client/getCode");
         assertEquals("12", new String(getCodeResponse.data));
+    }*/
+
+    @Test
+    void test() throws IOException {
+        Instance server = new Instance("out/storeTestServer", true)
+                .setNodeName("store.node")
+                .setAccessCode("john", "1234")
+                .load("store.node.js",
+                        "function getCode(path) { \n" +
+                                "   return Node.serialize(path); \n" +
+                                "}")
+                .load("server.node.js",
+                        "function sum(a, b) { \n" +
+                                "   return a + b; \n" +
+                                "}")
+                .start();
+        assertEquals(new Double(3.0d), server.getNumber("server/sum", 1, 2));
+
+        Instance cleint = new Instance("out/storeTestClient", true)
+                .setProxyHost("localhost", server.portAdding)
+                .setAccessCode("john", "1234")
+                .load("client.node.js",
+                        "function loadApp(name){\n" +
+                                "    Console.log(\"bbbb\" + name); \n" +
+                                "    Node.eval(\"server\", get(\"store.node/store/getCode\", name))\n" +
+                                "}");
+        cleint.run("client/loadApp", "server");
+        assertEquals(new Double(3.0d), cleint.getNumber("server/sum", 1, 2));
     }
+
 }

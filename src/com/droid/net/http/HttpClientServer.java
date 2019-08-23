@@ -5,6 +5,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.runner.utils.Parameter;
 import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.HttpResponseType;
 import com.droid.djs.serialization.node.NodeParser;
@@ -110,7 +111,7 @@ public class HttpClientServer extends NanoHTTPD {
             try {
                 for (String pair : args.split("&")) {
                     int idx = pair.indexOf("=");
-                    query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                    query_pairs.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
                 }
             } catch (UnsupportedEncodingException e) {
             }
@@ -121,12 +122,18 @@ public class HttpClientServer extends NanoHTTPD {
     void setParam(Node node, String key, String value) {
         NodeBuilder builder = new NodeBuilder();
         Node param = null;
-        // TODO key can be par[title][0]
-        for (Node paramNode : builder.set(node).getParams())
-            if (key.equals(builder.set(paramNode).getTitleString())) {
-                param = paramNode;
-                break;
-            }
+
+        if (key.charAt(0) == '[') {
+            // TODO test key = "[key][0][key][0]"
+            param = builder.set(node).getParamNode(0);
+        } else {
+            for (Node paramNode : builder.set(node).getParams())
+                if (key.equals(builder.set(paramNode).getTitleString())) {
+                    param = paramNode;
+                    break;
+                }
+        }
+
         if (param != null) {
             Node valueNode;
             if (value.charAt(0) == '!') {
@@ -153,7 +160,7 @@ public class HttpClientServer extends NanoHTTPD {
         StringBuilder result = new StringBuilder();
 
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append(entry.getKey());
             result.append("=");
             result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
             result.append("&");
@@ -163,23 +170,54 @@ public class HttpClientServer extends NanoHTTPD {
         return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
     }
 
-    public Node request(String urlStr) throws IOException {
+    Map<String, String> buildParameters(Node paramter) {
+        NodeBuilder builder = new NodeBuilder();
+        Map<String, String> result = new HashMap<>();
+
+        if (builder.set(paramter).isDataVariable()) {
+            builder.set(builder.getValueNode());
+        }
+
+        if (builder.isString()){
+            result.put("[0]", "!" + builder.getData().readString());
+        }else if (builder.isNumber()){
+            result.put("[0]", builder.getData().readString());
+        }else if (builder.isBoolean()){
+            result.put("[0]", builder.getData().readString());
+        }else /*if (builder.isNULL()){
+            result.put("[0]", "!" + builder.getData().readString());
+        }else*/ if (builder.set(paramter).isObject()) {
+            // TODO test with locals more than 2 levels
+            for (Node local : builder.getLocalNodes()) {
+                HttpResponse response = NodeSerializer.getResponse(builder.getNode());
+                String key = URLEncoder.encode(builder.set(local).getTitleString());
+                result.put(key, new String(response.data));
+            }
+        } else if (builder.set(paramter).isArray()) {
+            // TODO add code
+        }
+        return result;
+    }
+
+    public Node request(String urlStr, Node paramter) throws IOException {
         urlStr = !urlStr.contains("://") ? "http://" + urlStr : urlStr;
         URL url = new URL(urlStr);
         url = new URL("http", url.getHost(), defaultPort, url.getFile());
+        Map<String, String> parameters = buildParameters(paramter);
         try {
-            return request(url, new HashMap<>());
+            return request(url, parameters);
         } catch (UnknownHostException ignore) {
             url = new URL("http", Instance.get().proxyHost, (defaultPort + Instance.get().proxyPortAdding), url.getFile());
             try {
-                return request(url, new HashMap<>());
-            }catch (Exception e){
+                return request(url, parameters);
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
         }
     }
 
+    // TODO change Map<String, String> parameters to Map<String, InputStream> parameters
     public Node request(URL url, Map<String, String> parameters) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -197,12 +235,17 @@ public class HttpClientServer extends NanoHTTPD {
 
         String contentType = con.getHeaderField(Headers.CONTENT_TYPE);
         NodeBuilder builder = new NodeBuilder();
-        switch (contentType){
-            case HttpResponseType.TEXT: return builder.create(NodeType.STRING).setData(inputStream).commit();
-            case HttpResponseType.NUMBER_10: return builder.create(NodeType.NUMBER).setData(inputStream).commit();
-            case HttpResponseType.BOOLEAN: return builder.create(NodeType.BOOLEAN).setData(inputStream).commit();
-            case HttpResponseType.NULL: return null;
-            case HttpResponseType.JSON: return NodeParser.fromStream(inputStream);
+        switch (contentType) {
+            case HttpResponseType.TEXT:
+                return builder.create(NodeType.STRING).setData(inputStream).commit();
+            case HttpResponseType.NUMBER_BASE10:
+                return builder.create(NodeType.NUMBER).setData(inputStream).commit();
+            case HttpResponseType.BOOLEAN:
+                return builder.create(NodeType.BOOLEAN).setData(inputStream).commit();
+            case HttpResponseType.NULL:
+                return null;
+            case HttpResponseType.JSON:
+                return NodeParser.fromStream(inputStream);
         }
         // TODO case when http type is not support
         return null;

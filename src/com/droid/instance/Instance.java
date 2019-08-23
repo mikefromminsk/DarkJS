@@ -6,6 +6,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.serialization.node.HttpResponse;
+import com.droid.djs.serialization.node.HttpResponseType;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.DiskManager;
 import com.droid.gdb.map.Crc16;
@@ -75,7 +76,6 @@ public class Instance extends InstanceParameters implements Runnable {
     public Instance start() {
         if (instanceThread == null || !instanceThread.isAlive()) {
             instanceThread = new Thread(this);
-            System.out.println("start instance " + storeDir);
             instanceThread.start();
         }
         return this;
@@ -114,6 +114,7 @@ public class Instance extends InstanceParameters implements Runnable {
     @Override
     public void run() {
         try {
+            System.out.println("start instance " + storeDir);
             connectThread(this);
 
             if (loadList.size() > 0) {
@@ -204,20 +205,35 @@ public class Instance extends InstanceParameters implements Runnable {
                 Object obj = parameters[i];
                 if (obj instanceof String)
                     nodeParameters[i] = builder.createString((String) obj);
-                else if (obj instanceof Double || obj instanceof Integer || obj instanceof Long)
+                else if (obj instanceof Integer)
+                    nodeParameters[i] = builder.createNumber((double) (int) obj);
+                else if (obj instanceof Double)
                     nodeParameters[i] = builder.createNumber((double) obj);
+                else if (obj instanceof Long)
+                    nodeParameters[i] = builder.createNumber((double) (long) obj);
                 else if (obj instanceof Boolean)
                     nodeParameters[i] = builder.createBool((Boolean) obj);
             }
             Node node = Files.getNodeIfExist(nodePath);
 
-            Instance.get().getThreads().run(node, nodeParameters, false, accessToken);
-
-            node = builder.set(node).getValueNode();
-
-            calledFunctionResponse[0] = NodeSerializer.getResponse(node);
+            if (node != null){
+                Instance.get().getThreads().run(node, nodeParameters, false, accessToken);
+                node = builder.set(node).getValueNode();
+                calledFunctionResponse[0] = NodeSerializer.getResponse(node);
+            }
         });
         return calledFunctionResponse[0];
+    }
+
+    public Double getNumber(String nodePath, Object... parameters) {
+        HttpResponse response = get(nodePath, parameters);
+        if (response.type.equals(HttpResponseType.NUMBER_BASE10))
+            return Double.valueOf(new String(response.data));
+        return null;
+    }
+
+    public String getString(String nodePath, Object... parameters) {
+        return new String(get(nodePath, parameters).data);
     }
 
     public void run(String nodePath, Object... parameters) {

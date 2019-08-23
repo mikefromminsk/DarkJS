@@ -172,7 +172,7 @@ public class NodeSerializer {
         if (builder.isData()) {
             String contentType;
             if (builder.isNumber()) {
-                contentType = HttpResponseType.NUMBER_10;
+                contentType = HttpResponseType.NUMBER_BASE10;
             } else if (builder.isBoolean()) {
                 contentType = HttpResponseType.BOOLEAN;
             } else {

@@ -112,7 +112,7 @@ abstract public class Utils {
     }
 
     Node getNode(NodeBuilder builder, int i) {
-        return builder.getParams()[i];
+        return builder.getParamNode(i);
     }
 
     public abstract String name();
