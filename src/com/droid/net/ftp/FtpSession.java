@@ -6,6 +6,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
+import com.droid.instance.InstanceParameters;
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.nodes.*;
@@ -15,12 +16,17 @@ import java.io.OutputStream;
 
 public class FtpSession implements IFileSystem<Node> {
 
-    private Branch branch = new Branch(300);
-    private NodeBuilder builder = new NodeBuilder();
+    private Instance instance;
+    private Branch branch;
     private Long access_token;
+    private NodeBuilder builder;
 
-    public FtpSession(String username, String password) {
-        access_token = Crc16.getHash(username +  password);
+    public FtpSession(int port, String username, String password) {
+        System.out.println("FtpSession" + Thread.currentThread().getId());
+        instance = Instance.connectThreadByPortAdditional(port - FtpServer.defaultPort);
+        branch = new Branch(300);
+        builder = new NodeBuilder();
+        access_token = Crc16.getHash(username + password);
     }
 
     @Override
@@ -132,7 +138,7 @@ public class FtpSession implements IFileSystem<Node> {
     @Override
     public OutputStream writeFile(Node file, long start) {
         Node node = Files.getNode(branch.getRoot(), Files.getPath(file));
-        return new DataOutputStream(branch, node);
+        return new DataOutputStream(instance, branch, node);
     }
 
     @Override

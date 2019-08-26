@@ -2,7 +2,9 @@ package com.droid.djs.fs;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.nodes.consts.NodeType;
 import com.droid.instance.Instance;
+import com.droid.instance.InstanceParameters;
 
 import java.util.Random;
 import java.util.Timer;
@@ -10,17 +12,15 @@ import java.util.TimerTask;
 
 public class Branch {
 
+    private Instance instance;
     private NodeBuilder builder = new NodeBuilder();
     private Node root;
     private Timer timer = new Timer();
     private Random random = new Random();
     private int mergeTimer;
 
-    public Branch() {
-        this(0);
-    }
-
     public Branch(int mergeTimer) {
+        instance = Instance.get();
         this.mergeTimer = mergeTimer;
     }
 
@@ -41,7 +41,9 @@ public class Branch {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    Instance.connectThread(instance);
                     mergeWithMaster();
+                    Instance.disconnectThread();
                 }
             }, mergeTimer);
         }
@@ -56,15 +58,14 @@ public class Branch {
 
     // TODO issue when in run folder only one file
     public void mergeWithMaster() {
+        System.out.println("mergeWithMaster"  + Thread.currentThread().getId());
         if (timer != null)
             timer.cancel();
         if (root != null) {
             Node branchPackage = findPackage(root);
             if (branchPackage != null) {
-                String branchRootPath = Files.getPath(root);
-                String branchFilePath = Files.getPath(branchPackage);
-                branchFilePath = branchFilePath.substring(branchRootPath.length());
-                Node masterPackage = Files.getNode(branchFilePath);
+                String branchPackagePath = Files.getPath(root, branchPackage);
+                Node masterPackage =  Files.getNode(branchPackagePath);
                 Files.replace(masterPackage, branchPackage);
                 if (masterPackage == Instance.get().getMaster())
                     Instance.get().removeMaster();

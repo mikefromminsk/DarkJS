@@ -7,6 +7,7 @@ import com.droid.djs.serialization.json.JsonParser;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
+import com.droid.instance.Instance;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -22,18 +23,16 @@ public class DataOutputStream extends OutputStream {
     private File tempFile = new File(ftpTempDir, "" + random.nextInt());
     private FileOutputStream out;
     private Branch branch;
+    private Instance instance;
 
-    public DataOutputStream(Branch branch, Node node) {
+    public DataOutputStream(Instance instance, Branch branch, Node node) {
+        this.instance = instance;
         this.branch = branch;
         this.node = node;
         try {
             out = new FileOutputStream(tempFile);
         } catch (Exception ignore) {
         }
-    }
-
-    public DataOutputStream(Node node) {
-        this(new Branch(), node);
     }
 
     @Override
@@ -64,30 +63,15 @@ public class DataOutputStream extends OutputStream {
     public void close() {
         try {
             out.close();
-            Node res = Files.putFile(node, new FileInputStream(tempFile));
-            NodeBuilder builder = new NodeBuilder().set(res);
-            Data dataNode = (Data) builder.getValueNode();
-            Data parserNode = builder.getParserNode();
-            if (parserNode != null && dataNode != null) {
-                String parser = parserNode.data.readString();
-                String data = dataNode.data.readString();
-                boolean parserExist = true;
-                if ("json".equals(parser)) {
-                    JsonElement jsonElement = JsonParser.parse(data);
-                    JsonBuilder.build(node, jsonElement);
-                } else if ("node.js".equals(parser)) {
-                    jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
-                    new JsBuilder().build(node, nashornNode);
-                } else {
-                    parserExist = false;
-                }
-                if (parserExist){
-                    new NodeBuilder().set(node).setValue(null);
-                }
-            }
+            boolean connectionOpened = Instance.connectThreadIfNotConnected(instance);
+            Instance.get();
+            Files.putFile(node, new FileInputStream(tempFile));
+            if (connectionOpened)
+                Instance.disconnectThread();
             tempFile.delete();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

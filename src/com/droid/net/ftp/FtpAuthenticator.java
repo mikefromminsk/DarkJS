@@ -1,7 +1,9 @@
 package com.droid.net.ftp;
 
+import com.droid.instance.Instance;
 import com.droid.net.ftp.FtpSession;
 import com.guichaguri.minimalftp.FTPConnection;
+import com.guichaguri.minimalftp.FTPServer;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.guichaguri.minimalftp.api.IUserAuthenticator;
 
@@ -31,8 +33,10 @@ public class FtpAuthenticator implements IUserAuthenticator {
 
     @Override
     public IFileSystem authenticate(FTPConnection con, InetAddress address, String username, String password) throws AuthException {
-        if (con.getFileSystem() == null)
-            con.setFileSystem(new FtpSession(username, password));
+        if (con.getFileSystem() == null){
+            FtpSession ftpSession = new FtpSession(con.getServer().getPort(), username, password);
+            con.setFileSystem(ftpSession);
+        }
         return con.getFileSystem();
     }
 }

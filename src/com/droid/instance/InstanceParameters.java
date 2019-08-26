@@ -87,15 +87,18 @@ public class InstanceParameters {
     }
 
     public HttpClientServer startHttpServerOnFreePort() throws BindException {
-        while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF){
-            try {
-                httpClientServer = new HttpClientServer(HttpClientServer.defaultPort + portAdding);
-                return httpClientServer;
-            } catch (IOException e) {
-                portAdding++;
+        if (httpClientServer == null){
+            while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF){
+                try {
+                    httpClientServer = new HttpClientServer(HttpClientServer.defaultPort + portAdding);
+                    return httpClientServer;
+                } catch (IOException e) {
+                    portAdding++;
+                }
             }
+            throw new BindException();
         }
-        throw new BindException();
+        return httpClientServer;
     }
 
     private HttpClientServer httpClientServer;

@@ -5,24 +5,33 @@ import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
+import com.droid.djs.serialization.js.JsBuilder;
+import com.droid.djs.serialization.js.JsParser;
+import com.droid.djs.serialization.json.JsonBuilder;
+import com.droid.djs.serialization.json.JsonParser;
 import com.droid.instance.Instance;
+import com.google.gson.JsonElement;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
 public class Files {
 
-    public static String getPath(Node file) {
+    public static String getPath(Node root, Node file) {
         NodeBuilder builder = new NodeBuilder().set(file);
         StringBuilder path = new StringBuilder();
-        Node master = Instance.get().getMaster();
-        while (builder.getLocalParentNode() != null && builder.getNode() != master) {
+        while (builder.getLocalParentNode() != null && builder.getNode() != root) {
             path.insert(0, "/" + builder.getTitleString());
             Node localParent = builder.getLocalParentNode();
             builder.set(localParent);
         }
         return "".equals(path.toString()) ? "/" : path.toString();
+    }
+
+    public static String getPath(Node file) {
+        return getPath(Instance.get().getMaster(), file);
     }
 
     public static Node getNode(String path) {
@@ -150,8 +159,25 @@ public class Files {
     public static Node putFile(Node node, String path, InputStream stream) {
         Node fileNode = getNode(node, path);
         NodeBuilder builder = new NodeBuilder();
-        Node dataNode = builder.create(NodeType.STRING).setData(stream).commit();
+        Data dataNode = (Data) builder.create(NodeType.STRING).setData(stream).commit();
         builder.set(fileNode).setValue(dataNode).commit();
+
+        Data parserNode = builder.getParserNode();
+        if (parserNode != null && dataNode != null) {
+            String parser = parserNode.data.readString();
+            String data = dataNode.data.readString();
+            if ("json".equals(parser)) {
+                JsonElement jsonElement = JsonParser.parse(data);
+                JsonBuilder.build(node, jsonElement);
+                builder.set(node).setValue(null).commit();
+            } else if ("node.js".equals(parser)) {
+                jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
+                Instance.get();
+                new JsBuilder().build(node, nashornNode);
+                builder.set(node).setValue(null).commit();
+            }
+        }
+
         return fileNode;
     }
 
@@ -170,7 +196,7 @@ public class Files {
         NodeBuilder builder = new NodeBuilder();
         Node masterLocalParent = builder.set(from).getLocalParentNode();
         Node[] masterParentLocals = builder.set(masterLocalParent).getLocalNodes();
-        int localIndex = Arrays.asList(masterParentLocals).indexOf(from);
+        int localIndex = Arrays.asList(masterParentLocals).indexOf(from); // TODO replace this line with builder.findLocal
         builder.set(masterLocalParent).setLocalNode(localIndex, to).commit();
 
         Node title = builder.set(from).getTitleNode();

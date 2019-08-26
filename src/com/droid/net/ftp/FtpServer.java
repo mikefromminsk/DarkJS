@@ -1,6 +1,7 @@
 package com.droid.net.ftp;
 
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.instance.Instance;
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.FTPServer;
 import com.guichaguri.minimalftp.api.IFTPListener;
@@ -15,6 +16,7 @@ public class FtpServer implements IFTPListener {
     public static int defaultPort = 21;
 
     public FtpServer(Integer port) {
+        System.out.println("FtpServer" + Thread.currentThread().getId());
         server.setAuthenticator(new FtpAuthenticator());
         server.addListener(this);
         server.setTimeout(3000);
@@ -32,11 +34,13 @@ public class FtpServer implements IFTPListener {
 
     @Override
     public void onConnected(FTPConnection con) {
-
+        // connect to Instance in FtpAuthenticator class
+        System.out.println("onConnected" + Thread.currentThread().getId());
     }
 
     @Override
     public void onDisconnected(FTPConnection con) {
-
+        System.out.println("onDisconnected" + Thread.currentThread().getId());
+        Instance.disconnectThreadByPortAdding(FtpServer.defaultPort - con.getServer().getPort());
     }
 }

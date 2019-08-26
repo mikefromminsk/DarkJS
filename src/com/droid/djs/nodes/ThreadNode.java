@@ -59,13 +59,13 @@ public class ThreadNode extends Node implements Runnable {
 
     class RunData {
         Object callerIsBlocked;
-        InstanceParameters instanceParameters;
+        Instance instance;
         Node node;
         Map<String, String> args;
 
-        public RunData(Object callerIsBlocked, InstanceParameters instanceParameters, Node node, Map<String, String> args) {
+        public RunData(Object callerIsBlocked, Instance instance, Node node, Map<String, String> args) {
             this.callerIsBlocked = callerIsBlocked;
-            this.instanceParameters = instanceParameters;
+            this.instance = instance;
             this.node = node;
             this.args = args;
         }
@@ -127,7 +127,7 @@ public class ThreadNode extends Node implements Runnable {
             while (!runQueue.isEmpty()) {
                 RunData runData = runQueue.pollFirst();
                 if (runData != null) {
-                    Instance.connectThread(runData.instanceParameters);
+                    Instance.connectThread(runData.instance);
                     runner.run(runData.node);
                     Instance.disconnectThread();
                     notify(runData);

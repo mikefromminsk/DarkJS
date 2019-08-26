@@ -71,7 +71,7 @@ class InstanceTest {
                                 "    Node.eval(\"server\", get(\"store.node/store/getCode\", name))\n" +
                                 "}");
         cleint.run("client/loadApp", "server");
-        assertEquals(new Double(3.0d), cleint.getNumber("server/sum", 1, 2));
+        assertEquals(new Double(4.0d), cleint.getNumber("server/sum", 2, 2));
     }
 
 }

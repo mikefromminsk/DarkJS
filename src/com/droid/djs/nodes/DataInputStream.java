@@ -62,7 +62,7 @@ public class DataInputStream extends InputStream {
                 if (readiedChars < BUFFER_SIZE)
                     buf = Arrays.copyOf(buf, readiedChars); // removeSector zero bytes
                 currentPosition += readiedChars;
-                fileReader.close();
+                // fileReader not close
                 return buf;
             }
         } catch (IOException e) {

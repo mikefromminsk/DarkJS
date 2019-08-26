@@ -17,11 +17,12 @@ import java.util.Map;
 
 public class Instance extends InstanceParameters implements Runnable {
 
-    private static Map<Long, InstanceParameters> allInstanceParameters = new HashMap<>();
+    // todo add disconnect instance after timeout
+    private static Map<Long, Instance> allConnectedThreads = new HashMap<>();
     private Thread instanceThread;
 
-    public static InstanceParameters get() {
-        return allInstanceParameters.get(Thread.currentThread().getId());
+    public static Instance get() {
+        return allConnectedThreads.get(Thread.currentThread().getId());
     }
 
     public Instance(int portAdding, String storeDir, String installDir, String nodename, String proxyHost, String login, String password) {
@@ -88,21 +89,41 @@ public class Instance extends InstanceParameters implements Runnable {
         }
     }
 
-    public static void connectThread(InstanceParameters instanceParameters) {
-        allInstanceParameters.put(Thread.currentThread().getId(), instanceParameters);
+    public static Instance getByPortAdditional(int portAdding) {
+        for (Long threadID : allConnectedThreads.keySet())
+            if (allConnectedThreads.get(threadID).portAdding == portAdding)
+                return allConnectedThreads.get(threadID);
+        return null;
     }
 
-    public static void connectThreadByPortAdditional(int addToPort) {
-        for (Long threadID : allInstanceParameters.keySet())
-            if (allInstanceParameters.get(threadID).portAdding == addToPort) {
-                connectThread(allInstanceParameters.get(threadID));
-                return;
-            }
-        throw new NullPointerException();
+    public static Instance connectThreadByPortAdditional(int portAdding) {
+        Instance instance = getByPortAdditional(portAdding);
+        connectThread(instance);
+        return instance;
+    }
+
+
+    public static boolean connectThreadIfNotConnected(Instance instance) {
+        if (allConnectedThreads.containsKey(Thread.currentThread().getId()))
+            return false;
+        connectThread(instance);
+        return true;
+    }
+
+    public static void connectThread(Instance instance) {
+        allConnectedThreads.put(Thread.currentThread().getId(), instance);
+    }
+
+    public static void disconnectThreadByPortAdding(int portAdding) {
+        disconnectThread(getByPortAdditional(portAdding));
+    }
+
+    public static void disconnectThread(Instance instance) {
+        allConnectedThreads.values().remove(instance);
     }
 
     public static void disconnectThread() {
-        allInstanceParameters.remove(Thread.currentThread().getId());
+        allConnectedThreads.remove(Thread.currentThread().getId());
     }
 
     private Runnable func;
@@ -118,7 +139,7 @@ public class Instance extends InstanceParameters implements Runnable {
             connectThread(this);
 
             if (loadList.size() > 0) {
-                Branch loadingBranch = new Branch();
+                Branch loadingBranch = new Branch(0);
                 for (String path : loadList.keySet()) {
                     InputStream inputStream = loadList.get(path);
                     if (inputStream != null)
@@ -216,7 +237,7 @@ public class Instance extends InstanceParameters implements Runnable {
             }
             Node node = Files.getNodeIfExist(nodePath);
 
-            if (node != null){
+            if (node != null) {
                 Instance.get().getThreads().run(node, nodeParameters, false, accessToken);
                 node = builder.set(node).getValueNode();
                 calledFunctionResponse[0] = NodeSerializer.getResponse(node);
@@ -256,8 +277,9 @@ public class Instance extends InstanceParameters implements Runnable {
 
     private void loadStream(Branch loadingBranch, String localFileName, InputStream dataStream) {
         try {
-            DataOutputStream dataOutputStream = new DataOutputStream(loadingBranch,
-                    Files.getNode(loadingBranch.getRoot(), localFileName));
+            Instance.get();
+            Node file = Files.getNode(loadingBranch.getRoot(), localFileName);
+            DataOutputStream dataOutputStream = new DataOutputStream(Instance.get(), loadingBranch, file);
             byte[] buffer = new byte[1024];
             int len;
             while ((len = dataStream.read(buffer)) != -1)
@@ -278,6 +300,7 @@ public class Instance extends InstanceParameters implements Runnable {
                 if (file.isDirectory()) {
                     loadDirectory(loadingBranch, file, localFileName);
                 } else {
+                    System.out.println(localFileName);
                     loadStream(loadingBranch, localFileName, new FileInputStream(file));
                 }
             }

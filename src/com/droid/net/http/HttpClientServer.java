@@ -61,7 +61,11 @@ public class HttpClientServer extends NanoHTTPD {
                     String password = authorization.substring(authorization.indexOf(":") + 1);
                     Long access_token = Crc16.getHash(login + password);
 
-                    Node node = Files.getNodeIfExist(session.getUri(), access_token);
+                    String urlPath = session.getUri();
+                    if (urlPath.equals("") || urlPath.equals("/"))
+                        urlPath = "index";
+
+                    Node node = Files.getNodeIfExist(urlPath, access_token);
 
                     if (node == null) {
                         response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
@@ -78,8 +82,8 @@ public class HttpClientServer extends NanoHTTPD {
 
                         Instance.get().getThreads().run(node, null, false, access_token);
 
-                        builder.set(node);
-                        builder.set(builder.getValueNode());
+                        if (builder.set(node).isFunction())
+                            builder.set(builder.getValueNode());
 
                         HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
                         ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
