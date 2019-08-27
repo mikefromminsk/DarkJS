@@ -34,6 +34,11 @@ public class Files {
         return getPath(Instance.get().getMaster(), file);
     }
 
+    public static String getPathWithParser(Node file) {
+        Node parser = new NodeBuilder().set(file).getParserNode();
+        return getPath(Instance.get().getMaster(), file) + (parser != null ? "." + ((Data) parser).data.readString() : "");
+    }
+
     public static Node getNode(String path) {
         return getNode(path, NodeType.NODE);
     }
@@ -157,25 +162,30 @@ public class Files {
     }
 
     public static Node putFile(Node node, String path, InputStream stream) {
-        Node fileNode = getNode(node, path);
-        NodeBuilder builder = new NodeBuilder();
-        Data dataNode = (Data) builder.create(NodeType.STRING).setData(stream).commit();
-        builder.set(fileNode).setValue(dataNode).commit();
+        Node fileNode = null;
+        try {
+            fileNode = getNode(node, path);
+            NodeBuilder builder = new NodeBuilder();
+            Data dataNode = (Data) builder.create(NodeType.STRING).setData(stream).commit();
+            builder.set(fileNode).setValue(dataNode).commit();
 
-        Data parserNode = builder.getParserNode();
-        if (parserNode != null && dataNode != null) {
-            String parser = parserNode.data.readString();
-            String data = dataNode.data.readString();
-            if ("json".equals(parser)) {
-                JsonElement jsonElement = JsonParser.parse(data);
-                JsonBuilder.build(node, jsonElement);
-                builder.set(node).setValue(null).commit();
-            } else if ("node.js".equals(parser)) {
-                jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
-                Instance.get();
-                new JsBuilder().build(node, nashornNode);
-                builder.set(node).setValue(null).commit();
+            Data parserNode = builder.getParserNode();
+            if (parserNode != null && dataNode != null) {
+                String parser = parserNode.data.readString();
+                String data = dataNode.data.readString();
+                if ("json".equals(parser)) {
+                    JsonElement jsonElement = JsonParser.parse(data);
+                    JsonBuilder.build(node, jsonElement);
+                    builder.set(node).setValue(null).commit();
+                } else if ("node.js".equals(parser)) {
+                    jdk.nashorn.internal.ir.Node nashornNode = JsParser.parse(data);
+                    Instance.get();
+                    new JsBuilder().build(node, nashornNode);
+                    builder.set(node).setValue(null).commit();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return fileNode;
@@ -227,7 +237,7 @@ public class Files {
 
     private static void observeRec(NodeBuilder builder, Node node, FindFile findFile) {
         Node[] locals = builder.set(node).getLocalNodes();
-        for (Node local : locals){
+        for (Node local : locals) {
             findFile.file(local);
             observeRec(builder, local, findFile);
         }

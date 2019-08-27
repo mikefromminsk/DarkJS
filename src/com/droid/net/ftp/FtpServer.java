@@ -41,6 +41,5 @@ public class FtpServer implements IFTPListener {
     @Override
     public void onDisconnected(FTPConnection con) {
         System.out.println("onDisconnected" + Thread.currentThread().getId());
-        Instance.disconnectThreadByPortAdding(FtpServer.defaultPort - con.getServer().getPort());
     }
 }

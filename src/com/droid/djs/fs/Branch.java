@@ -26,7 +26,7 @@ public class Branch {
 
     public Node getRoot() {
         if (root == null) {
-            root = Files.getNode("Branch/" + Math.abs(random.nextInt()));
+            root = Files.getNodeFromRoot("Branch/" + Math.abs(random.nextInt()));
             Instance.get().getNodeStorage().transactionCommit();
             updateTimer();
         }

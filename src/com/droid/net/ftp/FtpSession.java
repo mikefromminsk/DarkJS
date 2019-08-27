@@ -24,7 +24,7 @@ public class FtpSession implements IFileSystem<Node> {
     public FtpSession(int port, String username, String password) {
         System.out.println("FtpSession" + Thread.currentThread().getId());
         instance = Instance.connectThreadByPortAdditional(port - FtpServer.defaultPort);
-        branch = new Branch(300);
+        branch = new Branch(1300);
         builder = new NodeBuilder();
         access_token = Crc16.getHash(username + password);
     }
@@ -137,7 +137,7 @@ public class FtpSession implements IFileSystem<Node> {
 
     @Override
     public OutputStream writeFile(Node file, long start) {
-        Node node = Files.getNode(branch.getRoot(), Files.getPath(file));
+        Node node = Files.getNode(branch.getRoot(), Files.getPathWithParser(file));
         return new DataOutputStream(instance, branch, node);
     }
 
