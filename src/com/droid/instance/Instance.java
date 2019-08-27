@@ -12,7 +12,9 @@ import com.droid.gdb.DiskManager;
 import com.droid.gdb.map.Crc16;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Instance extends InstanceParameters implements Runnable {
@@ -20,6 +22,13 @@ public class Instance extends InstanceParameters implements Runnable {
     // todo add disconnect instance after timeout
     private static Map<Long, Instance> allConnectedThreads = new HashMap<>();
     private Thread instanceThread;
+    private Map<String, InputStream> loadList = new HashMap<>();
+    private List<String> loadExceptList = new ArrayList<>();
+    private Runnable func;
+    private Object onInitializing = new Object();
+    private Object onStart = new Object();
+    private Object onFinish = new Object();
+    private Object onStop = new Object();
 
     public static Instance get() {
         return allConnectedThreads.get(Thread.currentThread().getId());
@@ -62,6 +71,10 @@ public class Instance extends InstanceParameters implements Runnable {
         return this;
     }
 
+    public Instance setProxyPortAdding(int proxyPortAdding) {
+        return setProxyHost("localhost", proxyPortAdding);
+    }
+
     public Instance setNodeName(String nodename) {
         this.nodename = nodename;
         return this;
@@ -75,10 +88,7 @@ public class Instance extends InstanceParameters implements Runnable {
     }
 
     public Instance start() {
-        if (instanceThread == null || !instanceThread.isAlive()) {
-            instanceThread = new Thread(this);
-            instanceThread.start();
-        }
+        call(null);
         return this;
     }
 
@@ -125,12 +135,6 @@ public class Instance extends InstanceParameters implements Runnable {
     public static void disconnectThread() {
         allConnectedThreads.remove(Thread.currentThread().getId());
     }
-
-    private Runnable func;
-    private Object onInitializing = new Object();
-    private Object onStart = new Object();
-    private Object onFinish = new Object();
-    private Object onStop = new Object();
 
     @Override
     public void run() {
@@ -209,7 +213,10 @@ public class Instance extends InstanceParameters implements Runnable {
     }
 
     public Instance call(Runnable func) {
-        start();
+        if (instanceThread == null || !instanceThread.isAlive()) {
+            instanceThread = new Thread(this);
+            instanceThread.start();
+        }
         wait(onInitializing);
         this.func = func;
         notify(onStart);
@@ -261,8 +268,6 @@ public class Instance extends InstanceParameters implements Runnable {
         get(nodePath, parameters);
     }
 
-    private Map<String, InputStream> loadList = new HashMap<>();
-
     public Instance load(String path, String filedata) {
         if (path != null && filedata != null)
             loadList.put(path, new ByteArrayInputStream(filedata.getBytes()));
@@ -277,6 +282,10 @@ public class Instance extends InstanceParameters implements Runnable {
 
     private void loadStream(Branch loadingBranch, String localFileName, InputStream dataStream) {
         try {
+            if (loadExceptList.contains(localFileName)) {
+                dataStream.close();
+                return;
+            }
             Instance.get();
             Node file = Files.getNode(loadingBranch.getRoot(), localFileName);
             DataOutputStream dataOutputStream = new DataOutputStream(Instance.get(), loadingBranch, file);
@@ -297,6 +306,8 @@ public class Instance extends InstanceParameters implements Runnable {
             if (list == null) return;
             for (File file : list) {
                 String localFileName = localPath + "/" + file.getName();
+                if (loadExceptList.contains(localFileName))
+                    continue;
                 if (file.isDirectory()) {
                     loadDirectory(loadingBranch, file, localFileName);
                 } else {
@@ -307,5 +318,13 @@ public class Instance extends InstanceParameters implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Instance loadExcept(String exception) {
+        exception = exception.replace('\\', '/');
+        if (exception.charAt(0) != '/')
+            exception = '/' + exception;
+        loadExceptList.add(exception);
+        return this;
     }
 }

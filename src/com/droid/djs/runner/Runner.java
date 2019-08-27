@@ -199,7 +199,7 @@ public class Runner {
     private Node exitNode = null;
 
     private void run(Node node, Node calledNodeId) {
-        {
+        /*{
             NodeBuilder builder = new NodeBuilder().set(node);
             String message = null;
             if (builder.isData())
@@ -211,7 +211,7 @@ public class Runner {
             if (message == null)
                 message = ""; //"n" + node.id;
             System.out.println("t" + Thread.currentThread().getId() + " " + message);
-        }
+        }*/
 
 
         if (node.type == NodeType.THREAD) {

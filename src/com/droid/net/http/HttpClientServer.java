@@ -203,10 +203,8 @@ public class HttpClientServer extends NanoHTTPD {
         return result;
     }
 
-    public Node request(String urlStr, Node paramter) throws IOException {
-        urlStr = !urlStr.contains("://") ? "http://" + urlStr : urlStr;
-        URL url = new URL(urlStr);
-        url = new URL("http", url.getHost(), defaultPort, url.getFile());
+    public Node request(String host, String path, Node paramter) throws IOException {
+        URL url = new URL("http", host, defaultPort, path);
         Map<String, String> parameters = buildParameters(paramter);
         try {
             return request(url, parameters);

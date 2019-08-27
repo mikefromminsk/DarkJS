@@ -68,7 +68,7 @@ class InstanceTest {
                 .load("client.node.js",
                         "function loadApp(name){\n" +
                                 "    Console.log(\"bbbb\" + name); \n" +
-                                "    Node.eval(\"server\", get(\"store.node/store/getCode\", name))\n" +
+                                "    Node.eval(\"server\", get(\"store.node\", \"store/getCode\", name))\n" +
                                 "}");
         cleint.run("client/loadApp", "server");
         assertEquals(new Double(4.0d), cleint.getNumber("server/sum", 2, 2));

@@ -83,6 +83,13 @@ abstract public class Utils {
         return null;
     }
 
+    String getStringRequared(NodeBuilder builder, int index) {
+        String result = getString(builder, index);
+        if (result != null)
+            return result;
+        throw new NullPointerException();
+    }
+
     String firstString(NodeBuilder builder) {
         return getString(builder, 0);
     }

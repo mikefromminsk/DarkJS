@@ -15,9 +15,13 @@ public class HttpResponseType {
         switch (parserName) {
             case "js":
                 return JS;
+            case "min.js":
+                return JS;
             case "html":
                 return HTML;
             case "css":
+                return CSS;
+            case "min.css":
                 return CSS;
             case "png":
                 return PNG;

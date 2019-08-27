@@ -1,5 +1,6 @@
 package com.droid.djs.runner.utils;
 
+import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.fs.Files;
@@ -16,7 +17,8 @@ public class NodeUtils extends Utils {
     public void methods() {
         func("get", (builder, node, ths) -> Files.getNodeIfExist(firstString(builder)), par("path", NodeType.STRING));
         func("serialize", (builder, node, ths) -> {
-            Node serializeNode = Files.getNode(firstString(builder));
+            String path = firstString(builder);
+            Node serializeNode = Files.getNode(path);
             String json = NodeSerializer.toJson(serializeNode);
             return builder.createString(json);
         }, par("path", NodeType.STRING));

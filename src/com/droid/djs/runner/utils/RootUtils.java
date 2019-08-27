@@ -16,15 +16,17 @@ public class RootUtils extends Utils {
     public void methods() {
         func("get",
                 (builder, node, ths) -> {
-                    String url = getString(builder, 0);
-                    Node parameter = getNode(builder, 1);
+                    String host = getStringRequared(builder, 0);
+                    String path = getStringRequared(builder, 1);
+                    Node parameter = getNode(builder, 2);
                     try {
-                        return Instance.get().getHttpClientServer().request(url, parameter);
+                        return Instance.get().getHttpClientServer().request(host, path, parameter);
                     } catch (IOException e) {
                         return null;
                     }
                 },
-                par("url", NodeType.STRING),
+                par("host", NodeType.STRING),
+                par("path", NodeType.STRING),
                 par("arguments", NodeType.NODE));
 
         func("data", (builder, node, ths) -> {
