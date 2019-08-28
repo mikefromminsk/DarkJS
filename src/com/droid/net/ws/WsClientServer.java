@@ -19,10 +19,10 @@ import java.util.*;
 
 public class WsClientServer extends WebSocketServer {
 
-    private String proxyHost = "localhost:9001";
+    private String proxyHost;
 
     private final String nodeName;
-    public static int defaultPort = 8081;
+    public static int defaultPort = 59000;
 
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 

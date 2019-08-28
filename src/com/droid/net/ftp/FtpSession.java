@@ -6,7 +6,7 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
-import com.droid.instance.InstanceParameters;
+
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
 import com.droid.djs.nodes.*;
@@ -22,7 +22,6 @@ public class FtpSession implements IFileSystem<Node> {
     private NodeBuilder builder;
 
     public FtpSession(int port, String username, String password) {
-        System.out.println("FtpSession" + Thread.currentThread().getId());
         instance = Instance.connectThreadByPortAdditional(port - FtpServer.defaultPort);
         branch = new Branch(300);
         builder = new NodeBuilder();

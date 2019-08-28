@@ -559,7 +559,7 @@ public abstract class NanoHTTPD {
 
         private String queryParameterString;
 
-        private String remoteIp;
+        public String remoteIp;
 
         private String protocolVersion;
 

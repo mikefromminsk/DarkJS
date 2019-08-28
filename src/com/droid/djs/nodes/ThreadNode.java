@@ -4,7 +4,7 @@ import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.runner.Runner;
 import com.droid.instance.Instance;
-import com.droid.instance.InstanceParameters;
+
 
 import java.util.*;
 

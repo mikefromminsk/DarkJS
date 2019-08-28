@@ -1,23 +1,46 @@
 package com.droid.instance;
 
+import com.droid.djs.DataStorage;
+import com.droid.djs.NodeStorage;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.nodes.ThreadNode;
+import com.droid.djs.runner.Func;
+import com.droid.djs.runner.prototypes.StringPrototype;
+import com.droid.djs.runner.utils.*;
+import com.droid.djs.runner.utils.Console;
 import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.HttpResponseType;
 import com.droid.djs.serialization.node.NodeSerializer;
+import com.droid.djs.treads.Threads;
 import com.droid.gdb.DiskManager;
 import com.droid.gdb.map.Crc16;
+import com.droid.net.ftp.FtpServer;
+import com.droid.net.http.HttpClientServer;
+import com.droid.net.ws.WsClientServer;
 
 import java.io.*;
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Instance extends InstanceParameters implements Runnable {
+public class Instance implements Runnable {
+    public int portAdding;
+    public String storeDir;
+    public String nodename;
+    public String proxyHost;
+    public int proxyPortAdding;
+    public Long accessToken;
+    public String login;
+    public String password;
+
+    public List<Func> functions = new ArrayList<>();
+    public List<FuncInterface> interfaces = new ArrayList<>();
 
     // todo add disconnect instance after timeout
     private static Map<Long, Instance> allConnectedThreads = new HashMap<>();
@@ -34,18 +57,11 @@ public class Instance extends InstanceParameters implements Runnable {
         return allConnectedThreads.get(Thread.currentThread().getId());
     }
 
-    public Instance(int portAdding, String storeDir, String installDir, String nodename, String proxyHost, String login, String password) {
-        this.portAdding = portAdding;
+    public Instance(String storeDir, boolean removeExistDir) throws IOException {
         this.storeDir = storeDir;
-        this.nodename = nodename;
-        this.proxyHost = proxyHost;
-        if (login != null && password != null)
-            this.accessToken = Crc16.getHash(login + password);
-        load(installDir);
-    }
-
-    public Instance(String storeDir) {
-        this.storeDir = storeDir;
+        if (removeExistDir)
+            if (!deleteDirectory(new File(storeDir)))
+                throw new IOException();
     }
 
     private boolean deleteDirectory(File directoryToBeDeleted) {
@@ -58,24 +74,9 @@ public class Instance extends InstanceParameters implements Runnable {
         return true;
     }
 
-    public Instance(String storeDir, boolean removeExistDir) throws IOException {
-        this.storeDir = storeDir;
-        if (removeExistDir)
-            if (!deleteDirectory(new File(storeDir)))
-                throw new IOException();
-    }
-
-    public Instance setProxyHost(String proxyHost, int proxyPortAdding) {
+    public Instance setProxy(String proxyHost, int proxyPortAdding, String nodename) {
         this.proxyHost = proxyHost;
         this.proxyPortAdding = proxyPortAdding;
-        return this;
-    }
-
-    public Instance setProxyPortAdding(int proxyPortAdding) {
-        return setProxyHost("localhost", proxyPortAdding);
-    }
-
-    public Instance setNodeName(String nodename) {
         this.nodename = nodename;
         return this;
     }
@@ -136,10 +137,100 @@ public class Instance extends InstanceParameters implements Runnable {
         allConnectedThreads.remove(Thread.currentThread().getId());
     }
 
+    public List<Func> getFunctions() {
+        if (functions.size() == 0) {
+            new StringPrototype();
+            new ThreadUtils();
+            new MathUtils();
+            new RootUtils();
+            new NodeUtils();
+            new Net();
+            new Console();
+            Utils.saveInterfaces();
+        }
+        return functions;
+    }
+
+    private NodeStorage nodeStorage;
+    public NodeStorage getNodeStorage() {
+        if (nodeStorage == null) {
+            nodeStorage = new NodeStorage(Instance.get().storeDir, "node");
+            if (nodeStorage.isEmpty()){
+                nodeStorage.add(new ThreadNode());
+                getFunctions();
+            }
+        }
+        return nodeStorage;
+    }
+
+    private DataStorage dataStorage;
+    public DataStorage getDataStorage() {
+        if (dataStorage == null)
+            dataStorage = new DataStorage();
+        return dataStorage;
+    }
+
+    private Threads threads;
+    public Threads getThreads() {
+        if (threads == null)
+            threads = new Threads();
+        return threads;
+    }
+
+    private Node master = null;
+    public Node getMaster() {
+        if (master == null)
+            master = Files.getNodeFromRoot("master");
+        return master;
+    }
+
+    // TODO change to change instance
+    public void removeMaster(){
+        master = null;
+    }
+
+    private HttpClientServer httpClientServer;
+    public HttpClientServer startHttpServerOnFreePort() throws BindException {
+        if (httpClientServer == null){
+            while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF){
+                try {
+                    httpClientServer = new HttpClientServer(HttpClientServer.defaultPort + portAdding);
+                    return httpClientServer;
+                } catch (IOException e) {
+                    portAdding++;
+                }
+            }
+            throw new BindException();
+        }
+        return httpClientServer;
+    }
+
+    private FtpServer ftpServer;
+    public FtpServer startFtpServer() {
+        if (ftpServer == null)
+            ftpServer = new FtpServer(FtpServer.defaultPort + portAdding);
+        return ftpServer;
+    }
+
+    private WsClientServer wsClientServer;
+    public WsClientServer startWsClientServer() {
+        if (wsClientServer == null)
+            wsClientServer = new WsClientServer(WsClientServer.defaultPort + portAdding);
+        return wsClientServer;
+    }
+
+    public void closeAllPorts() {
+        if (httpClientServer != null)
+            httpClientServer.stop();
+        if (ftpServer != null)
+            ftpServer.stop();
+        if (wsClientServer != null)
+            wsClientServer.stop();
+    }
+
     @Override
     public void run() {
         try {
-            System.out.println("start instance " + storeDir);
             connectThread(this);
 
             if (loadList.size() > 0) {
@@ -157,6 +248,7 @@ public class Instance extends InstanceParameters implements Runnable {
             //testRootIndex();
 
             Instance.get().startHttpServerOnFreePort();
+            System.out.println("start instance " + storeDir + " http port " + (HttpClientServer.defaultPort + portAdding));
             Instance.get().startFtpServer();
             Instance.get().startWsClientServer();
 
@@ -311,7 +403,6 @@ public class Instance extends InstanceParameters implements Runnable {
                 if (file.isDirectory()) {
                     loadDirectory(loadingBranch, file, localFileName);
                 } else {
-                    System.out.println(localFileName);
                     loadStream(loadingBranch, localFileName, new FileInputStream(file));
                 }
             }

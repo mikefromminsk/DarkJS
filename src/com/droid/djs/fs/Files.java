@@ -182,6 +182,7 @@ public class Files {
                     Instance.get();
                     new JsBuilder().build(node, nashornNode);
                     builder.set(node).setValue(null).commit();
+                    Instance.get().getThreads().run(node);
                 }
             }
         } catch (Exception e) {

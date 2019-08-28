@@ -1,6 +1,7 @@
 package com.droid.djs.serialization.node;
 
 public class HttpResponseType {
+
     public static final String HTML = "text/html";
     public static final String CSS = "text/css";
     public static final String JS = "text/javascript";

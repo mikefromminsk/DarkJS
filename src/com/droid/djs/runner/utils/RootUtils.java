@@ -5,6 +5,7 @@ import com.droid.djs.nodes.consts.NodeType;
 import com.droid.instance.Instance;
 
 import java.io.IOException;
+import java.util.Base64;
 
 public class RootUtils extends Utils {
     @Override
@@ -16,11 +17,11 @@ public class RootUtils extends Utils {
     public void methods() {
         func("get",
                 (builder, node, ths) -> {
-                    String host = getStringRequared(builder, 0);
-                    String path = getStringRequared(builder, 1);
+                    String host = getString(builder, 0);
+                    String path = getString(builder, 1);
                     Node parameter = getNode(builder, 2);
                     try {
-                        return Instance.get().getHttpClientServer().request(host, path, parameter);
+                        return Instance.get().startHttpServerOnFreePort().requestToProxy(host, path, parameter);
                     } catch (IOException e) {
                         return null;
                     }

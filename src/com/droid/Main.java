@@ -15,19 +15,18 @@ public class Main {
                 .start();
 
         Instance store = new Instance("out/MainTest/store", true)
-                .setProxyPortAdding(proxy.portAdding)
-                .setNodeName("store.node")
+                .setProxy("localhost", proxy.proxyPortAdding, "store.node")
                 .setAccessCode(login, pass)
                 .load("C:/wamp/www/droid")
                 .start();
 
         Instance localnode = new Instance("out/MainTest/client", true)
-                .setProxyPortAdding(proxy.portAdding)
+                .setProxy("localhost", proxy.proxyPortAdding, "client.node")
                 .setAccessCode(login, pass)
                 .load("C:/wamp/www/droid")
                 .loadExcept("/summator")
                 .start();
 
-        localnode.getHttpClientServer().join();
+        localnode.startHttpServerOnFreePort().join();
     }
 }

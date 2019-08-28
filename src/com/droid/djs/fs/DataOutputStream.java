@@ -65,7 +65,6 @@ public class DataOutputStream extends OutputStream {
             out.close();
             branch.updateTimer();
             boolean connectionOpened = Instance.connectThreadIfNotConnected(instance);
-            Instance.get();
             Files.putFile(node, new FileInputStream(tempFile));
             if (connectionOpened)
                 Instance.disconnectThread();

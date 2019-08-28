@@ -8,7 +8,7 @@ import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.serialization.js.JsBuilder;
 import com.droid.instance.Instance;
-import com.droid.instance.InstanceParameters;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;

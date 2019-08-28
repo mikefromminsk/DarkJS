@@ -5,13 +5,13 @@ import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
 import com.droid.djs.nodes.consts.NodeType;
-import com.droid.djs.runner.utils.Parameter;
 import com.droid.djs.serialization.node.HttpResponse;
 import com.droid.djs.serialization.node.HttpResponseType;
 import com.droid.djs.serialization.node.NodeParser;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.gdb.map.Crc16;
 import com.droid.instance.Instance;
+import com.sun.istack.internal.NotNull;
 import org.nanohttpd.NanoHTTPD;
 
 import java.io.*;
@@ -22,24 +22,55 @@ import java.util.*;
 public class HttpClientServer extends NanoHTTPD {
 
     public static class Headers {
+        public final static String CONTENT_LENGTH = "content-length";
         public final static String CONTENT_TYPE = "content-type";
         public static final String AUTHORIZATION = "authorization";
+        public static final String DESTINATION_NODENAME = "destination-nodename";
         public static final String AUTHENTICATE = "WWW-Authenticate";
+        public static final String NODENAME = "nodename";
+        public static final String NODEPORT = "nodeport";
     }
 
-    public static final String FORM_DATA = "application/x-www-form-urlencoded";
     public static int defaultPort = 8080;
     public static String BASIC_AUTH_PREFIX = "Basic ";
+    public static Map<String, Host> nodeNames = new HashMap<>();
+
+    class Host {
+        String ip;
+        int port;
+
+        public Host(String ip, int port) {
+            this.ip = ip;
+            this.port = port;
+        }
+    }
 
     public HttpClientServer(Integer port) throws IOException {
         super(port == null ? defaultPort : port);
         start(0);
+        if (Instance.get().proxyHost != null)
+            try {
+                request(Instance.get().proxyHost, Instance.get().proxyPortAdding + defaultPort, "/", "", new HashMap<>()).getInputStream().close();
+            } catch (Exception ignored) {
+            }
+    }
+
+    Long authToToken(String authorization) {
+        if (authorization.startsWith(BASIC_AUTH_PREFIX)) {
+            authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
+            authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
+            String login = authorization.substring(0, authorization.indexOf(":"));
+            String password = authorization.substring(authorization.indexOf(":") + 1);
+            return Crc16.getHash(login + password);
+        }
+        return null;
     }
 
     @Override
-    public Response serve(IHTTPSession session) {
-        super.serve(session);
+    public Response serve(IHTTPSession sessionObject) {
+        super.serve(sessionObject);
         long startRequestTime = new Date().getTime();
+        HTTPSession session = (HTTPSession) sessionObject;
         Response response = null;
         Instance.connectThreadByPortAdditional(getListeningPort() - defaultPort);
         try {
@@ -47,56 +78,79 @@ public class HttpClientServer extends NanoHTTPD {
             if (requestContentType != null)
                 requestContentType = requestContentType.toLowerCase();
             if (session.getMethod() == Method.GET
-                    || session.getMethod() == Method.POST && FORM_DATA.equals(requestContentType)) {
-                //Authorization: Basic userid:password
-                String authorization = session.getHeaders().get(Headers.AUTHORIZATION);
-                if (authorization == null || !authorization.startsWith(BASIC_AUTH_PREFIX)) {
-                    response = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "Need basic auth");
-                    response.addHeader(Headers.AUTHENTICATE, "Basic realm=\"Access to the site\"");
-                } else {
+                    || session.getMethod() == Method.POST && (requestContentType != null && requestContentType.equals("application/x-www-form-urlencoded"))) {
+                String nodename = session.getHeaders().get(Headers.NODENAME);
+                // TODO add remove conditions
+                if (nodename != null) {
+                    String nodeport = session.getHeaders().get(Headers.NODEPORT);
+                    nodeNames.put(nodename, new Host(session.remoteIp, Integer.valueOf(nodeport)));
+                }
 
-                    authorization = authorization.substring(BASIC_AUTH_PREFIX.length());
-                    authorization = new String(Base64.getDecoder().decode(authorization.getBytes()));
-                    String login = authorization.substring(0, authorization.indexOf(":"));
-                    String password = authorization.substring(authorization.indexOf(":") + 1);
-                    Long access_token = Crc16.getHash(login + password);
+                String path = session.getUri();
+                if (path.equals("") || path.equals("/"))
+                    path = "index";
 
-                    String urlPath = session.getUri();
-                    if (urlPath.equals("") || urlPath.equals("/"))
-                        urlPath = "index";
-
-                    Node node = Files.getNodeIfExist(urlPath, access_token);
-
-                    if (node == null) {
-                        response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
+                String destinationNodename = session.getHeaders().get(Headers.DESTINATION_NODENAME);
+                if (destinationNodename != null) {
+                    Host host = nodeNames.get(destinationNodename);
+                    if (host == null) {
+                        throw new NullPointerException();
                     } else {
-                        Map<String, String> args = parseArguments(session.getQueryParameterString());
+                        Map<String, String> headers = session.getHeaders();
+                        headers.remove(Headers.NODENAME);
+                        headers.remove(Headers.NODEPORT);
+                        headers.remove(Headers.DESTINATION_NODENAME);
+                        HttpURLConnection conn = request(host.ip, host.port, path, session.getQueryParameterString(), headers);
+                        InputStream inputStream = conn.getInputStream();
+                        int contentLength = Integer.parseInt(conn.getHeaderField(Headers.CONTENT_LENGTH));
+                        String contentType = conn.getHeaderField(Headers.CONTENT_TYPE);
 
-                        NodeBuilder builder = new NodeBuilder().set(node);
+                        response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, contentType, inputStream, contentLength);
+                        response.addHeader(Headers.CONTENT_LENGTH, "" + contentLength);
+                    }
+                } else {
+                    String authorization = session.getHeaders().get(Headers.AUTHORIZATION);
+                    if (authorization == null || !authorization.startsWith(BASIC_AUTH_PREFIX)) {
+                        response = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "Need basic auth");
+                        response.addHeader(Headers.AUTHENTICATE, "Basic realm=\"Access to the site\"");
+                    } else {
 
-                        for (Node param : builder.getParams())
-                            builder.set(param).setValue(null).commit();
+                        Long accessToken = authToToken(authorization);
 
-                        for (String argsKey : args.keySet())
-                            setParam(node, argsKey, args.get(argsKey));
+                        Node node = Files.getNodeIfExist(path, accessToken);
 
-                        Instance.get().getThreads().run(node, null, false, access_token);
+                        if (node == null) {
+                            response = newFixedLengthResponse(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "File not Found");
+                        } else {
+                            Map<String, String> args = parseArguments(session.getQueryParameterString());
 
-                        if (builder.set(node).isFunction())
-                            builder.set(builder.getValueNode());
+                            NodeBuilder builder = new NodeBuilder().set(node);
 
-                        HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
-                        ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
-                        response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
-                        response.addHeader("content-length", "" + responseData.data.length); // fix nanohttpd issue when content type is define
+                            for (Node param : builder.getParams())
+                                builder.set(param).setValue(null).commit();
+
+                            for (String argsKey : args.keySet())
+                                setParam(node, argsKey, args.get(argsKey));
+
+                            Instance.get().getThreads().run(node, null, false, accessToken);
+
+                            if (builder.set(node).isFunction())
+                                builder.set(builder.getValueNode());
+
+                            HttpResponse responseData = NodeSerializer.getResponse(builder.getNode());
+                            ByteArrayInputStream dataStream = new ByteArrayInputStream(responseData.data);
+                            response = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, responseData.type, dataStream, responseData.data.length);
+                            response.addHeader(Headers.CONTENT_LENGTH, "" + responseData.data.length); // fix nanohttpd issue when content type is define
+                        }
                     }
                 }
+
             } else if (session.getMethod() == Method.POST) {
                 Files.putFile(session.getUri(), session.getInputStream());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+            response = NanoHTTPD.newFixedLengthResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         }
 
         Instance.disconnectThread();
@@ -115,7 +169,11 @@ public class HttpClientServer extends NanoHTTPD {
             try {
                 for (String pair : args.split("&")) {
                     int idx = pair.indexOf("=");
-                    query_pairs.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                    if (idx == -1) {
+                        query_pairs.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                    } else {
+                        query_pairs.put("[0]", URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                    }
                 }
             } catch (UnsupportedEncodingException e) {
             }
@@ -182,13 +240,13 @@ public class HttpClientServer extends NanoHTTPD {
             builder.set(builder.getValueNode());
         }
 
-        if (builder.isString()){
+        if (builder.isString()) {
             result.put("[0]", "!" + builder.getData().readString());
-        }else if (builder.isNumber()){
+        } else if (builder.isNumber()) {
             result.put("[0]", builder.getData().readString());
-        }else if (builder.isBoolean()){
+        } else if (builder.isBoolean()) {
             result.put("[0]", builder.getData().readString());
-        }else /*if (builder.isNULL()){
+        } else /*if (builder.isNULL()){
             result.put("[0]", "!" + builder.getData().readString());
         }else*/ if (builder.set(paramter).isObject()) {
             // TODO test with locals more than 2 levels
@@ -203,39 +261,21 @@ public class HttpClientServer extends NanoHTTPD {
         return result;
     }
 
-    public Node request(String host, String path, Node paramter) throws IOException {
-        URL url = new URL("http", host, defaultPort, path);
-        Map<String, String> parameters = buildParameters(paramter);
-        try {
-            return request(url, parameters);
-        } catch (UnknownHostException ignore) {
-            url = new URL("http", Instance.get().proxyHost, (defaultPort + Instance.get().proxyPortAdding), url.getFile());
-            try {
-                return request(url, parameters);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
     // TODO change Map<String, String> parameters to Map<String, InputStream> parameters
-    public Node request(URL url, Map<String, String> parameters) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        String authData = Instance.get().login + ":" + Instance.get().password;
-        authData = Base64.getEncoder().encodeToString(authData.getBytes());
-        con.addRequestProperty(Headers.AUTHORIZATION, BASIC_AUTH_PREFIX + authData);
-        con.setDoOutput(true);
-        OutputStream outputStream = con.getOutputStream();
-        DataOutputStream out = new DataOutputStream(outputStream);
-        out.writeBytes(serializeParameters(parameters));
-        out.flush();
-        out.close();
+    public Node requestToProxy(String nodename, String path, Node parameter) throws IOException {
 
-        InputStream inputStream = con.getInputStream();
+        String authStr = Instance.get().login + ":" + Instance.get().password;
+        String authEncodeStr = Base64.getEncoder().encodeToString(authStr.getBytes());
+        Map<String, String> headers = new HashMap<>();
+        headers.put(Headers.AUTHORIZATION, BASIC_AUTH_PREFIX + authEncodeStr);
+        headers.put(Headers.DESTINATION_NODENAME, nodename);
 
-        String contentType = con.getHeaderField(Headers.CONTENT_TYPE);
+        String serializeNode = serializeParameters(buildParameters(parameter));
+
+        HttpURLConnection conn = request(Instance.get().proxyHost, Instance.get().proxyPortAdding + defaultPort, path, serializeNode, headers);
+
+        InputStream inputStream = conn.getInputStream();
+        String contentType = conn.getHeaderField(Headers.CONTENT_TYPE);
         NodeBuilder builder = new NodeBuilder();
         switch (contentType) {
             case HttpResponseType.TEXT:
@@ -251,5 +291,28 @@ public class HttpClientServer extends NanoHTTPD {
         }
         // TODO case when http type is not support
         return null;
+    }
+
+    public HttpURLConnection request(@NotNull String host, @NotNull int port, @NotNull String path, @NotNull String data, @NotNull Map<String, String> headers) throws IOException {
+        URL url = new URL("http", host, port, path);
+        System.out.println("GET " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        for (String key : headers.keySet())
+            conn.addRequestProperty(key, headers.get(key));
+        conn.addRequestProperty(Headers.CONTENT_LENGTH, "" + data.length());
+        conn.addRequestProperty(Headers.NODENAME, Instance.get().nodename);
+        conn.addRequestProperty(Headers.NODEPORT, "" + (Instance.get().portAdding + defaultPort));
+
+        conn.setDoOutput(true);
+        OutputStream outputStream = conn.getOutputStream();
+        DataOutputStream out = new DataOutputStream(outputStream);
+        out.writeBytes(data);
+        out.flush();
+        out.close();
+
+        return conn;
     }
 }

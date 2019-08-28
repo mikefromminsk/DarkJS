@@ -83,11 +83,11 @@ abstract public class Utils {
         return null;
     }
 
-    String getStringRequared(NodeBuilder builder, int index) {
+    String getStringRequired(NodeBuilder builder, int index) {
         String result = getString(builder, index);
         if (result != null)
             return result;
-        throw new NullPointerException();
+        throw new IllegalArgumentException();
     }
 
     String firstString(NodeBuilder builder) {
@@ -107,7 +107,8 @@ abstract public class Utils {
 
     protected Object toObject(NodeBuilder builder) {
         Node node = builder.getNode();
-        if (node != null) node = builder.getValueOrSelf();
+        if (node != null)
+            node = builder.getValueOrSelf();
         Object obj = null;
         if (node instanceof Data)
             obj = ((Data) node).data.getObject();

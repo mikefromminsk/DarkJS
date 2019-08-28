@@ -2,9 +2,7 @@ package com.droid.djs.fs;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
 import com.droid.instance.Instance;
-import com.droid.instance.InstanceParameters;
 
 import java.util.Random;
 import java.util.Timer;
@@ -58,7 +56,6 @@ public class Branch {
 
     // TODO issue when in run folder only one file
     public void mergeWithMaster() {
-        System.out.println("mergeWithMaster"  + Thread.currentThread().getId());
         if (timer != null)
             timer.cancel();
         if (root != null) {
