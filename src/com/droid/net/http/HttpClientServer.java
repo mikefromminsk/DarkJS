@@ -169,7 +169,7 @@ public class HttpClientServer extends NanoHTTPD {
             try {
                 for (String pair : args.split("&")) {
                     int idx = pair.indexOf("=");
-                    if (idx == -1) {
+                    if (idx != -1) {
                         query_pairs.put(pair.substring(0, idx), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
                     } else {
                         query_pairs.put("[0]", URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));

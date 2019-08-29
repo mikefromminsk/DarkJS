@@ -343,7 +343,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setParser(Data parser) {
+    public NodeBuilder setParser(Node parser) {
         node.parser = parser;
         return this;
     }
@@ -632,6 +632,9 @@ public class NodeBuilder {
                 break;
             case LOCAL_PARENT:
                 setLocalParent(linkValueNode);
+                break;
+            case PARSER:
+                setParser(linkValueNode);
                 break;
             case LOCAL:
                 addLocal(linkValueNode);
