@@ -2,6 +2,7 @@ package com.droid.djs.runner.utils;
 
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.instance.Instance;
 
 import java.io.IOException;
@@ -36,10 +37,9 @@ public class RootUtils extends Utils {
 
         // TODO add dynamic count of params
         func("gui", (builder, node, ths) -> {
-                    Instance.get().startWsClientServer().sendGui(node);
+                    Instance.get().startWsClientServer().broadcast(NodeSerializer.toJson(node));
                     return null;
                 }, par("observer_id", NodeType.STRING),
-                par("key", NodeType.NODE),
-                par("value", NodeType.NODE));
+                par("data", NodeType.NODE));
     }
 }

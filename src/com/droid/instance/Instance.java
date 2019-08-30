@@ -144,7 +144,6 @@ public class Instance implements Runnable {
             new MathUtils();
             new RootUtils();
             new NodeUtils();
-            new Net();
             new Console();
             Utils.saveInterfaces();
         }
@@ -219,7 +218,7 @@ public class Instance implements Runnable {
         return wsClientServer;
     }
 
-    public void closeAllPorts() {
+    public void closeAllPorts() throws IOException, InterruptedException {
         if (httpClientServer != null)
             httpClientServer.stop();
         if (ftpServer != null)
