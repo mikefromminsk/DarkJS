@@ -1,35 +1,24 @@
-// TODO SGDB: add SGDB all clear
-// TODO SGDB: to resolve problem with out of hard memory in SGDB
-// TODO SGDB: create interface of initialization
-// TODO SGDB: upgrade SGBD with stream data and big data
-// TODO DJS: add other node links list
-// TODO DJS: grouping commits and commit after run
-// TODO DJS: add VCS to DJS
-// TODO DJS: add DHT to DJS darkjs.net
-// TODO DJS: add WebSocket support
-// TODO DJS: change JS code loading way
-// TODO DJS: create simple http UI
+// TODO create name of application
+// TODO SGDB: problems with out of hard memory in SGDB
+// TODO SGDB: problems stream data big data and parallel read and write
+// TODO SGDB: add garbage collector
+// TODO DJS: split Node to Data ThreadNode IfNode etc
+// TODO DJS: add DHT and translators
+// TODO DJS: change JS parser
+// TODO DJS: add all constructions like trycatch null class
 // TODO DJS: adapt DJS to android jar lib
-// TODO DJS: create builder of JS code from JS AST
-// TODO DJS: net security
-// TODO DJS: multithreading
-// TODO DJS: double run problem
-// TODO DJS: solve problem with go to up in local links
-// TODO UI: create intellij plugin instead UI
+// TODO DJS: net security userlists auth
+// TODO DJS: add code generator
+// TODO DJS: problems with arrays and objects (in params too)
 // TODO UI: create simple wiki
 // TODO UI: settings memory size
-// TODO UI: adapt to android
-// TODO UI: styling purpule and blue masseffect 3
+// TODO simplify code and adapt for android ios
+// TODO UI: styling purple and blue MassEffect 3
+// TODO UI: css lib for all apps
 // TODO finish test: add final streaming audio and video
-// TODO finish test: remote control of android tel from DJS
 // TODO finish test: implement soft search
-// TODO finish test: itsupport
-// TODO finish test: bsync copy
-// TODO finish test: quadracopter
-// TODO finish test: app store
-// TODO finish test: vpn
-// TODO finish test: videohosting
-// TODO finish test: pair programming
+// TODO finish test: add torrents for downloading external big data
+// TODO finish test: quadcopter
 // TODO finish test: to combine all languages
 // TODO finish test: db translator to graph db
-// TODO finish test: messenger
+// TODO publication proxy and nodes

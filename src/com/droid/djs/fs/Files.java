@@ -86,8 +86,6 @@ public class Files {
     public static Node getNode(Node root, String path, NodeType nodeType, Long access_token) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();
-        // TODO remove types from names
-        // TODO access to root
         // TODO add escape characters /
         if (path != null && !path.equals("")) {
             String[] names = path.split("/");

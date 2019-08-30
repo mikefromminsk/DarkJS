@@ -29,7 +29,7 @@ public class Node extends SuperNode {
 
     public ArrayList<Object> local; // TODO rename to locals
     public ArrayList<Object> param; // TODO rename to params
-    public ArrayList<Object> next;
+    public ArrayList<Object> next; // TODO merge next and cell
     public ArrayList<Object> cell;
     public ArrayList<Object> prop;
     // after addObject new link you should addObject it to listLinks and build function
