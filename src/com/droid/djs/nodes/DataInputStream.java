@@ -21,8 +21,9 @@ public class DataInputStream extends InputStream {
     private long currentPosition;
     private DataStorage dataStorage = Instance.get().getDataStorage();
     private FileInputStream fileReader;
+    private byte[] cashe; // TODO remove in bug data
 
-    public DataInputStream( NodeType type, long start, long length) {
+    public DataInputStream(NodeType type, long start, long length) {
         this.type = type;
         this.start = start;
         this.length = length;
@@ -31,9 +32,9 @@ public class DataInputStream extends InputStream {
 
     public boolean hasNext() {
         boolean nextExist = currentPosition < length;
-        if (!nextExist){
+        if (!nextExist) {
             currentPosition = 0;
-            if (fileReader != null){
+            if (fileReader != null) {
                 try {
                     fileReader.close();
                     fileReader = null;
@@ -76,19 +77,21 @@ public class DataInputStream extends InputStream {
     }
 
     public byte[] readBytes() {
-        byte[] allstring = new byte[0];
-        while (hasNext()) {
-            byte[] buffer;
-            if (length < DataStorage.MAX_STORAGE_DATA_IN_DB)
-                buffer = readFromDb();
-            else
-                buffer = readFromFs();
-            if (buffer != null)
-                allstring = Bytes.concat(allstring, buffer);
-            if (buffer == null) // TODO DANGER INFINITY LOOP
-                throw new NullPointerException();
+        if (cashe == null) {
+            cashe = new byte[0];
+            while (hasNext()) {
+                byte[] buffer;
+                if (length < DataStorage.MAX_STORAGE_DATA_IN_DB)
+                    buffer = readFromDb();
+                else
+                    buffer = readFromFs();
+                if (buffer != null)
+                    cashe = Bytes.concat(cashe, buffer);
+                if (buffer == null) // TODO DANGER INFINITY LOOP
+                    throw new NullPointerException();
+            }
         }
-        return allstring;
+        return cashe;
     }
 
     public Object getObject() {
@@ -113,7 +116,7 @@ public class DataInputStream extends InputStream {
     public int read(byte[] b) {
         // TODO !!!! rewrite
         // Multithreading read
-        if (currentPosition == length){
+        if (currentPosition == length) {
             currentPosition = 0;
             return -1;
         }
@@ -122,7 +125,7 @@ public class DataInputStream extends InputStream {
         int minLength = Math.min(data.length, b.length);
         System.arraycopy(data, (int) oldPosition, b, 0, minLength);
         currentPosition = oldPosition + minLength;
-        if (currentPosition > length){
+        if (currentPosition > length) {
             currentPosition = length;
         }
         return minLength;
@@ -145,7 +148,7 @@ public class DataInputStream extends InputStream {
         return n;
     }
 
-    public long length(){
+    public long length() {
         return length;
     }
 }
