@@ -3,6 +3,8 @@
 // TODO SGDB: problems stream data big data and parallel read and write
 // TODO SGDB: add garbage collector
 // TODO SGDB: test ideal max storage cluster size
+// TODO SGDB: remove hashkey first bytes
+// TODO SGDB DJS: finish test: add final streaming audio and video
 // TODO DJS: split Node to Data ThreadNode IfNode etc
 // TODO DJS: add DHT and translators
 // TODO DJS: change JS parser
@@ -16,11 +18,9 @@
 // TODO simplify code and adapt for android ios
 // TODO UI: styling purple and blue MassEffect 3
 // TODO UI: css lib for all apps
-// TODO finish test: add final streaming audio and video
 // TODO finish test: implement soft search
 // TODO finish test: add torrents for downloading external big data
 // TODO finish test: quadcopter
 // TODO finish test: to combine all languages
 // TODO finish test: db translator to graph db
 // TODO publication proxy and nodes
-// TODO remove hashkey first bytes
