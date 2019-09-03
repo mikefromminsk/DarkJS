@@ -48,11 +48,11 @@ public class DiskManager {
     }
 
     private static Map<String, DiskManager> diskManagers = new HashMap<>();
-    public static DiskManager getInstance(String dbDirPath) {
-        DiskManager manager = diskManagers.get(dbDirPath);
+    public static DiskManager getInstance(String storeDir) {
+        DiskManager manager = diskManagers.get(storeDir);
         if (manager == null)
             try {
-                diskManagers.put(dbDirPath, manager = new DiskManager(dbDirPath));
+                diskManagers.put(storeDir, manager = new DiskManager(storeDir));
             } catch (IOException e) {
                 e.printStackTrace();
              }

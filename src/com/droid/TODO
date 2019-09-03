@@ -2,6 +2,7 @@
 // TODO SGDB: problems with out of hard memory in SGDB
 // TODO SGDB: problems stream data big data and parallel read and write
 // TODO SGDB: add garbage collector
+// TODO SGDB: test ideal max storage cluster size
 // TODO DJS: split Node to Data ThreadNode IfNode etc
 // TODO DJS: add DHT and translators
 // TODO DJS: change JS parser
@@ -10,7 +11,7 @@
 // TODO DJS: net security userlists auth
 // TODO DJS: add code generator
 // TODO DJS: problems with arrays and objects (in params too)
-// TODO UI: create simple wiki
+// TODO UI: create wiki javadoc
 // TODO UI: settings memory size
 // TODO simplify code and adapt for android ios
 // TODO UI: styling purple and blue MassEffect 3
@@ -22,3 +23,4 @@
 // TODO finish test: to combine all languages
 // TODO finish test: db translator to graph db
 // TODO publication proxy and nodes
+// TODO remove hashkey first bytes
