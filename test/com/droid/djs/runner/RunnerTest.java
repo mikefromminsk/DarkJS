@@ -41,6 +41,7 @@ class RunnerTest {
         new Instance("out/runTests", true)
                 .load("test_res/run")
                 .call(() -> {
+                    //Files.observe("/", node -> System.out.println(Files.getPath(node)));
                     NodeBuilder builder = new NodeBuilder().set(Instance.get().getMaster());
                     for (Node test : builder.getLocalNodes()) {
                         Instance.get().getThreads().run(test);

@@ -20,7 +20,7 @@ public class Runner {
     private final static boolean SET_VALUE_FROM_RETURN = true;
 
     Node getNodePrototype(NodeType nodeType){
-        return Files.getNode(DEFAULT_PROTOTYPES_DIR + Utils.capitalize(nodeType.toString()));
+        return Files.getNodeFromRoot(DEFAULT_PROTOTYPES_DIR + Utils.capitalize(nodeType.toString()));
     }
 
     private Node propCalledNode = null;
@@ -237,11 +237,11 @@ public class Runner {
            if (builder.set(node).getParamCount() != 0) {
                 // TODO change to getParams
                 for (int i = 0; i < builder.set(node).getParamCount(); i++) {
-                    Node sourceParam = builder.set(node).getParamNode(i);
+                    Node sourceParam = builder.getParamNode(i);
                     run(sourceParam, calledNodeId);
                 }
             }
-            Node resultNode = ((NativeNode) node).func.invoke(builder, node, calledNodeId);
+            Node resultNode = ((NativeNode) node).func.invoke(builder.set(node), calledNodeId);
             builder.set(node).setValue(resultNode).commit();
         }
 

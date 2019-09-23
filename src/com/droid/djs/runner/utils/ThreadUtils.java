@@ -11,11 +11,11 @@ public class ThreadUtils extends Utils {
 
     @Override
     public void methods() {
-        func("sleep", (builder, node, ths) -> {
-            Object left = firstObject(builder);
-            if (left instanceof Double) {
+        func("sleep", (builder, ths) -> {
+            Double dalay = getNumber(builder, 0d, 0);
+            if (dalay > 0) {
                 try {
-                    Thread.sleep((long) (double) left);
+                    Thread.sleep((long) (double) dalay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

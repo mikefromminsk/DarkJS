@@ -15,14 +15,14 @@ public class NodeUtils extends Utils {
 
     @Override
     public void methods() {
-        func("get", (builder, node, ths) -> Files.getNodeIfExist(firstString(builder)), par("path", NodeType.STRING));
-        func("serialize", (builder, node, ths) -> {
+        func("get", (builder, ths) -> Files.getNodeIfExist(firstString(builder)), par("path", NodeType.STRING));
+        func("serialize", (builder, ths) -> {
             String path = firstString(builder);
             Node serializeNode = Files.getNode(path);
             String json = NodeSerializer.toJson(serializeNode);
             return builder.createString(json);
         }, par("path", NodeType.STRING));
-        func("eval", (builder, node, ths) -> {
+        func("eval", (builder, ths) -> {
                     String nodePath = firstString(builder);
                     String serializeNodeJson = secondString(builder);
                     Node selfNode = Files.getNode(nodePath);

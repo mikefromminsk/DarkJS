@@ -6,7 +6,6 @@ import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.instance.Instance;
 
 import java.io.IOException;
-import java.util.Base64;
 
 public class RootUtils extends Utils {
     @Override
@@ -17,7 +16,7 @@ public class RootUtils extends Utils {
     @Override
     public void methods() {
         func("get",
-                (builder, node, ths) -> {
+                (builder, ths) -> {
                     String host = getString(builder, 0);
                     String path = getString(builder, 1);
                     Node parameter = getNode(builder, 2);
@@ -31,13 +30,13 @@ public class RootUtils extends Utils {
                 par("path", NodeType.STRING),
                 par("arguments", NodeType.NODE));
 
-        func("data", (builder, node, ths) -> {
+        func("data", (builder, ths) -> {
             return null;
         }, par("hash", NodeType.STRING));
 
         // TODO add dynamic count of params
-        func("gui", (builder, node, ths) -> {
-                    Instance.get().startWsClientServer().broadcast(NodeSerializer.toJson(node));
+        func("gui", (builder, ths) -> {
+                    Instance.get().startWsClientServer().broadcast(NodeSerializer.toJson(builder.getNode()));
                     return null;
                 }, par("observer_id", NodeType.STRING),
                 par("data", NodeType.NODE));

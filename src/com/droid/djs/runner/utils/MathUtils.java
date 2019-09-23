@@ -1,5 +1,6 @@
 package com.droid.djs.runner.utils;
 
+import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.consts.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
@@ -64,16 +65,17 @@ public class MathUtils extends Utils {
 
     @Override
     public void methods() {
-        func(UNARY_MINUS, (builder, node, ths) -> {
+        func(UNARY_MINUS, (builder, ths) -> {
+            Node currentNode = builder.getNode();
             Object leftObject = firstObject(builder);
             if (leftObject instanceof Double) {
                 Double newString = -(Double) leftObject;
                 return builder.create(NodeType.NUMBER).setData(newString).commit();
             }
-            return node;
+            return currentNode;
         }, par("par1", NodeType.NUMBER));
 
-        func(EQ, (builder, node, ths) -> {
+        func(EQ, (builder, ths) -> {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     return (Objects.equals(leftObject, rightObject))
@@ -81,7 +83,7 @@ public class MathUtils extends Utils {
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
-        func(ADD, (builder, node, ths) -> {
+        func(ADD, (builder, ths) -> {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     if (leftObject instanceof String && rightObject instanceof String) {
@@ -95,7 +97,7 @@ public class MathUtils extends Utils {
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
-        func(SUB, (builder, node, ths) -> {
+        func(SUB, (builder, ths) -> {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     if (leftObject instanceof Double && rightObject instanceof Double) {
@@ -106,7 +108,7 @@ public class MathUtils extends Utils {
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
-        func(MUL, (builder, node, ths) -> {
+        func(MUL, (builder, ths) -> {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     if (leftObject instanceof Double && rightObject instanceof Double) {
@@ -117,7 +119,7 @@ public class MathUtils extends Utils {
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
-        func(DIV, (builder, node, ths) -> {
+        func(DIV, (builder, ths) -> {
                     Object leftObject = firstObject(builder);
                     Object rightObject = secondObject(builder);
                     if (leftObject instanceof Double && rightObject instanceof Double) {
@@ -128,7 +130,7 @@ public class MathUtils extends Utils {
                 }, par("par1", NodeType.NUMBER),
                 par("par2", NodeType.NUMBER));
 
-        func(INC, (builder, node, ths) -> {
+        func(INC, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             if (leftObject instanceof Double) {
                 Double newString = (Double) leftObject + 1;
@@ -137,7 +139,7 @@ public class MathUtils extends Utils {
             return null;
         }, par("par1", NodeType.NUMBER));
 
-        func(DEC, (builder, node, ths) -> {
+        func(DEC, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             if (leftObject instanceof Double) {
                 Double newString = (Double) leftObject - 1;
@@ -146,7 +148,7 @@ public class MathUtils extends Utils {
             return null;
         }, par("par1", NodeType.NUMBER));
 
-        func(MORE, (builder, node, ths) -> {
+        func(MORE, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
@@ -154,7 +156,7 @@ public class MathUtils extends Utils {
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
-        func(MORE_OR_EQUAL, (builder, node, ths) -> {
+        func(MORE_OR_EQUAL, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
@@ -162,7 +164,7 @@ public class MathUtils extends Utils {
             return null;
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
-        func(LESS, (builder, node, ths) -> {
+        func(LESS, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)
@@ -171,7 +173,7 @@ public class MathUtils extends Utils {
         }, par("par1", NodeType.NUMBER), par("par2", NodeType.NUMBER));
 
 
-        func(LESS_OR_EQUAL, (builder, node, ths) -> {
+        func(LESS_OR_EQUAL, (builder, ths) -> {
             Object leftObject = firstObject(builder);
             Object rightObject = secondObject(builder);
             if (leftObject instanceof Double && rightObject instanceof Double)

@@ -10,7 +10,7 @@ public class Console extends Utils {
 
     @Override
     public void methods() {
-        func("log", (builder, node, ths) -> {
+        func("log", (builder, ths) -> {
             String message = firstString(builder);
             System.out.println(message);
             return builder.createBool(true);

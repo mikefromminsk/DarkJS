@@ -1,7 +1,5 @@
 package com.droid.djs.serialization.json;
 
-import com.droid.djs.nodes.Data;
-import com.droid.djs.nodes.DataInputStream;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 

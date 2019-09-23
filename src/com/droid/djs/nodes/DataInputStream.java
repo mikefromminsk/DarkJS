@@ -21,7 +21,7 @@ public class DataInputStream extends InputStream {
     private long currentPosition;
     private DataStorage dataStorage = Instance.get().getDataStorage();
     private FileInputStream fileReader;
-    private byte[] cashe; // TODO remove in bug data
+    private byte[] cache; // TODO remove in big data
 
     public DataInputStream(NodeType type, long start, long length) {
         this.type = type;
@@ -77,8 +77,8 @@ public class DataInputStream extends InputStream {
     }
 
     public byte[] readBytes() {
-        if (cashe == null) {
-            cashe = new byte[0];
+        if (cache == null) {
+            cache = new byte[0];
             while (hasNext()) {
                 byte[] buffer;
                 if (length < DataStorage.MAX_STORAGE_DATA_IN_DB)
@@ -86,12 +86,12 @@ public class DataInputStream extends InputStream {
                 else
                     buffer = readFromFs();
                 if (buffer != null)
-                    cashe = Bytes.concat(cashe, buffer);
+                    cache = Bytes.concat(cache, buffer);
                 if (buffer == null) // TODO DANGER INFINITY LOOP
                     throw new NullPointerException();
             }
         }
-        return cashe;
+        return cache;
     }
 
     public Object getObject() {

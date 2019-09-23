@@ -83,7 +83,9 @@ public class ThreadNode extends Node implements Runnable {
         runQueue.add(runData);
 
         notify(runQueue);
-        wait(runData);
+
+        if (!async)
+            wait(runData);
 
         return true;
     }
