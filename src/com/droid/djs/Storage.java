@@ -17,14 +17,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
-public class NodeStorage {
+public class Storage {
 
     private static final int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
     private ArrayList<Node> transactionNodes = new ArrayList<>();
     private Map<Long, Node> nodesCache = new TreeMap<>();
     private InfinityStringArray nodeStorage;
 
-    public NodeStorage(String infinityFileDir, String infinityFileName) {
+    public Storage(String infinityFileDir, String infinityFileName) {
         nodeStorage = new InfinityStringArray(infinityFileDir, infinityFileName) {
             @Override
             public MetaCell initMeta() {
@@ -207,5 +207,5 @@ public class NodeStorage {
         return nodeStorage.diskManager;
     }
 
-    // TODO create transactionNodes for DataStorage and put it to all NodeStorage places
+    // TODO create transactionNodes for DataStorage and put it to all Storage places
 }

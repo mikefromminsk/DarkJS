@@ -1,6 +1,6 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.NodeStorage;
+import com.droid.djs.Storage;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
@@ -14,12 +14,12 @@ import java.util.Arrays;
 public class DataInputStream extends InputStream {
 
     // TODO setString buffer size > MAX_STORAGE_DATA_IN_DB
-    private static final int BUFFER_SIZE = NodeStorage.MAX_STORAGE_DATA_IN_DB;
+    private static final int BUFFER_SIZE = Storage.MAX_STORAGE_DATA_IN_DB;
     private NodeType type;
     public long start;
     public long length;
     private long currentPosition;
-    private NodeStorage dataStorage = Instance.get().getNodeStorage();
+    private Storage dataStorage = Instance.get().getStorage();
     private FileInputStream fileReader;
     private byte[] cache; // TODO remove in big data
 
@@ -81,7 +81,7 @@ public class DataInputStream extends InputStream {
             cache = new byte[0];
             while (hasNext()) {
                 byte[] buffer;
-                if (length < NodeStorage.MAX_STORAGE_DATA_IN_DB)
+                if (length < Storage.MAX_STORAGE_DATA_IN_DB)
                     buffer = readFromDb();
                 else
                     buffer = readFromFs();

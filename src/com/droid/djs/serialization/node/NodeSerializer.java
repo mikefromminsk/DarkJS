@@ -1,6 +1,6 @@
 package com.droid.djs.serialization.node;
 
-import com.droid.djs.NodeStorage;
+import com.droid.djs.Storage;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
@@ -82,7 +82,7 @@ public class NodeSerializer {
     private static Object dataSimplification(NodeBuilder builder, Node node) {
         DataInputStream dataInputStream = builder.set(node).getData();
         if (node.type == NodeType.STRING) {
-            if (dataInputStream.length > NodeStorage.MAX_STORAGE_DATA_IN_DB)
+            if (dataInputStream.length > Storage.MAX_STORAGE_DATA_IN_DB)
                 return LINK_PREFIX + node.id;
             else
                 return STRING_PREFIX + dataInputStream.readString();

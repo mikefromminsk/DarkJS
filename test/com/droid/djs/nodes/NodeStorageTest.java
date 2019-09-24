@@ -79,7 +79,7 @@ class NodeStorageTest implements Runnable {
 
         add("Start", "commit");
         start = time();
-        Instance.get().getNodeStorage().transactionCommit();
+        Instance.get().getStorage().transactionCommit();
         add("Finish(ms)", time() - start);
 
         add("Start", "connectThread " + count + " records with duplicates");
@@ -91,6 +91,6 @@ class NodeStorageTest implements Runnable {
         for (int i = 0; i < count; i++)
             builder.create(NodeType.STRING).setData("" + getRandom(0, count)).commit();
         add("Finish", time() - start);
-        Instance.get().getNodeStorage().transactionCommit();
+        Instance.get().getStorage().transactionCommit();
     }*/
 }

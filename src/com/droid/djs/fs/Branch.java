@@ -25,7 +25,7 @@ public class Branch {
     public Node getRoot() {
         if (root == null) {
             root = Files.getNodeFromRoot("Branch/" + Math.abs(random.nextInt()));
-            Instance.get().getNodeStorage().transactionCommit();
+            Instance.get().getStorage().transactionCommit();
             updateTimer();
         }
         return root;
@@ -68,7 +68,7 @@ public class Branch {
                     Instance.get().removeMaster();
             }
             root = null;
-            Instance.get().getNodeStorage().transactionCommit();
+            Instance.get().getStorage().transactionCommit();
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.droid.instance;
 
-import com.droid.djs.NodeStorage;
+import com.droid.djs.Storage;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.DataOutputStream;
 import com.droid.djs.fs.Files;
@@ -149,16 +149,16 @@ public class Instance implements Runnable {
         return functions;
     }
 
-    private NodeStorage nodeStorage;
-    public NodeStorage getNodeStorage() {
-        if (nodeStorage == null) {
-            nodeStorage = new NodeStorage(Instance.get().storeDir, "node");
-            if (nodeStorage.isEmpty()){
-                nodeStorage.add(new ThreadNode());
+    private Storage storage;
+    public Storage getStorage() {
+        if (storage == null) {
+            storage = new Storage(Instance.get().storeDir, "node");
+            if (storage.isEmpty()){
+                storage.add(new ThreadNode());
                 getFunctions();
             }
         }
-        return nodeStorage;
+        return storage;
     }
 
     private Threads threads;
@@ -281,9 +281,9 @@ public class Instance implements Runnable {
                 } catch (Exception e) {
                     getThreads().stopAllThreads();
                     try {
-                        getNodeStorage().transactionCommit();
-                        getNodeStorage().close();
-                        DiskManager.removeInstance(getNodeStorage().getDiskManager());
+                        getStorage().transactionCommit();
+                        getStorage().close();
+                        DiskManager.removeInstance(getStorage().getDiskManager());
                     } catch (IOException e1) {
                         e.printStackTrace();
                     } finally {

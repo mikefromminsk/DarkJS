@@ -19,13 +19,13 @@ class NodeBuilderTest {
     void create() {
         /*NodeBuilder builder = new NodeBuilder();
         Long secondValueNodeId = builder.create().getId();
-        NodeStorage.getFunctions().transactionCommit();
-        NodeStorage.getFunctions().clearCache();
+        Storage.getFunctions().transactionCommit();
+        Storage.getFunctions().clearCache();
         assertEquals(valueNodeId, builder.set(nodeId).getValue());
         builder.setValue(secondValueNodeId).commit();
         assertEquals(secondValueNodeId, builder.set(nodeId).getValue());
-        NodeStorage.getFunctions().transactionCommit();
-        NodeStorage.getFunctions().clearCache();
+        Storage.getFunctions().transactionCommit();
+        Storage.getFunctions().clearCache();
         assertEquals(secondValueNodeId, builder.set(nodeId).getValueNode().id);
 
         String string = "string";

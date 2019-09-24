@@ -1,6 +1,6 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.NodeStorage;
+import com.droid.djs.Storage;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.consts.LinkType;
 import com.droid.djs.nodes.consts.NodeType;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class NodeBuilder {
 
-    private NodeStorage nodeStorage = Instance.get().getNodeStorage();
+    private Storage storage = Instance.get().getStorage();
     private Node node;
 
     public NodeBuilder create() {
@@ -21,7 +21,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder create(NodeType nodeType) {
-        node = nodeStorage.newNode(nodeType);
+        node = storage.newNode(nodeType);
         return this;
     }
 
@@ -38,7 +38,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder get(Long id) {
-        node = nodeStorage.get(id);
+        node = storage.get(id);
         return this;
     }
 
@@ -50,14 +50,14 @@ public class NodeBuilder {
     public Node commit() {
         if (node.type.ordinal() >= NodeType.NODE.ordinal()) {
             if (node.id == null)
-                nodeStorage.add(node);
+                storage.add(node);
             else
-                nodeStorage.set(node.id, node);
+                storage.set(node.id, node);
             if (!node.isSaved)
-                nodeStorage.addToTransaction(node);
+                storage.addToTransaction(node);
         } else {
             Data data = (Data) node;
-            nodeStorage.add(data);
+            storage.add(data);
             if (data.data == null)
                 node = null;
         }
@@ -194,7 +194,7 @@ public class NodeBuilder {
         if (node.value instanceof Node)
             return (Node) node.value;
         else if (node.value instanceof Long)
-            return (Node) (node.value = nodeStorage.get((Long) node.value));
+            return (Node) (node.value = storage.get((Long) node.value));
         return null;
     }
 
@@ -202,7 +202,7 @@ public class NodeBuilder {
         if (node.source instanceof Node)
             return (Node) node.source;
         else if (node.source instanceof Long)
-            return (Node) (node.source = nodeStorage.get((Long) node.source));
+            return (Node) (node.source = storage.get((Long) node.source));
         return null;
     }
 
@@ -210,7 +210,7 @@ public class NodeBuilder {
         if (node.title instanceof Data)
             return (Data) node.title;
         else if (node.title instanceof Long)
-            return (Data) (node.title = nodeStorage.get((Long) node.title));
+            return (Data) (node.title = storage.get((Long) node.title));
         return null;
     }
 
@@ -218,7 +218,7 @@ public class NodeBuilder {
         if (node.set instanceof Node)
             return (Node) node.set;
         else if (node.set instanceof Long)
-            return (Node) (node.set = nodeStorage.get((Long) node.set));
+            return (Node) (node.set = storage.get((Long) node.set));
         return null;
     }
 
@@ -226,7 +226,7 @@ public class NodeBuilder {
         if (node._true instanceof Node)
             return (Node) node._true;
         else if (node._true instanceof Long)
-            return (Node) (node._true = nodeStorage.get((Long) node._true));
+            return (Node) (node._true = storage.get((Long) node._true));
         return null;
     }
 
@@ -234,7 +234,7 @@ public class NodeBuilder {
         if (node._else instanceof Node)
             return (Node) node._else;
         else if (node._else instanceof Long)
-            return (Node) (node._else = nodeStorage.get((Long) node._else));
+            return (Node) (node._else = storage.get((Long) node._else));
         return null;
     }
 
@@ -242,7 +242,7 @@ public class NodeBuilder {
         if (node.exit instanceof Node)
             return (Node) node.exit;
         else if (node.exit instanceof Long)
-            return (Node) (node.exit = nodeStorage.get((Long) node.exit));
+            return (Node) (node.exit = storage.get((Long) node.exit));
         return null;
     }
 
@@ -250,7 +250,7 @@ public class NodeBuilder {
         if (node._while instanceof Node)
             return (Node) node._while;
         else if (node._while instanceof Long)
-            return (Node) (node._while = nodeStorage.get((Long) node._while));
+            return (Node) (node._while = storage.get((Long) node._while));
         return null;
     }
 
@@ -258,7 +258,7 @@ public class NodeBuilder {
         if (node._if instanceof Node)
             return (Node) node._if;
         else if (node._if instanceof Long)
-            return (Node) (node._if = nodeStorage.get((Long) node._if));
+            return (Node) (node._if = storage.get((Long) node._if));
         return null;
     }
 
@@ -266,7 +266,7 @@ public class NodeBuilder {
         if (node.prototype instanceof Node)
             return (Node) node.prototype;
         else if (node.prototype instanceof Long)
-            return (Node) (node.prototype = nodeStorage.get((Long) node.prototype));
+            return (Node) (node.prototype = storage.get((Long) node.prototype));
         return null;
     }
 
@@ -274,7 +274,7 @@ public class NodeBuilder {
         if (node.localParent instanceof Node)
             return (Node) node.localParent;
         else if (node.localParent instanceof Long)
-            return (Node) (node.localParent = nodeStorage.get((Long) node.localParent));
+            return (Node) (node.localParent = storage.get((Long) node.localParent));
         return null;
     }
 
@@ -282,7 +282,7 @@ public class NodeBuilder {
         if (node.parser instanceof Node)
             return (Data) node.parser;
         else if (node.parser instanceof Long)
-            return (Data) (node.parser = nodeStorage.get((Long) node.parser));
+            return (Data) (node.parser = storage.get((Long) node.parser));
         return null;
     }
 
@@ -386,7 +386,7 @@ public class NodeBuilder {
             Object object = list.get(index);
             if (object instanceof Node) return (Node) object;
             if (object instanceof Long) {
-                Node readedNode = nodeStorage.get((Long) object);
+                Node readedNode = storage.get((Long) object);
                 list.set(index, readedNode);
                 return readedNode;
             }
@@ -658,7 +658,7 @@ public class NodeBuilder {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        nodeStorage.transactionCommit();
+        storage.transactionCommit();
     }
 
     public NodeType getType() {
