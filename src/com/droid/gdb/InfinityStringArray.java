@@ -30,7 +30,7 @@ public class InfinityStringArray extends InfinityFile {
         return new MetaCell();
     }
 
-    protected MetaCell getMeta(long index) {
+    public MetaCell getMeta(long index) {
         return (MetaCell) meta.get(index, initMeta());
     }
 
@@ -149,7 +149,7 @@ public class InfinityStringArray extends InfinityFile {
         return sectorSize;
     }
 
-    protected byte[] dataToSector(byte[] data) {
+    public byte[] dataToSector(byte[] data) {
         byte[] result = new byte[getSectorLength(data.length)];
         System.arraycopy(data, 0, result, 0, data.length);
         return result;

@@ -1,6 +1,5 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.consts.LinkType;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 public class NodeBuilder {
 
     private NodeStorage nodeStorage = Instance.get().getNodeStorage();
-    private DataStorage dataStorage = Instance.get().getDataStorage();
     private Node node;
 
     public NodeBuilder create() {
@@ -59,7 +57,7 @@ public class NodeBuilder {
                 nodeStorage.addToTransaction(node);
         } else {
             Data data = (Data) node;
-            dataStorage.add(data);
+            nodeStorage.add(data);
             if (data.data == null)
                 node = null;
         }

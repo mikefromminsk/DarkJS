@@ -1,6 +1,5 @@
 package com.droid.instance;
 
-import com.droid.djs.DataStorage;
 import com.droid.djs.NodeStorage;
 import com.droid.djs.fs.Branch;
 import com.droid.djs.fs.DataOutputStream;
@@ -162,13 +161,6 @@ public class Instance implements Runnable {
         return nodeStorage;
     }
 
-    private DataStorage dataStorage;
-    public DataStorage getDataStorage() {
-        if (dataStorage == null)
-            dataStorage = new DataStorage();
-        return dataStorage;
-    }
-
     private Threads threads;
     public Threads getThreads() {
         if (threads == null)
@@ -291,8 +283,7 @@ public class Instance implements Runnable {
                     try {
                         getNodeStorage().transactionCommit();
                         getNodeStorage().close();
-                        getDataStorage().close();
-                        DiskManager.removeInstance(getNodeStorage().diskManager);
+                        DiskManager.removeInstance(getNodeStorage().getDiskManager());
                     } catch (IOException e1) {
                         e.printStackTrace();
                     } finally {
