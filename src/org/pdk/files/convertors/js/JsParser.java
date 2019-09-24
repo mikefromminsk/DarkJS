@@ -1,4 +1,4 @@
-package org.pdk.convertors.js;
+package org.pdk.files.convertors.js;
 
 import jdk.nashorn.internal.runtime.Context;
 import jdk.nashorn.internal.runtime.ErrorManager;

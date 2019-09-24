@@ -4,8 +4,8 @@ import org.pdk.modules.utils.Module;
 import org.pdk.store.nodes.Node;
 import org.pdk.store.NodeType;
 import org.pdk.files.Files;
-import org.pdk.convertors.node.NodeParser;
-import org.pdk.convertors.node.NodeSerializer;
+import org.pdk.files.convertors.node.NodeParser;
+import org.pdk.files.convertors.node.NodeSerializer;
 
 public class NodeModule extends Module {
     @Override

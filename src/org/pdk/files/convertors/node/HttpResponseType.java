@@ -1,4 +1,4 @@
-package org.pdk.convertors.node;
+package org.pdk.files.convertors.node;
 
 public class HttpResponseType {
 

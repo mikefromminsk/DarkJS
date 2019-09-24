@@ -4,7 +4,7 @@ import org.pdk.store.Storage;
 import org.pdk.files.Files;
 import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;
-import org.pdk.convertors.node.NodeSerializer;
+import org.pdk.files.convertors.node.NodeSerializer;
 import org.pdk.instance.Instance;
 
 import java.io.ByteArrayInputStream;

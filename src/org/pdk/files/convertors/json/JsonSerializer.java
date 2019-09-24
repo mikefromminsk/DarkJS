@@ -1,4 +1,4 @@
-package org.pdk.convertors.json;
+package org.pdk.files.convertors.json;
 
 import org.pdk.store.nodes.Data;
 import org.pdk.store.nodes.Node;

@@ -1,4 +1,4 @@
-package org.pdk.convertors.json;
+package org.pdk.files.convertors.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;

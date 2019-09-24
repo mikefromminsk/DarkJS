@@ -5,10 +5,10 @@ import org.pdk.store.NodeType;
 import org.pdk.store.nodes.Data;
 import org.pdk.store.nodes.Node;
 import org.pdk.store.nodes.ThreadNode;
-import org.pdk.convertors.js.JsBuilder;
-import org.pdk.convertors.js.JsParser;
-import org.pdk.convertors.json.JsonBuilder;
-import org.pdk.convertors.json.JsonParser;
+import org.pdk.files.convertors.js.JsBuilder;
+import org.pdk.files.convertors.js.JsParser;
+import org.pdk.files.convertors.json.JsonBuilder;
+import org.pdk.files.convertors.json.JsonParser;
 import org.pdk.instance.Instance;
 import com.google.gson.JsonElement;
 

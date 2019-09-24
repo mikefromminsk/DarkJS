@@ -1,4 +1,4 @@
-package org.pdk.convertors.js;
+package org.pdk.files.convertors.js;
 
 import org.pdk.store.nodes.NodeBuilder;
 import org.pdk.store.NodeType;
