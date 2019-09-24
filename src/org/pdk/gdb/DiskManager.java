@@ -1,6 +1,6 @@
 package org.pdk.gdb;
 
-import org.pdk.engine.fs.DataOutputStream;
+import org.pdk.engine.files.DataOutputStream;
 
 import java.io.File;
 import java.util.*;

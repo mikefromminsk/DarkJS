@@ -1,6 +1,6 @@
 package org.pdk.engine.modules.prototypes;
 
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.modules.utils.Module;
 
 public class StringPrototype extends Module {

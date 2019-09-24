@@ -1,6 +1,6 @@
 package org.pdk.engine.store.nodes;
 
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 
 import java.io.InputStream;
 

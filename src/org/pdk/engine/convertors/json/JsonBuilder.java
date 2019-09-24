@@ -1,9 +1,9 @@
 package org.pdk.engine.convertors.json;
 
-import org.pdk.engine.fs.Files;
+import org.pdk.engine.files.Files;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.store.nodes.NodeBuilder;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 

@@ -1,7 +1,7 @@
-package org.pdk.engine.fs;
+package org.pdk.engine.files;
 
 import org.pdk.engine.store.nodes.Node;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 import java.io.*;
 import java.util.Random;

@@ -1,8 +1,8 @@
 package org.pdk.engine.convertors.node;
 
 import org.pdk.engine.store.Storage;
-import org.pdk.engine.consts.LinkType;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.LinkType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.store.nodes.DataInputStream;
 // TODO remove Gson library
 import org.pdk.engine.modules.utils.FuncInterface;

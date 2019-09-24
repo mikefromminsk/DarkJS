@@ -1,10 +1,10 @@
 package org.pdk.engine.store.nodes;
 
 import org.pdk.engine.store.Storage;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.gdb.Bytes;
 import org.pdk.gdb.DiskManager;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 import java.io.FileInputStream;
 import java.io.IOException;

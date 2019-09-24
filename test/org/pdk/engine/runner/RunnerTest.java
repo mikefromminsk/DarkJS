@@ -3,7 +3,7 @@ package org.pdk.engine.runner;
 import org.pdk.engine.store.nodes.NodeBuilder;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.convertors.node.NodeSerializer;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,11 +1,11 @@
-package org.pdk.net.ftp;
+package org.pdk.engine.network.ftp;
 
 import org.pdk.engine.store.nodes.NodeBuilder;
-import org.pdk.engine.fs.Branch;
-import org.pdk.engine.fs.Files;
-import org.pdk.engine.fs.DataOutputStream;
+import org.pdk.engine.files.Branch;
+import org.pdk.engine.files.Files;
+import org.pdk.engine.files.DataOutputStream;
 import org.pdk.gdb.map.Crc16;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;

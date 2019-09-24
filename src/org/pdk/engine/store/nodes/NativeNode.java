@@ -1,9 +1,9 @@
 package org.pdk.engine.store.nodes;
 
-import org.pdk.engine.consts.LinkType;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.LinkType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.modules.utils.Func;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 public class NativeNode extends Node {
 

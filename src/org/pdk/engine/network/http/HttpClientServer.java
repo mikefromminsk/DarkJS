@@ -1,16 +1,16 @@
-package org.pdk.net.http;
+package org.pdk.engine.network.http;
 
 
-import org.pdk.engine.fs.Files;
+import org.pdk.engine.files.Files;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.store.nodes.NodeBuilder;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.convertors.node.HttpResponse;
 import org.pdk.engine.convertors.node.HttpResponseType;
 import org.pdk.engine.convertors.node.NodeParser;
 import org.pdk.engine.convertors.node.NodeSerializer;
 import org.pdk.gdb.map.Crc16;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 import com.sun.istack.internal.NotNull;
 import org.nanohttpd.NanoHTTPD;
 

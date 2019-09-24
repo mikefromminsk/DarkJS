@@ -1,10 +1,10 @@
 package org.pdk.engine.treads;
 
 import org.pdk.engine.store.nodes.NodeBuilder;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.store.nodes.ThreadNode;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 
 import java.util.ArrayList;

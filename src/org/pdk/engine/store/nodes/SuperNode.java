@@ -1,6 +1,6 @@
 package org.pdk.engine.store.nodes;
 
-import org.pdk.engine.consts.LinkType;
+import org.pdk.engine.store.LinkType;
 import org.pdk.gdb.Bytes;
 import org.pdk.gdb.InfinityStringArrayCell;
 

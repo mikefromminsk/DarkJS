@@ -2,7 +2,7 @@ package org.pdk.engine.modules.root;
 
 import org.pdk.engine.modules.utils.Module;
 import org.pdk.engine.store.nodes.Node;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
 import java.util.Objects;

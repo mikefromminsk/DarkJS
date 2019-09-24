@@ -1,4 +1,4 @@
-package org.pdk.net.ftp;
+package org.pdk.engine.network.ftp;
 
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.api.IFileSystem;

@@ -1,4 +1,4 @@
-package org.pdk.net.ws;
+package org.pdk.engine.network.ws;
 
 import java.util.List;
 import java.util.Map;

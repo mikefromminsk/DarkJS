@@ -1,4 +1,4 @@
-package org.pdk.net.ws;
+package org.pdk.engine.network.ws;
 
 class WsClientServerTest {
 /*

@@ -1,12 +1,12 @@
-package org.pdk.instance;
+package org.pdk.engine.instance;
 
 import org.pdk.engine.modules.root.*;
 import org.pdk.engine.modules.utils.FuncInterface;
 import org.pdk.engine.modules.utils.Module;
 import org.pdk.engine.store.Storage;
-import org.pdk.engine.fs.Branch;
-import org.pdk.engine.fs.DataOutputStream;
-import org.pdk.engine.fs.Files;
+import org.pdk.engine.files.Branch;
+import org.pdk.engine.files.DataOutputStream;
+import org.pdk.engine.files.Files;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.store.nodes.NodeBuilder;
 import org.pdk.engine.store.nodes.ThreadNode;
@@ -18,9 +18,9 @@ import org.pdk.engine.convertors.node.NodeSerializer;
 import org.pdk.engine.treads.Threads;
 import org.pdk.gdb.DiskManager;
 import org.pdk.gdb.map.Crc16;
-import org.pdk.net.ftp.FtpServer;
-import org.pdk.net.http.HttpClientServer;
-import org.pdk.net.ws.WsClientServer;
+import org.pdk.engine.network.ftp.FtpServer;
+import org.pdk.engine.network.http.HttpClientServer;
+import org.pdk.engine.network.ws.WsClientServer;
 
 import java.io.*;
 import java.net.BindException;

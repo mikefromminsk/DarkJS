@@ -1,7 +1,7 @@
-package org.pdk.engine.fs;
+package org.pdk.engine.files;
 
 import org.pdk.engine.store.nodes.NodeBuilder;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.store.nodes.Data;
 import org.pdk.engine.store.nodes.Node;
 import org.pdk.engine.store.nodes.ThreadNode;
@@ -9,7 +9,7 @@ import org.pdk.engine.convertors.js.JsBuilder;
 import org.pdk.engine.convertors.js.JsParser;
 import org.pdk.engine.convertors.json.JsonBuilder;
 import org.pdk.engine.convertors.json.JsonParser;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 import com.google.gson.JsonElement;
 
 import java.io.ByteArrayInputStream;

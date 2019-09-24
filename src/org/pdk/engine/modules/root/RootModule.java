@@ -2,9 +2,9 @@ package org.pdk.engine.modules.root;
 
 import org.pdk.engine.modules.utils.Module;
 import org.pdk.engine.store.nodes.Node;
-import org.pdk.engine.consts.NodeType;
+import org.pdk.engine.store.NodeType;
 import org.pdk.engine.convertors.node.NodeSerializer;
-import org.pdk.instance.Instance;
+import org.pdk.engine.instance.Instance;
 
 import java.io.IOException;
 

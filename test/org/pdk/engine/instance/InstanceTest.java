@@ -1,4 +1,4 @@
-package org.pdk.instance;
+package org.pdk.engine.instance;
 
 import org.junit.jupiter.api.Test;
 

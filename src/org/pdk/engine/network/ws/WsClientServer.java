@@ -1,4 +1,4 @@
-package org.pdk.net.ws;
+package org.pdk.engine.network.ws;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
