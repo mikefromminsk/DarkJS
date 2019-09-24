@@ -4,7 +4,6 @@ public class MetaCell implements InfinityConstArrayCell {
 
     public long start;
     public long length;
-    private static int SIZE = 3 * Long.BYTES;
 
     @Override
     public void parse(byte[] data) {
@@ -23,6 +22,7 @@ public class MetaCell implements InfinityConstArrayCell {
 
     @Override
     public int getSize() {
-        return SIZE;
+        // TODO DANGER Actual value is (2 * Long.Byte)
+        return 24; // 3 * Long.BYTE
     }
 }

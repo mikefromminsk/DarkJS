@@ -7,7 +7,7 @@ import com.droid.djs.nodes.ThreadNode;
 import com.droid.djs.nodes.DataInputStream;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.instance.Instance;
 

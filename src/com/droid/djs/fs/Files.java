@@ -1,7 +1,7 @@
 package com.droid.djs.fs;
 
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.nodes.ThreadNode;
@@ -13,7 +13,6 @@ import com.droid.instance.Instance;
 import com.google.gson.JsonElement;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 

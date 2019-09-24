@@ -1,7 +1,7 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.nodes.consts.LinkType;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.LinkType;
+import com.droid.djs.consts.NodeType;
 import com.droid.gdb.Bytes;
 
 import java.util.ArrayList;

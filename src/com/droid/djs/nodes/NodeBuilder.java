@@ -2,8 +2,8 @@ package com.droid.djs.nodes;
 
 import com.droid.djs.Storage;
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.consts.LinkType;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.LinkType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.instance.Instance;
 

@@ -1,8 +1,5 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.nodes.consts.NodeType;
-import com.droid.instance.Instance;
-
 import java.util.ArrayList;
 import java.util.Date;
 

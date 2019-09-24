@@ -1,6 +1,6 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 
 import java.io.InputStream;
 

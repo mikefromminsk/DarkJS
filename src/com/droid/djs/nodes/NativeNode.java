@@ -1,9 +1,8 @@
 package com.droid.djs.nodes;
 
-import com.droid.djs.nodes.consts.LinkType;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.LinkType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.Func;
-import com.droid.djs.runner.utils.Utils;
 import com.droid.instance.Instance;
 
 public class NativeNode extends Node {

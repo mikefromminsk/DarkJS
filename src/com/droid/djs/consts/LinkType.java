@@ -1,4 +1,4 @@
-package com.droid.djs.nodes.consts;
+package com.droid.djs.consts;
 
 public enum LinkType {
     VALUE,

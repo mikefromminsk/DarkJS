@@ -1,7 +1,7 @@
 package com.droid.djs.runner.utils;
 
 import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 
 import java.util.Objects;

@@ -1,7 +1,7 @@
 package com.droid.djs.serialization.js;
 
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;

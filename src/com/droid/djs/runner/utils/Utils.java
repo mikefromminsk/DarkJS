@@ -2,12 +2,11 @@ package com.droid.djs.runner.utils;
 
 import com.droid.djs.nodes.Data;
 import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.nodes.NativeNode;
 import com.droid.djs.nodes.Node;
 import com.droid.djs.runner.Func;
-import com.droid.djs.runner.prototypes.StringPrototype;
 import com.droid.instance.Instance;
 
 import java.util.*;

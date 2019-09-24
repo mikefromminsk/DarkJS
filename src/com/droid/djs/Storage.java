@@ -1,11 +1,8 @@
 package com.droid.djs;
 
-import com.droid.djs.nodes.consts.NodeType;
-import com.droid.djs.nodes.DataInputStream;
-import com.droid.djs.nodes.NativeNode;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.nodes.Data;
+import com.droid.djs.nodes.*;
+import com.droid.djs.nodes.basic.MetaData;
+import com.droid.djs.consts.NodeType;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
 import com.droid.gdb.map.InfinityHashMap;
@@ -28,7 +25,7 @@ public class Storage {
         nodeStorage = new InfinityStringArray(infinityFileDir, infinityFileName) {
             @Override
             public MetaCell initMeta() {
-                return new NodeMetaCell();
+                return new MetaData();
             }
         };
 
@@ -80,7 +77,7 @@ public class Storage {
     public Node get(Long index) {
         Node node = nodesCache.get(index);
         if (node == null) {
-            NodeMetaCell metaCell = (NodeMetaCell) nodeStorage.getMeta(index);
+            MetaData metaCell = (MetaData) nodeStorage.getMeta(index);
             NodeType nodeType = NodeType.values()[metaCell.type];
             node = newNode(nodeType);
             node.id = index;
@@ -107,7 +104,7 @@ public class Storage {
 
     public void add(Node node) {
         byte[] data = node.build();
-        NodeMetaCell metaCell = new NodeMetaCell();
+        MetaData metaCell = new MetaData();
         if (data != null/* && data.length != 0*/) {
             byte[] sector = nodeStorage.dataToSector(data);
             metaCell.type = (byte) node.type.ordinal();
@@ -132,20 +129,20 @@ public class Storage {
                 int hash = 0;
                 OutputStream outStream = null;
 
-                NodeMetaCell nodeMetaCell = new NodeMetaCell();
-                nodeMetaCell.type = (byte) node.type.ordinal();
-                nodeMetaCell.length = 0;
+                MetaData metaData = new MetaData();
+                metaData.type = (byte) node.type.ordinal();
+                metaData.length = 0;
                 byte[] buffer = new byte[MAX_STORAGE_DATA_IN_DB];
                 int readiedBytes;
                 File file = null;
                 while ((readiedBytes = node.externalData.read(buffer)) != -1) {
                     hash = Crc16.getHash(hash, buffer);
-                    nodeMetaCell.length += readiedBytes;
+                    metaData.length += readiedBytes;
                     if (outStream == null) {
                         hashKey = buffer;
                         if (readiedBytes == MAX_STORAGE_DATA_IN_DB) {
-                            nodeMetaCell.start = random.nextLong();
-                            file = DiskManager.getInstance(Instance.get().storeDir).getFileById(nodeMetaCell.start);
+                            metaData.start = random.nextLong();
+                            file = DiskManager.getInstance(Instance.get().storeDir).getFileById(metaData.start);
                             if (!file.exists())
                                 file.createNewFile();
                             outStream = new FileOutputStream(file);
@@ -160,19 +157,19 @@ public class Storage {
                 if (hashKey != null) {
                     long prevNodeId = dataHashTree.get(hashKey, Crc16.hashToBytes(hash));
                     if (prevNodeId == Long.MAX_VALUE) {
-                        if (nodeMetaCell.length < MAX_STORAGE_DATA_IN_DB) {
-                            nodeMetaCell.start = dataStorage.add(buffer);
+                        if (metaData.length < MAX_STORAGE_DATA_IN_DB) {
+                            metaData.start = dataStorage.add(buffer);
                         }
-                        node.id = nodeStorage.meta.add(nodeMetaCell);
-                        node.data = new com.droid.djs.nodes.DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
+                        node.id = nodeStorage.meta.add(metaData);
+                        node.data = new com.droid.djs.nodes.DataInputStream(node.type, metaData.start, metaData.length);
                         dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                     } else {
-                        if (nodeMetaCell.length >= MAX_STORAGE_DATA_IN_DB)
+                        if (metaData.length >= MAX_STORAGE_DATA_IN_DB)
                             file.delete(); // delete read file buffer
                         // TODO return instance from nodes cache
-                        nodeMetaCell = (NodeMetaCell) nodeStorage.meta.get(prevNodeId, nodeMetaCell);
+                        metaData = (MetaData) nodeStorage.meta.get(prevNodeId, metaData);
                         node.id = prevNodeId;
-                        node.data = new DataInputStream(node.type, nodeMetaCell.start, nodeMetaCell.length);
+                        node.data = new DataInputStream(node.type, metaData.start, metaData.length);
                     }
                 }
                 node.externalData.close();

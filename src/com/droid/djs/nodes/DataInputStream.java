@@ -1,7 +1,7 @@
 package com.droid.djs.nodes;
 
 import com.droid.djs.Storage;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.NodeType;
 import com.droid.gdb.Bytes;
 import com.droid.gdb.DiskManager;
 import com.droid.instance.Instance;

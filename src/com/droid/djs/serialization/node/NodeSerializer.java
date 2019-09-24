@@ -1,8 +1,8 @@
 package com.droid.djs.serialization.node;
 
 import com.droid.djs.Storage;
-import com.droid.djs.nodes.consts.LinkType;
-import com.droid.djs.nodes.consts.NodeType;
+import com.droid.djs.consts.LinkType;
+import com.droid.djs.consts.NodeType;
 import com.droid.djs.nodes.DataInputStream;
 // TODO remove Gson library
 import com.droid.djs.runner.utils.FuncInterface;
