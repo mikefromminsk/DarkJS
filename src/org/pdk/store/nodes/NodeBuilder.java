@@ -6,6 +6,7 @@ import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;
 import org.pdk.files.convertors.node.NodeSerializer;
 import org.pdk.instance.Instance;
+import org.pdk.store.data.DataInputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -62,12 +63,6 @@ public class NodeBuilder {
                 node = null;
         }
         return node;
-    }
-
-    public Long getId() {
-        if (node.id == null)
-            commit();
-        return node.id;
     }
 
     // This function should use because node type create only by NodeBuilder.create

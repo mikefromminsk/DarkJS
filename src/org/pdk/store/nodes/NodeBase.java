@@ -1,10 +1,11 @@
 package org.pdk.store.nodes;
 
 import org.pdk.store.LinkType;
+import org.pdk.store.base.Base;
 import org.simpledb.Bytes;
 import org.simpledb.InfinityStringArrayCell;
 
-public abstract class SuperNode implements InfinityStringArrayCell {
+public abstract class NodeBase extends Base implements InfinityStringArrayCell {
 
     @Override
     public byte[] build() {

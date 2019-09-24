@@ -82,6 +82,7 @@ public class Files {
         return getNode(Instance.get().getMaster(), path, nodeType, access_token);
     }
 
+    // TODO create getNode with builder first
     public static Node getNode(Node root, String path, NodeType nodeType, Long access_token) {
         NodeBuilder builder = new NodeBuilder().set(root);
         NodeBuilder builder2 = new NodeBuilder();

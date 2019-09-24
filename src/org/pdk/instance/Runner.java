@@ -4,7 +4,7 @@ package org.pdk.instance;
 import org.pdk.files.Files;
 import org.pdk.store.nodes.NativeNode;
 import org.pdk.store.nodes.ThreadNode;
-import org.pdk.store.nodes.DataInputStream;
+import org.pdk.store.data.DataInputStream;
 import org.pdk.store.nodes.Node;
 import org.pdk.store.nodes.NodeBuilder;
 import org.pdk.store.NodeType;

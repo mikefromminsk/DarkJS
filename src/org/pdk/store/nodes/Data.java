@@ -1,6 +1,7 @@
 package org.pdk.store.nodes;
 
 import org.pdk.store.NodeType;
+import org.pdk.store.data.DataInputStream;
 
 import java.io.InputStream;
 

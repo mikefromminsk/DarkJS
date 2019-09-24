@@ -6,7 +6,7 @@ import org.simpledb.Bytes;
 
 import java.util.ArrayList;
 
-public class Node extends SuperNode {
+public class Node extends NodeBase {
 
     public boolean isSaved;
     public Long id;

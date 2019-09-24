@@ -1,5 +1,5 @@
 package org.pdk.store.data;
 
-public class NumberData extends BasicData {
+public class NumberData extends DataBase {
     double number;
 }

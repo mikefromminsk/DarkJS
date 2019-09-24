@@ -4,7 +4,7 @@ import org.simpledb.MetaCell;
 
 import java.nio.ByteBuffer;
 
-public class MetaData extends MetaCell {
+public class MetaCellWithType extends MetaCell {
 
     //private final static int META_CELL_SIZE = Byte.BYTES + 3 * Long.BYTES;
     public byte type;

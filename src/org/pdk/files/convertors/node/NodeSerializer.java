@@ -3,7 +3,7 @@ package org.pdk.files.convertors.node;
 import org.pdk.store.Storage;
 import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;
-import org.pdk.store.nodes.DataInputStream;
+import org.pdk.store.data.DataInputStream;
 // TODO remove Gson library
 import org.pdk.modules.utils.FuncInterface;
 import org.pdk.modules.utils.Module;

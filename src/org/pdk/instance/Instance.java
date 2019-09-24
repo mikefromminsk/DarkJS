@@ -5,7 +5,7 @@ import org.pdk.modules.utils.FuncInterface;
 import org.pdk.modules.utils.Module;
 import org.pdk.store.Storage;
 import org.pdk.files.Branch;
-import org.pdk.files.DataOutputStream;
+import org.pdk.store.data.DataOutputStream;
 import org.pdk.files.Files;
 import org.pdk.store.nodes.Node;
 import org.pdk.store.nodes.NodeBuilder;
