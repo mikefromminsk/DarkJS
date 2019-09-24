@@ -1,7 +1,7 @@
 package com.droid.djs.fs;
 
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.Node;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.droid.instance.Instance;
 
 import java.util.Random;

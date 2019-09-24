@@ -2,11 +2,11 @@ package com.droid.djs.runner;
 
 
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.NativeNode;
-import com.droid.djs.nodes.ThreadNode;
-import com.droid.djs.nodes.DataInputStream;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.NativeNode;
+import com.droid.djs.store_models.nodes.ThreadNode;
+import com.droid.djs.store_models.nodes.DataInputStream;
+import com.droid.djs.store_models.nodes.Node;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.instance.Instance;

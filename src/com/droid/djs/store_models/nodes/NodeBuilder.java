@@ -1,4 +1,4 @@
-package com.droid.djs.nodes;
+package com.droid.djs.store_models.nodes;
 
 import com.droid.djs.Storage;
 import com.droid.djs.fs.Files;

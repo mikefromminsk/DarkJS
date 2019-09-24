@@ -1,4 +1,4 @@
-package com.droid.djs.nodes.basic;
+package com.droid.djs.store_models.meta;
 
 import com.droid.gdb.MetaCell;
 

@@ -1,9 +1,9 @@
 package com.droid.djs.treads;
 
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.ThreadNode;
+import com.droid.djs.store_models.nodes.Node;
+import com.droid.djs.store_models.nodes.ThreadNode;
 import com.droid.instance.Instance;
 
 

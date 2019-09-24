@@ -1,6 +1,6 @@
 package com.droid.djs.runner.utils;
 
-import com.droid.djs.nodes.Node;
+import com.droid.djs.store_models.nodes.Node;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
 import com.droid.djs.serialization.node.NodeParser;

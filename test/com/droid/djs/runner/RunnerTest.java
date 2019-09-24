@@ -1,22 +1,12 @@
 package com.droid.djs.runner;
 
-import com.droid.Main;
-import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.Node;
+import com.droid.djs.store_models.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.Node;
 import com.droid.djs.serialization.node.NodeSerializer;
 import com.droid.instance.Instance;
-import com.droid.djs.treads.Threads;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

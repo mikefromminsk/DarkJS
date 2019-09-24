@@ -1,14 +1,8 @@
 package com.droid.instance;
 
-import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.serialization.node.HttpResponse;
-import com.droid.djs.serialization.node.NodeSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class InstanceTest {
 

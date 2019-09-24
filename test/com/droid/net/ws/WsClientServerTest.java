@@ -1,14 +1,5 @@
 package com.droid.net.ws;
 
-import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.NodeBuilder;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class WsClientServerTest {
 /*
     @Test

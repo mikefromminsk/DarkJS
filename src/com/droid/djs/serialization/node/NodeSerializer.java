@@ -3,14 +3,14 @@ package com.droid.djs.serialization.node;
 import com.droid.djs.Storage;
 import com.droid.djs.consts.LinkType;
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.nodes.DataInputStream;
+import com.droid.djs.store_models.nodes.DataInputStream;
 // TODO remove Gson library
 import com.droid.djs.runner.utils.FuncInterface;
 import com.droid.djs.runner.utils.Utils;
 import com.droid.djs.serialization.json.JsonSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.droid.djs.nodes.*;
+import com.droid.djs.store_models.nodes.*;
 
 import java.util.*;
 

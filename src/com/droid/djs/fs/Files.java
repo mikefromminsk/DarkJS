@@ -1,10 +1,10 @@
 package com.droid.djs.fs;
 
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.droid.djs.consts.NodeType;
-import com.droid.djs.nodes.Data;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.ThreadNode;
+import com.droid.djs.store_models.nodes.Data;
+import com.droid.djs.store_models.nodes.Node;
+import com.droid.djs.store_models.nodes.ThreadNode;
 import com.droid.djs.serialization.js.JsBuilder;
 import com.droid.djs.serialization.js.JsParser;
 import com.droid.djs.serialization.json.JsonBuilder;

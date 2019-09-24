@@ -1,7 +1,6 @@
 package com.droid.net.ftp;
 
-import com.droid.djs.nodes.NodeBuilder;
-import com.droid.instance.Instance;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.FTPServer;
 import com.guichaguri.minimalftp.api.IFTPListener;

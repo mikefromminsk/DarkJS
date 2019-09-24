@@ -1,15 +1,7 @@
 package com.droid.djs.fs;
 
-import com.droid.djs.serialization.js.JsBuilder;
-import com.droid.djs.serialization.js.JsParser;
-import com.droid.djs.serialization.json.JsonBuilder;
-import com.droid.djs.serialization.json.JsonParser;
-import com.droid.djs.nodes.NodeBuilder;
-import com.droid.djs.nodes.Data;
-import com.droid.djs.nodes.Node;
+import com.droid.djs.store_models.nodes.Node;
 import com.droid.instance.Instance;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.io.*;
 import java.util.Random;

@@ -1,7 +1,7 @@
 package com.droid.djs;
 
-import com.droid.djs.nodes.*;
-import com.droid.djs.nodes.basic.MetaData;
+import com.droid.djs.store_models.nodes.*;
+import com.droid.djs.store_models.meta.MetaData;
 import com.droid.djs.consts.NodeType;
 import com.droid.gdb.*;
 import com.droid.gdb.map.Crc16;
@@ -161,7 +161,7 @@ public class Storage {
                             metaData.start = dataStorage.add(buffer);
                         }
                         node.id = nodeStorage.meta.add(metaData);
-                        node.data = new com.droid.djs.nodes.DataInputStream(node.type, metaData.start, metaData.length);
+                        node.data = new com.droid.djs.store_models.nodes.DataInputStream(node.type, metaData.start, metaData.length);
                         dataHashTree.put(hashKey, Crc16.hashToBytes(hash), node.id);
                     } else {
                         if (metaData.length >= MAX_STORAGE_DATA_IN_DB)

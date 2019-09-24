@@ -1,8 +1,8 @@
 package com.droid.djs.serialization.json;
 
-import com.droid.djs.nodes.Data;
-import com.droid.djs.nodes.Node;
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.Data;
+import com.droid.djs.store_models.nodes.Node;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.google.gson.*;
 
 import java.util.ArrayList;

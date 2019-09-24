@@ -1,4 +1,4 @@
-package com.droid.djs.nodes;
+package com.droid.djs.store_models.nodes;
 
 import java.util.ArrayList;
 import java.util.Date;

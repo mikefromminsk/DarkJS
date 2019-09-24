@@ -1,10 +1,10 @@
 package com.droid.djs.serialization.js;
 
-import com.droid.djs.nodes.NodeBuilder;
+import com.droid.djs.store_models.nodes.NodeBuilder;
 import com.droid.djs.consts.NodeType;
 import com.droid.djs.fs.Files;
-import com.droid.djs.nodes.NativeNode;
-import com.droid.djs.nodes.Node;
+import com.droid.djs.store_models.nodes.NativeNode;
+import com.droid.djs.store_models.nodes.Node;
 import com.droid.djs.runner.utils.MathUtils;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
