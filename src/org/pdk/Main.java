@@ -1,6 +1,6 @@
 package org.pdk;
 
-import org.pdk.engine.instance.Instance;
+import org.pdk.instance.Instance;
 
 import java.io.IOException;
 

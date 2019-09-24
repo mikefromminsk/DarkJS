@@ -1,6 +1,6 @@
 package org.pdk.engine;
 
-import org.pdk.engine.convertors.js.JsParser;
+import org.pdk.convertors.js.JsParser;
 import jdk.nashorn.internal.runtime.ParserException;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
