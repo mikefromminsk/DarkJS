@@ -1,6 +1,7 @@
 package org.pdk.network.ftp;
 
-import org.pdk.store.model.nodes.NodeBuilder;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
 import org.pdk.files.Branch;
 import org.pdk.files.Files;
 import org.pdk.store.model.data.DataOutputStream;
@@ -9,7 +10,6 @@ import org.pdk.instance.Instance;
 
 import com.guichaguri.minimalftp.Utils;
 import com.guichaguri.minimalftp.api.IFileSystem;
-import org.pdk.store.model.nodes.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;

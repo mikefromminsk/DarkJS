@@ -1,7 +1,7 @@
 package org.pdk.store.model.data;
 
 import org.pdk.store.Storage;
-import org.pdk.store.NodeType;
+import org.pdk.store.consts.NodeType;
 import org.simpledb.Bytes;
 import org.simpledb.DiskManager;
 import org.pdk.instance.Instance;

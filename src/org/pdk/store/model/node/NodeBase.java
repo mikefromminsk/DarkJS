@@ -1,6 +1,6 @@
-package org.pdk.store.model.nodes;
+package org.pdk.store.model.node;
 
-import org.pdk.store.LinkType;
+import org.pdk.store.consts.LinkType;
 import org.pdk.store.model.DataOrNode;
 import org.simpledb.Bytes;
 import org.simpledb.InfinityStringArrayCell;

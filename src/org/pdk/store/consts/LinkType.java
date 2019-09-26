@@ -1,4 +1,4 @@
-package org.pdk.store;
+package org.pdk.store.consts;
 
 public enum LinkType {
     VALUE,

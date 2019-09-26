@@ -1,6 +1,6 @@
 package org.pdk.modules.root;
 
-import org.pdk.store.NodeType;
+import org.pdk.store.consts.NodeType;
 import org.pdk.modules.utils.Module;
 
 public class ThreadModule extends Module {

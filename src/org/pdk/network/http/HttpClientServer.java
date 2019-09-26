@@ -2,9 +2,9 @@ package org.pdk.network.http;
 
 
 import org.pdk.files.Files;
-import org.pdk.store.model.nodes.Node;
-import org.pdk.store.model.nodes.NodeBuilder;
-import org.pdk.store.NodeType;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
+import org.pdk.store.consts.NodeType;
 import org.pdk.files.convertors.node.HttpResponse;
 import org.pdk.files.convertors.node.HttpResponseType;
 import org.pdk.files.convertors.node.NodeParser;

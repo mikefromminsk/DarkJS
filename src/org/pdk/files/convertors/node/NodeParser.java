@@ -1,10 +1,10 @@
 package org.pdk.files.convertors.node;
 
 import org.pdk.files.Files;
-import org.pdk.store.model.nodes.Node;
-import org.pdk.store.model.nodes.NodeBuilder;
-import org.pdk.store.LinkType;
-import org.pdk.store.NodeType;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
+import org.pdk.store.consts.LinkType;
+import org.pdk.store.consts.NodeType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;

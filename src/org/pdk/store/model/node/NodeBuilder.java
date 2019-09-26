@@ -1,9 +1,9 @@
-package org.pdk.store.model.nodes;
+package org.pdk.store.model.node;
 
 import org.pdk.store.Storage;
 import org.pdk.files.Files;
-import org.pdk.store.LinkType;
-import org.pdk.store.NodeType;
+import org.pdk.store.consts.LinkType;
+import org.pdk.store.consts.NodeType;
 import org.pdk.files.convertors.node.NodeSerializer;
 import org.pdk.instance.Instance;
 import org.pdk.store.model.data.Data;

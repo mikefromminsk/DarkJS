@@ -1,7 +1,7 @@
 package org.pdk.engine.builder;
 
-import org.pdk.store.model.nodes.Node;
-import org.pdk.store.model.nodes.NodeBuilder;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
 
 import static org.junit.jupiter.api.Assertions.*;
 

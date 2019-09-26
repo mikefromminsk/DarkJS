@@ -1,7 +1,7 @@
 package org.pdk.files;
 
-import org.pdk.store.model.nodes.Node;
-import org.pdk.store.model.nodes.NodeBuilder;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
 import org.pdk.instance.Instance;
 
 import java.util.Random;

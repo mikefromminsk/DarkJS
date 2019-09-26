@@ -2,12 +2,12 @@ package org.pdk.instance;
 
 
 import org.pdk.files.Files;
-import org.pdk.store.model.nodes.NativeNode;
-import org.pdk.store.model.nodes.ThreadNode;
+import org.pdk.store.model.node.NativeNode;
+import org.pdk.store.model.node.ThreadNode;
 import org.pdk.store.model.data.DataInputStream;
-import org.pdk.store.model.nodes.Node;
-import org.pdk.store.model.nodes.NodeBuilder;
-import org.pdk.store.NodeType;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.NodeBuilder;
+import org.pdk.store.consts.NodeType;
 import org.pdk.modules.utils.Module;
 
 import static org.pdk.modules.utils.Module.DEFAULT_PROTOTYPES_DIR;

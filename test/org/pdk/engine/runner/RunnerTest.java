@@ -1,7 +1,7 @@
 package org.pdk.engine.runner;
 
-import org.pdk.store.model.nodes.NodeBuilder;
-import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.node.NodeBuilder;
+import org.pdk.store.model.node.Node;
 import org.pdk.files.convertors.node.NodeSerializer;
 import org.pdk.instance.Instance;
 import org.junit.jupiter.api.Test;

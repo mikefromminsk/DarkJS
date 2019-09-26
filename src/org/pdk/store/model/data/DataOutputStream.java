@@ -2,7 +2,7 @@ package org.pdk.store.model.data;
 
 import org.pdk.files.Branch;
 import org.pdk.files.Files;
-import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.node.Node;
 import org.pdk.instance.Instance;
 
 import java.io.*;

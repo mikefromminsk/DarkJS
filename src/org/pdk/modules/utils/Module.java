@@ -1,11 +1,11 @@
 package org.pdk.modules.utils;
 
 import org.pdk.store.model.data.Data;
-import org.pdk.store.model.nodes.NodeBuilder;
-import org.pdk.store.NodeType;
+import org.pdk.store.model.node.NodeBuilder;
+import org.pdk.store.consts.NodeType;
 import org.pdk.files.Files;
-import org.pdk.store.model.nodes.NativeNode;
-import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.node.NativeNode;
+import org.pdk.store.model.node.Node;
 import org.pdk.instance.Instance;
 
 import java.util.*;

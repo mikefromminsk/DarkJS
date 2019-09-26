@@ -1,7 +1,7 @@
-package org.pdk.store.model.nodes;
+package org.pdk.store.model.node;
 
-import org.pdk.store.LinkType;
-import org.pdk.store.NodeType;
+import org.pdk.store.consts.LinkType;
+import org.pdk.store.consts.NodeType;
 import org.simpledb.Bytes;
 
 import java.util.ArrayList;
