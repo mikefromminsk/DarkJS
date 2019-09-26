@@ -1027,7 +1027,7 @@ public class Base64
             flushBase64();
 
             // 2. Actually close the stream
-            // Base class both flushes and closes.
+            // DataOrNode class both flushes and closes.
             super.close();
             
             buffer = null;

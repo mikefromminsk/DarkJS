@@ -1,9 +1,9 @@
 package org.pdk.instance;
 
-import org.pdk.store.nodes.NodeBuilder;
+import org.pdk.store.model.nodes.NodeBuilder;
 import org.pdk.store.NodeType;
-import org.pdk.store.nodes.Node;
-import org.pdk.store.nodes.ThreadNode;
+import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.nodes.ThreadNode;
 
 
 import java.util.ArrayList;

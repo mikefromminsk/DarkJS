@@ -1,4 +1,4 @@
-package org.pdk.store.nodes;
+package org.pdk.store.model.nodes;
 
 import java.util.ArrayList;
 import java.util.Date;

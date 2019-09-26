@@ -1,8 +1,8 @@
 package org.pdk.files.convertors.json;
 
-import org.pdk.store.nodes.Data;
-import org.pdk.store.nodes.Node;
-import org.pdk.store.nodes.NodeBuilder;
+import org.pdk.store.model.data.Data;
+import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.nodes.NodeBuilder;
 import com.google.gson.*;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
 package org.pdk.files.convertors.js;
 
-import org.pdk.store.nodes.NodeBuilder;
+import org.pdk.store.model.nodes.NodeBuilder;
 import org.pdk.store.NodeType;
 import org.pdk.files.Files;
-import org.pdk.store.nodes.NativeNode;
-import org.pdk.store.nodes.Node;
+import org.pdk.store.model.nodes.NativeNode;
+import org.pdk.store.model.nodes.Node;
 import org.pdk.modules.root.MathModule;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;

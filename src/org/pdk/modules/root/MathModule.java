@@ -1,7 +1,7 @@
 package org.pdk.modules.root;
 
 import org.pdk.modules.utils.Module;
-import org.pdk.store.nodes.Node;
+import org.pdk.store.model.nodes.Node;
 import org.pdk.store.NodeType;
 import jdk.nashorn.internal.parser.TokenType;
 

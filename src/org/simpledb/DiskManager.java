@@ -1,6 +1,6 @@
 package org.simpledb;
 
-import org.pdk.store.data.DataOutputStream;
+import org.pdk.store.model.data.DataOutputStream;
 
 import java.io.File;
 import java.util.*;

@@ -1,4 +1,4 @@
-package org.pdk.store.meta;
+package org.pdk.store;
 
 import org.simpledb.MetaCell;
 

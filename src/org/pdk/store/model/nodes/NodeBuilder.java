@@ -1,4 +1,4 @@
-package org.pdk.store.nodes;
+package org.pdk.store.model.nodes;
 
 import org.pdk.store.Storage;
 import org.pdk.files.Files;
@@ -6,7 +6,8 @@ import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;
 import org.pdk.files.convertors.node.NodeSerializer;
 import org.pdk.instance.Instance;
-import org.pdk.store.data.DataInputStream;
+import org.pdk.store.model.data.Data;
+import org.pdk.store.model.data.DataInputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

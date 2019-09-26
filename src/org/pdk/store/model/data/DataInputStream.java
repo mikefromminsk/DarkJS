@@ -1,4 +1,4 @@
-package org.pdk.store.data;
+package org.pdk.store.model.data;
 
 import org.pdk.store.Storage;
 import org.pdk.store.NodeType;

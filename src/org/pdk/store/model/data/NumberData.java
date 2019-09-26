@@ -1,4 +1,4 @@
-package org.pdk.store.data;
+package org.pdk.store.model.data;
 
 public class NumberData extends DataBase {
     double number;

@@ -1,10 +1,10 @@
 package org.pdk.files;
 
-import org.pdk.store.nodes.NodeBuilder;
+import org.pdk.store.model.nodes.NodeBuilder;
 import org.pdk.store.NodeType;
-import org.pdk.store.nodes.Data;
-import org.pdk.store.nodes.Node;
-import org.pdk.store.nodes.ThreadNode;
+import org.pdk.store.model.data.Data;
+import org.pdk.store.model.nodes.Node;
+import org.pdk.store.model.nodes.ThreadNode;
 import org.pdk.files.convertors.js.JsBuilder;
 import org.pdk.files.convertors.js.JsParser;
 import org.pdk.files.convertors.json.JsonBuilder;

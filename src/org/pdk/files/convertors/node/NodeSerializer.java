@@ -3,14 +3,15 @@ package org.pdk.files.convertors.node;
 import org.pdk.store.Storage;
 import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;
-import org.pdk.store.data.DataInputStream;
+import org.pdk.store.model.data.Data;
+import org.pdk.store.model.data.DataInputStream;
 // TODO remove Gson library
 import org.pdk.modules.utils.FuncInterface;
 import org.pdk.modules.utils.Module;
 import org.pdk.files.convertors.json.JsonSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.pdk.store.nodes.*;
+import org.pdk.store.model.nodes.*;
 
 import java.util.*;
 

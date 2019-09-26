@@ -1,4 +1,4 @@
-package org.pdk.store.nodes;
+package org.pdk.store.model.nodes;
 
 import org.pdk.store.LinkType;
 import org.pdk.store.NodeType;

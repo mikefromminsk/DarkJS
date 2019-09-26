@@ -134,7 +134,7 @@ public class ConnectionHandler {
 
         con.registerCommand("HOST", "HOST <address>", this::host, false); // Custom Virtual Hosts (RFC 7151)
 
-        con.registerFeature("base"); // Base Commands (RFC 5797)
+        con.registerFeature("base"); // DataOrNode Commands (RFC 5797)
         con.registerFeature("secu"); // Security Commands (RFC 5797)
         con.registerFeature("hist"); // Obsolete Commands (RFC 5797)
         con.registerFeature("nat6"); // Extended Passive/Active Commands (RFC 5797)

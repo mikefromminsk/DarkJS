@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Base class for additional implementations for the server as well as the client
+ * DataOrNode class for additional implementations for the server as well as the client
  */
 public abstract class AbstractWebSocket extends WebSocketAdapter {
 

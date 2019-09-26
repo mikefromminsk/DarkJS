@@ -1,6 +1,6 @@
 package org.pdk.network.ftp;
 
-import org.pdk.store.nodes.NodeBuilder;
+import org.pdk.store.model.nodes.NodeBuilder;
 import com.guichaguri.minimalftp.FTPConnection;
 import com.guichaguri.minimalftp.FTPServer;
 import com.guichaguri.minimalftp.api.IFTPListener;

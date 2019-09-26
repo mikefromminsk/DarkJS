@@ -96,7 +96,7 @@ public class FileHandler {
 
         con.registerCommand("HASH", "HASH <file>", this::hash); // Hash Digest (draft-bryan-ftpext-hash-02)
 
-        con.registerFeature("base"); // Base Commands (RFC 5797)
+        con.registerFeature("base"); // DataOrNode Commands (RFC 5797)
         con.registerFeature("hist"); // Obsolete Commands (RFC 5797)
         con.registerFeature("REST STREAM"); // Restart in stream mode (RFC 3659)
         con.registerFeature("MDTM"); // Modification Time (RFC 3659)
