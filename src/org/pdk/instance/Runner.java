@@ -8,9 +8,9 @@ import org.pdk.store.model.data.DataInputStream;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.NodeBuilder;
 import org.pdk.store.consts.NodeType;
-import org.pdk.modules.utils.Module;
+import org.pdk.modules.Module;
 
-import static org.pdk.modules.utils.Module.DEFAULT_PROTOTYPES_DIR;
+import static org.pdk.modules.Module.DEFAULT_PROTOTYPES_DIR;
 
 public class Runner {
 

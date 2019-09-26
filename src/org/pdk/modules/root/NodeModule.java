@@ -1,6 +1,6 @@
 package org.pdk.modules.root;
 
-import org.pdk.modules.utils.Module;
+import org.pdk.modules.Module;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.consts.NodeType;
 import org.pdk.files.Files;

@@ -6,8 +6,8 @@ import org.pdk.store.consts.NodeType;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.DataInputStream;
 // TODO remove Gson library
-import org.pdk.modules.utils.FuncInterface;
-import org.pdk.modules.utils.Module;
+import org.pdk.modules.FuncInterface;
+import org.pdk.modules.Module;
 import org.pdk.files.convertors.json.JsonSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

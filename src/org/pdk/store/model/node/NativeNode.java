@@ -2,7 +2,7 @@ package org.pdk.store.model.node;
 
 import org.pdk.store.consts.LinkType;
 import org.pdk.store.consts.NodeType;
-import org.pdk.modules.utils.Func;
+import org.pdk.modules.Func;
 import org.pdk.instance.Instance;
 
 public class NativeNode extends Node {

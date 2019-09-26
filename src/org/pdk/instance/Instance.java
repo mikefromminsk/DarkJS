@@ -1,8 +1,8 @@
 package org.pdk.instance;
 
 import org.pdk.modules.root.*;
-import org.pdk.modules.utils.FuncInterface;
-import org.pdk.modules.utils.Module;
+import org.pdk.modules.FuncInterface;
+import org.pdk.modules.Module;
 import org.pdk.store.Storage;
 import org.pdk.files.Branch;
 import org.pdk.store.model.data.DataOutputStream;
@@ -10,7 +10,7 @@ import org.pdk.files.Files;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.NodeBuilder;
 import org.pdk.store.model.node.ThreadNode;
-import org.pdk.modules.utils.Func;
+import org.pdk.modules.Func;
 import org.pdk.modules.prototypes.StringPrototype;
 import org.pdk.files.convertors.node.HttpResponse;
 import org.pdk.files.convertors.node.HttpResponseType;

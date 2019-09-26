@@ -1,4 +1,4 @@
-package org.pdk.modules.utils;
+package org.pdk.modules;
 
 import org.pdk.store.model.node.NodeBuilder;
 import org.pdk.store.model.node.Node;
