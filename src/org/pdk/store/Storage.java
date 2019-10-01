@@ -35,15 +35,15 @@ public class Storage {
         dataHashTree = new InfinityHashMap(storeDir, "hash");
     }
 
-    public Node get(Long index) {
-        Node node = nodesCache.get(index);
+    public Node get(Long nodeId) {
+        Node node = nodesCache.get(nodeId);
         if (node == null) {
-            NodeMeta metaCell = (NodeMeta) nodeStorage.getMeta(index);
+            NodeMeta metaCell = (NodeMeta) nodeStorage.getMeta(nodeId);
             node = createNodeInstance(metaCell.type);
             byte[] readiedData = nodeStorage.read(metaCell.start, metaCell.length);
             node.parse(readiedData);
-            node.id = index;
-            nodesCache.put(index, node);
+            node.nodeId = nodeId;
+            nodesCache.put(nodeId, node);
         }
         return node;
     }
@@ -69,7 +69,7 @@ public class Storage {
         // TODO change transactionNodes to sync list
         synchronized (transactionNodes) {
             for (Node node : transactionNodes) {
-                if (node.id == null){
+                if (node.nodeId == null){
                     NodeMeta metaCell = new NodeMeta();
                     byte[] data = node.build();
                     if (data.length != 0) {
@@ -78,11 +78,11 @@ public class Storage {
                         metaCell.start = nodeStorage.add(sector);
                         metaCell.length = data.length;
                     }
-                    node.id = nodeStorage.meta.add(metaCell);
-                    nodesCache.put(node.id, node);
+                    node.nodeId = nodeStorage.meta.add(metaCell);
+                    nodesCache.put(node.nodeId, node);
                 }
                 else {
-                    nodeStorage.setObject(node.id, node);
+                    nodeStorage.setObject(node.nodeId, node);
                 }
                 node.isSaved = false;
             }
@@ -95,7 +95,7 @@ public class Storage {
             transactionCommit();
         transactionNodes.add(node);
         node.isSaved = true;
-        nodesCache.put(node.id, node);
+        nodesCache.put(node.nodeId, node);
     }
 
     public void close() throws IOException {

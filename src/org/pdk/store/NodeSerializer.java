@@ -7,6 +7,9 @@ import org.pdk.store.model.node.Node;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class NodeSerializer extends InputStream {
@@ -18,25 +21,25 @@ public class NodeSerializer extends InputStream {
     public static final String LINK_PREFIX = "@";
     public static final String TRUE = "true";
     public static final String FALSE = "false";
-    private Node node;
-    private Node current;
-    private int level;
-    private NodeBuilder builder;
+
+    private int maxLevel;
     private StringBuilder result;
     private ArrayList<Long> passed = new ArrayList<>();
-    private ArrayList<Node> next = new ArrayList<>();
+    private LinkedHashMap<Node, Integer> next = new LinkedHashMap<>();
+    Storage storage;
 
-    public NodeSerializer(Node node) {
-        this(node, 1);
+    public NodeSerializer(Storage storage, Node node) {
+        this(storage, node, 1);
     }
 
-    public NodeSerializer(Node node, int level) {
-        this.node = node;
-        this.level = level;
+    public NodeSerializer(Storage storage, Node node, int maxLevel) {
+        this.storage = storage;
+        this.maxLevel = maxLevel;
         this.result = new StringBuilder("{\n");
+        next.put(node, 0);
     }
 
-    private void appendDon(DataOrNode don) {
+    private void appendDon(DataOrNode don, int currentLevel) {
         if (don instanceof Data) {
             Data data = (Data) don;
             if (data instanceof BooleanData) {
@@ -46,51 +49,41 @@ public class NodeSerializer extends InputStream {
             } else if (data instanceof StringData) {
                 result.append("\"!").append(((StringData) data).bytes).append("\"");
             } else if (data instanceof FileData) {
-                result.append("\"@").append(((FileData) data).id).append("\"");
+                result.append("\"@").append(((FileData) data).fileId).append("\"");
             }
         } else {
             Node node = (Node) don;
-            result.append("\"n").append(node.id).append("\"");
+            result.append("\"n").append(node.nodeId).append("\"");
+            if (currentLevel < maxLevel)
+                next.putIfAbsent(node, currentLevel + 1);
         }
     }
 
-    public void toMapRecursive(Node don) {
-        if (don != null) {
-            if (passed.indexOf(node.id) != -1) return;
+    public void appendNode(Map.Entry<Node, Integer> nodeEntry) {
+        Node node = nodeEntry.getKey();
+        Integer currentLevel = nodeEntry.getValue();
+        if (passed.indexOf(node.nodeId) != -1) return;
+        result.append("n").append(node.nodeId).append(" :{\n");
+        node.listLinks((linkType, link, singleValue) -> {
+            if (linkType == LinkType.LOCAL_PARENT) return;
 
-            String nodeName = NODE_PREFIX + node.id;
-
-            result.append(nodeName).append('\n');
-
-            //if (node instanceof ThreadNode)
-
-            node.listLinks((linkType, link, singleValue) -> {
-                if (linkType == LinkType.LOCAL_PARENT) return;
-
-                /*if (linkType == LinkType.NATIVE_FUNCTION) {
-                    String linkTypeStr = linkType.toString().toLowerCase();
-                    FuncInterface funcInterface = Module.getFunctionInterface((int) (long) link);
-                    links.put(linkTypeStr, "!" + funcInterface.path + funcInterface.name);
-                    return;
-                }*/
-                // Nodes links
-                String linkName = linkType.toString().toLowerCase();
-                result.append("\t\"").append(linkName);
-                if (singleValue) {
-                    result.append("\": ");
-                    appendDon(link instanceof Long ? builder.get((Long) link).() : (DataOrNode) link);
+            String linkName = linkType.toString().toLowerCase();
+            result.append("\t\"").append(linkName);
+            if (singleValue) {
+                result.append("\": ");
+                appendDon(link instanceof Long ? storage.get((Long) link) :(DataOrNode) link, currentLevel);
+                result.append(",\n");
+            } else {
+                ArrayList<Object> links = (ArrayList<Object>) link;
+                result.append("\": [\n");
+                for (Object item : links) {
+                    appendDon(item instanceof Long ? storage.get((Long) link) : (DataOrNode) link, currentLevel);
                     result.append(",\n");
-                } else {
-                    ArrayList<Object> links = (ArrayList<Object>) link;
-                    result.append("\": [\n");
-                    for (Object item : links) {
-                        appendDon(item instanceof Long ? builder.get((Long) item).getDon() : (DataOrNode) link);
-                        result.append(",\n");
-                    }
-                    result.append("],\n");
                 }
-            });
-        }
+                result.append("],\n");
+            }
+        });
+        result.append("},\n");
     }
 
     /* ignore this method*/
@@ -102,16 +95,21 @@ public class NodeSerializer extends InputStream {
 
     @Override
     public int read(byte[] buffer) {
+        if (next.size() == 0)
+            return 0;
         while (result.length() < buffer.length) {
-            toMapRecursive(node);
+            Iterator<Map.Entry<Node, Integer>> it = next.entrySet().iterator();
+            Map.Entry<Node, Integer> entry = it.next();
+            appendNode(entry);
+            passed.add(entry.getKey().nodeId);
+            it.remove();
         }
-        result.append("}");
-        if (result.length() < buffer.length) {
-
-            return result.length();
-        } else {
-
-            return buffer.length;
-        }
+        if (next.size() == 0)
+            result.append("}");
+        byte[] bytes = result.toString().getBytes();
+        int length = Math.min(bytes.length, buffer.length);
+        System.arraycopy(bytes, 0, buffer, 0, length);
+        result.delete(0, length - 1);
+        return length;
     }
 }

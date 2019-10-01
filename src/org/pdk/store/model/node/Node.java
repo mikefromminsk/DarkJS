@@ -1,15 +1,18 @@
 package org.pdk.store.model.node;
 
 import org.pdk.store.model.DataOrNode;
+import org.pdk.store.model.data.*;
 import org.simpledb.Bytes;
 import org.simpledb.InfinityStringArrayCell;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Node implements InfinityStringArrayCell, DataOrNode {
 
     public boolean isSaved;
-    public Long id;
+    public Long nodeId;
     public Object value;
     public Object source;
     public Object title;
@@ -32,19 +35,37 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     @Override
     public byte[] build() {
-        ArrayList<Long> links = new ArrayList<>();
+        ArrayList<Link> links = new ArrayList<>();
         listLinks((linkType, link, singleValue) -> {
-            Long linkId = null;
-            if (link instanceof Long)
-                linkId = (Long) link;
-            else if (link instanceof Node)
-                linkId = ((Node) link).id;
-            if (linkId == null)
-                throw new NullPointerException();
-            long dataLink = linkId * 256L + (long) linkType.ordinal();
-            links.add(dataLink);
+            Link newLink = new Link();
+            newLink.linkType = linkType;
+            if (link instanceof Long) {
+                newLink.linkDataType = LinkDataType.NODE;
+                newLink.linkData.putLong((Long) link);
+            } else if (link instanceof Data) {
+                if (link instanceof BooleanData) {
+                    newLink.linkDataType = LinkDataType.BOOL;
+                    newLink.linkData.putLong(((BooleanData) link).bool ? 1L : 0L);
+                } else if (link instanceof NumberData) {
+                    newLink.linkDataType = LinkDataType.NUMBER;
+                    newLink.linkData.putDouble(((NumberData) link).number);
+                } else if (link instanceof StringData) {
+                    newLink.linkDataType = LinkDataType.STRING;
+                    newLink.linkData.putLong(((StringData) link).stringId);
+                } else if (link instanceof FileData){
+                    newLink.linkDataType = LinkDataType.FILE;
+                    newLink.linkData.putLong(((FileData) link).fileId);
+                }
+            } else if (link instanceof Node){
+                newLink.linkDataType = LinkDataType.NODE;
+                newLink.linkData.putLong(((Node) link).nodeId);
+            }
+            links.add(newLink);
         });
-        return Bytes.fromLongList(links);
+        ByteBuffer bb = ByteBuffer.allocate(links.size() * Link.SIZE);
+        for (Link link: links)
+            bb.put(link.build());
+        return bb.array();
     }
 
     public interface NodeLinkListener {
@@ -91,18 +112,34 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             linkListener.get(LinkType.CELL, cell, false);
     }
 
-
     @Override
     public void parse(byte[] data) {
-        long[] links = Bytes.toLongArray(data);
-        for (long dataLink : links) {
-            byte linkType = (byte) (dataLink % 256);
-            long linkData = (dataLink - linkType) / 256;
-            restore(LinkType.values()[linkType], linkData);
+        for (int i = 0; i < data.length / Link.SIZE; i++) {
+            Link link = new Link();
+            link.parse(Arrays.copyOfRange(data, i * Link.SIZE, i * (Link.SIZE + 1) - 1));
+            Object restoredLink = null;
+            switch (link.linkDataType) {
+                case BOOL:
+                    restoredLink = new BooleanData(link.linkData.getInt() == 1);
+                    break;
+                case NUMBER:
+                    restoredLink = new NumberData(link.linkData.getDouble());
+                    break;
+                case STRING:
+                    restoredLink = new StringData(link.linkData.getLong());
+                    break;
+                case FILE:
+                    restoredLink = new FileData(link.linkData.getLong());
+                    break;
+                case NODE:
+                    restoredLink = link.linkData.getLong();
+                    break;
+            }
+            restore(link.linkType, restoredLink);
         }
     }
 
-    public void restore(LinkType linkType, long linkData) {
+    public void restore(LinkType linkType, Object linkData) {
         switch (linkType) {
             case VALUE:
                 value = linkData;
