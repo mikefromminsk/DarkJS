@@ -1,13 +1,12 @@
 package org.pdk.store.model.node;
 
-import org.pdk.store.consts.LinkType;
-import org.pdk.store.model.node.meta.NodeType;
+import org.pdk.store.model.DataOrNode;
 import org.simpledb.Bytes;
 import org.simpledb.InfinityStringArrayCell;
 
 import java.util.ArrayList;
 
-public class Node implements InfinityStringArrayCell {
+public class Node implements InfinityStringArrayCell, DataOrNode {
 
     public boolean isSaved;
     public Long id;
@@ -15,9 +14,9 @@ public class Node implements InfinityStringArrayCell {
     public Object source;
     public Object title;
     public Object set;
-    public Object _true; 
+    public Object _true;
     public Object _else;
-    public Object exit; 
+    public Object exit;
     public Object _while;
     public Object _if;
     public Object prototype;
@@ -81,20 +80,15 @@ public class Node implements InfinityStringArrayCell {
         if (parser != null)
             linkListener.get(LinkType.PARSER, parser, true);
         if (local != null)
-            for (Object item : local)
-                linkListener.get(LinkType.LOCAL, item, false);
+            linkListener.get(LinkType.LOCAL, local, false);
         if (param != null)
-            for (Object item : param)
-                linkListener.get(LinkType.PARAM, item, false);
+            linkListener.get(LinkType.PARAM, param, false);
         if (next != null)
-            for (Object item : next)
-                linkListener.get(LinkType.NEXT, item, false);
+            linkListener.get(LinkType.NEXT, next, false);
         if (prop != null)
-            for (Object item : prop)
-                linkListener.get(LinkType.PROP, item, false);
+            linkListener.get(LinkType.PROP, prop, false);
         if (cell != null)
-            for (Object item : cell)
-                linkListener.get(LinkType.CELL, item, false);
+            linkListener.get(LinkType.CELL, cell, false);
     }
 
 

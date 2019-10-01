@@ -1,5 +1,5 @@
 package org.pdk.store.model.data;
 
-public class NumberData extends Data {
+public class NumberData implements Data {
     public double number;
 }
