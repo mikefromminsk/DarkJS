@@ -2,7 +2,7 @@ package org.pdk.store;
 
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
-import org.pdk.store.model.node.LinkType;
+import org.pdk.store.model.node.link.LinkType;
 import org.pdk.store.model.node.Node;
 
 import java.io.InputStream;

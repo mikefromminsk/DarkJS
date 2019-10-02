@@ -7,4 +7,8 @@ public class StringData implements Data {
     public StringData(long stringId) {
         this.stringId = stringId;
     }
+
+    public StringData(String data) {
+        this.bytes = data.getBytes();
+    }
 }

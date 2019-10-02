@@ -1,6 +1,8 @@
 package org.pdk.store;
 
+import org.pdk.store.model.node.NativeNode;
 import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.ThreadNode;
 import org.pdk.store.model.node.meta.NodeMeta;
 import org.pdk.store.model.node.meta.NodeType;
 import org.simpledb.InfinityFile;
@@ -48,19 +50,23 @@ public class Storage {
         return node;
     }
 
-    private Node createNodeInstance(NodeType nodeType) {
+    public Node createNodeInstance(NodeType nodeType) {
         switch (nodeType) {
+            case THREAD:
+                return new ThreadNode();
             case NATIVE_FUNCTION:
-                //return new NativeFunction(); break;
+                return new NativeNode();
             default:
                 return new Node();
         }
     }
 
-    private NodeType getNodeType(Node node){
-        /*if (node instanceof NativeNode){
-
-        }else*/{
+    private NodeType getNodeType(Node node) {
+        if (node instanceof ThreadNode) {
+            return NodeType.NATIVE_FUNCTION;
+        } else if (node instanceof NativeNode) {
+            return NodeType.NATIVE_FUNCTION;
+        } else {
             return NodeType.NODE;
         }
     }
@@ -69,7 +75,7 @@ public class Storage {
         // TODO change transactionNodes to sync list
         synchronized (transactionNodes) {
             for (Node node : transactionNodes) {
-                if (node.nodeId == null){
+                if (node.nodeId == null) {
                     NodeMeta metaCell = new NodeMeta();
                     byte[] data = node.build();
                     if (data.length != 0) {
@@ -80,10 +86,8 @@ public class Storage {
                     }
                     node.nodeId = nodeStorage.meta.add(metaCell);
                     nodesCache.put(node.nodeId, node);
-                }
-                else {
+                } else
                     nodeStorage.setObject(node.nodeId, node);
-                }
                 node.isSaved = false;
             }
             transactionNodes.clear();

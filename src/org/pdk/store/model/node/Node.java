@@ -2,7 +2,9 @@ package org.pdk.store.model.node;
 
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
-import org.simpledb.Bytes;
+import org.pdk.store.model.node.link.Link;
+import org.pdk.store.model.node.link.LinkDataType;
+import org.pdk.store.model.node.link.LinkType;
 import org.simpledb.InfinityStringArrayCell;
 
 import java.nio.ByteBuffer;
@@ -15,7 +17,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
     public Long nodeId;
     public Object value;
     public Object source;
-    public Object title;
+    public StringData title;
     public Object set;
     public Object _true;
     public Object _else;
@@ -24,7 +26,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
     public Object _if;
     public Object prototype;
     public Object localParent;
-    public Object parser;
+    public StringData parser;
 
     public ArrayList<Object> local;
     public ArrayList<Object> param;
@@ -39,7 +41,10 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
         listLinks((linkType, link, singleValue) -> {
             Link newLink = new Link();
             newLink.linkType = linkType;
-            if (link instanceof Long) {
+            if (link instanceof Integer){
+                newLink.linkDataType = LinkDataType.NUMBER; // for NativeNode.functionId
+                newLink.linkData.putLong((long)link);
+            } else if (link instanceof Long) {
                 newLink.linkDataType = LinkDataType.NODE;
                 newLink.linkData.putLong((Long) link);
             } else if (link instanceof Data) {
@@ -148,7 +153,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 source = linkData;
                 break;
             case TITLE:
-                title = linkData;
+                title = (StringData) linkData;
                 break;
             case SET:
                 set = linkData;
@@ -175,7 +180,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 localParent = linkData;
                 break;
             case PARSER:
-                parser = linkData;
+                parser = (StringData) linkData;
                 break;
             case LOCAL:
                 if (local == null)
