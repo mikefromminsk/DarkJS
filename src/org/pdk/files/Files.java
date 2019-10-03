@@ -70,6 +70,10 @@ public class Files {
         return getNode(builder, builder.getMaster(), path, null);
     }
 
+    public static Node getNodeFromRoot(NodeBuilder builder, String path, NodeType nodeType){
+        return getNode(builder, builder.getRoot(), path, nodeType);
+    }
+
     public static void replace(NodeBuilder builder, Node from, Node to) {
         Node localParent = builder.set(from).getLocalParent();
         DataOrNode[] parentLocals = builder.set(localParent).getLocals();

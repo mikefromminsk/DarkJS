@@ -2,6 +2,10 @@ package org.pdk.store.model.node;
 
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
+import org.pdk.store.model.data.string.BigStringData;
+import org.pdk.store.model.data.string.MediumStringData;
+import org.pdk.store.model.data.string.SmallStringData;
+import org.pdk.store.model.data.string.StringData;
 import org.pdk.store.model.node.link.Link;
 import org.pdk.store.model.node.link.LinkDataType;
 import org.pdk.store.model.node.link.LinkType;
@@ -54,12 +58,15 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 } else if (link instanceof NumberData) {
                     newLink.linkDataType = LinkDataType.NUMBER;
                     newLink.linkData.putDouble(((NumberData) link).number);
-                } else if (link instanceof StringData) {
-                    newLink.linkDataType = LinkDataType.STRING;
-                    newLink.linkData.putLong(((StringData) link).stringId);
-                } else if (link instanceof FileData){
-                    newLink.linkDataType = LinkDataType.FILE;
-                    newLink.linkData.putLong(((FileData) link).fileId);
+                } else if (link instanceof SmallStringData) {
+                    newLink.linkDataType = LinkDataType.SMALL_STRING;
+                    newLink.linkData.put(((SmallStringData) link).bytes);
+                } else if (link instanceof MediumStringData) {
+                    newLink.linkDataType = LinkDataType.MEDIUM_STRING;
+                    newLink.linkData.putLong(((MediumStringData) link).stringId);
+                } else if (link instanceof BigStringData){
+                    newLink.linkDataType = LinkDataType.BIG_STRING;
+                    newLink.linkData.putLong(((BigStringData) link).fileId);
                 }
             } else if (link instanceof Node){
                 newLink.linkDataType = LinkDataType.NODE;
@@ -130,11 +137,14 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 case NUMBER:
                     restoredLink = new NumberData(link.linkData.getDouble());
                     break;
-                case STRING:
-                    restoredLink = new StringData(link.linkData.getLong());
+                case SMALL_STRING:
+                    restoredLink = new SmallStringData(link.linkData.array());
                     break;
-                case FILE:
-                    restoredLink = new FileData(link.linkData.getLong());
+                case MEDIUM_STRING:
+                    restoredLink = new MediumStringData(link.linkData.getLong());
+                    break;
+                case BIG_STRING:
+                    restoredLink = new BigStringData(link.linkData.getLong());
                     break;
                 case NODE:
                     restoredLink = link.linkData.getLong();

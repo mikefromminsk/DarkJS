@@ -3,7 +3,7 @@ package org.pdk.store;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
-import org.pdk.store.model.data.StringData;
+import org.pdk.store.model.data.string.StringData;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.meta.NodeType;
 
@@ -38,7 +38,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder setTitle(String paramName) {
-        node.title = new StringData(paramName);
+        node.title = new StringData(paramName.getBytes());
         return this;
     }
 
@@ -143,5 +143,13 @@ public class NodeBuilder {
 
     public Node getMaster() {
         return null;
+    }
+
+    public Node getRoot() {
+        return null;
+    }
+
+    public NodeBuilder addParam(Node param) {
+        return this;
     }
 }

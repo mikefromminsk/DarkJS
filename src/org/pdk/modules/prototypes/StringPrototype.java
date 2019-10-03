@@ -1,7 +1,7 @@
 package org.pdk.modules.prototypes;
 
 import org.pdk.modules.utils.Module;
-import org.pdk.store.model.data.StringData;
+import org.pdk.store.model.data.string.StringData;
 
 public class StringPrototype extends Module {
 

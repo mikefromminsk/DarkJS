@@ -4,6 +4,7 @@ public enum LinkDataType {
     NODE,
     BOOL,
     NUMBER,
-    STRING,
-    FILE,
+    SMALL_STRING,
+    MEDIUM_STRING,
+    BIG_STRING,
 }
