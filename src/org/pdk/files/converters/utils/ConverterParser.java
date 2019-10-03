@@ -9,5 +9,5 @@ public abstract class ConverterParser {
         this.builder = builder;
     }
 
-    abstract Object parse();
+    protected abstract Object parse();
 }

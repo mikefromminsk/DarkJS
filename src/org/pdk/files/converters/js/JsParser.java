@@ -6,11 +6,12 @@ import jdk.nashorn.internal.runtime.ParserException;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
 import org.pdk.files.converters.utils.ConverterParser;
+import org.pdk.store.NodeBuilder;
 
-public class JsParser implements ConverterParser {
+public class JsParser extends ConverterParser {
 
-    public JsParser() {
-
+    public JsParser(NodeBuilder builder) {
+        super(builder);
     }
 
     public jdk.nashorn.internal.ir.Node parse(String sourceString) throws ParserException {

@@ -6,8 +6,6 @@ import org.pdk.files.Files;
 import org.pdk.files.converters.utils.ConverterBuilder;
 import org.pdk.modules.root.MathModule;
 import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.data.string.MediumStringData;
-import org.pdk.store.model.data.string.StringData;
 import org.pdk.store.model.node.NativeNode;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.meta.NodeType;
@@ -172,11 +170,11 @@ public class JsBuilder extends ConverterBuilder {
             /*if (statement instanceof IndexNode) {
                 IndexNode index = (IndexNode) statement;
                 Node base = jsLine(module, index.getBase());
-                Node objectNode = builder.create().setSource(base).commit();
+                Node objectNode = creator.create().setSource(base).commit();
 
                 if (index.getIndex() instanceof LiteralNode || index.getIndex() instanceof IdentNode) {
                     Node indexNode = jsLine(module, index.getIndex());
-                    builder.setString(objectNode).addProperty(indexNode).commit();
+                    creator.setString(objectNode).addProperty(indexNode).commit();
                 }
                 return objectNode;
             }*/
@@ -255,7 +253,7 @@ public class JsBuilder extends ConverterBuilder {
 
             if (statement instanceof ObjectNode) {
                 ObjectNode objectNode = (ObjectNode) statement;
-                /*Node obj = builder.create(NodeType.OBJECT).commit();
+                /*Node obj = creator.create(NodeType.OBJECT).commit();
                 Map<Node, Block> subBlocks = new LinkedHashMap<>();
                 for (PropertyNode property : objectNode.getElements()) {
                     Node propNode = jsLine(obj, property);
@@ -300,7 +298,7 @@ public class JsBuilder extends ConverterBuilder {
                     }
                 } else {
                     // TODO remove this line
-                    //builder.set(callNode).addParam(0L);
+                    //creator.set(callNode).addParam(0L);
                 }
                 Node sourceFunc = jsLine(module, call.getFunction());
                 return builder.set(callNode)
@@ -314,25 +312,25 @@ public class JsBuilder extends ConverterBuilder {
 /*
                 if (literalNode instanceof LiteralNode.ArrayLiteralNode) {
                     LiteralNode.ArrayLiteralNode arrayLiteralNode = (LiteralNode.ArrayLiteralNode) literalNode;
-                    Node arr = builder.create(NodeType.ARRAY).commit();
+                    Node arr = creator.create(NodeType.ARRAY).commit();
                     for (Node item : arrayLiteralNode.getElementExpressions()) {
                         Node itemNode = jsLine(module, item);
-                        builder.set(arr).addCell(itemNode);
+                        creator.set(arr).addCell(itemNode);
                     }
                     return arr;
                 }
                 if (literalNode.isNull()) {
-                    return builder.create().commit();
+                    return creator.create().commit();
                 } else {
                     NodeType nodeType = NodeType.BOOLEAN;
                     if (literalNode.isNumeric())
                         nodeType = NodeType.NUMBER;
                     else if (literalNode.isString())
                         nodeType = NodeType.STRING;
-                    Node value = builder.create(nodeType)
+                    Node value = creator.create(nodeType)
                             .setData(literalNode.getString())
                             .commit();
-                    return builder.create()
+                    return creator.create()
                             .setValue(value)
                             .commit();
                 }*/

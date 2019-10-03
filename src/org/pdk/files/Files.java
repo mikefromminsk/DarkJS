@@ -20,7 +20,7 @@ public class Files {
         return "".equals(path.toString()) ? "/" : path.toString();
     }
 
-    // TODO create getNode with builder first
+    // TODO create getNode with creator first
     public static Node getNode(NodeBuilder builder, Node root, String path, NodeType nodeType) {
         builder.set(root);
         // TODO add escape characters /
