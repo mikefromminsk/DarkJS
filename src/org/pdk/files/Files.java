@@ -66,12 +66,19 @@ public class Files {
         return builder.getNode();
     }
 
-    Node getNodeIfExist(NodeBuilder builder, String path){
+    public static Node getNodeIfExist(NodeBuilder builder, Node root, String path){
+        return getNode(builder, root, path, null);
+    }
+
+    public static Node getNodeIfExist(NodeBuilder builder, String path){
         return getNode(builder, builder.getMaster(), path, null);
     }
 
     public static Node getNodeFromRoot(NodeBuilder builder, String path, NodeType nodeType){
         return getNode(builder, builder.getRoot(), path, nodeType);
+    }
+    public static Node getNodeFromRootIfExist(NodeBuilder builder, String path){
+        return getNode(builder, builder.getRoot(), path, null);
     }
 
     public static void replace(NodeBuilder builder, Node from, Node to) {

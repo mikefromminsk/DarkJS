@@ -1,5 +1,6 @@
 package org.pdk.store;
 
+import com.oracle.jrockit.jfr.InstantEvent;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
@@ -151,5 +152,93 @@ public class NodeBuilder {
 
     public NodeBuilder addParam(Node param) {
         return this;
+    }
+
+
+    public NodeBuilder addParam(Long param) {
+        return this;
+    }
+
+    public NodeBuilder setSource(Node node) {
+    }
+
+    public NodeBuilder setSet(Node setLink) {
+        return null;
+    }
+
+    public NodeBuilder addNext(Node initBlockNode) {
+        return null;
+    }
+
+    public NodeBuilder setWhile(Node forBodyNode) {
+        return null;
+    }
+
+    public NodeBuilder setIf(Node forTestNode) {
+        return null;
+    }
+
+    public NodeBuilder setValue(Node variable) {
+        return null;
+    }
+
+    public NodeBuilder removeAllNext() {
+            return null;
+    }
+
+    public NodeBuilder addProperty(String property) {
+        return null;
+    }
+
+    public NodeBuilder setTrue(Node ifTrueNode) {
+        return null;
+    }
+
+    public NodeBuilder setElse(Node ifElseNode) {
+        return null;
+    }
+
+    public NodeBuilder setExit(Node module) {
+        return null;
+    }
+
+    public Node[] getParams() {
+        return new Node[0];
+    }
+
+    public Node getIf() {
+        return null;
+    }
+
+    public Node getTrue() {
+        return null;
+    }
+
+    public Node getSource() {
+        return null;
+    }
+
+    public Node getSet() {
+        return null;
+    }
+
+    public Node getNext(int i) {
+        return null;
+    }
+
+    public Node getWhile() {
+        return null;
+    }
+
+    public Node getElse() {
+        return null;
+    }
+
+    public Node getExit() {
+        return null;
+    }
+
+    public NodeBuilder setPrototype(Node templateNode) {
+        return null;
     }
 }

@@ -6,7 +6,7 @@ import org.pdk.store.model.node.link.LinkType;
 
 public class NativeNode extends Node {
 
-    private Integer functionIndex;
+    public Integer functionIndex;
     public Func func;
 
     @Override

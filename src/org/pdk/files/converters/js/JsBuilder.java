@@ -2,8 +2,15 @@ package org.pdk.files.converters.js;
 
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
+import org.pdk.files.Files;
 import org.pdk.files.converters.utils.ConverterBuilder;
-import org.pdk.files.converters.utils.ConverterParser;
+import org.pdk.modules.root.MathModule;
+import org.pdk.store.NodeBuilder;
+import org.pdk.store.model.data.string.MediumStringData;
+import org.pdk.store.model.data.string.StringData;
+import org.pdk.store.model.node.NativeNode;
+import org.pdk.store.model.node.Node;
+import org.pdk.store.model.node.meta.NodeType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,11 +19,15 @@ import java.util.Map;
 
 import static org.pdk.modules.root.MathModule.*;
 
-public class JsBuilder implements ConverterBuilder {
+public class JsBuilder extends ConverterBuilder {
 
     private ArrayList<Node> localStack = new ArrayList<>();
 
-    Node jsLine(Node module, Node statement) {
+    public JsBuilder(NodeBuilder builder) {
+        super(builder);
+    }
+
+    Node jsLine(Node module, jdk.nashorn.internal.ir.Node statement) {
         try {
             if (module != null)
                 localStack.add(module);
@@ -57,11 +68,10 @@ public class JsBuilder implements ConverterBuilder {
 
             if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
-                Node func = Files.getNode(module, function.getName(),
+                Node func = Files.getNode(builder, module, function.getName(),
                         function.getName().startsWith("thread") ? NodeType.THREAD : NodeType.NODE);
                 for (IdentNode param : function.getParameters()) {
-                    Node titleData = builder.create(NodeType.STRING).setData(param.getName()).commit();
-                    Node paramNode = builder.create().setTitle(titleData).commit();
+                    Node paramNode = builder.create().setTitle(param.getName()).commit();
                     builder.set(func).addParam(paramNode);
                 }
                 /*jsLine(functionNode, function.getBody());*/
@@ -72,9 +82,10 @@ public class JsBuilder implements ConverterBuilder {
                 Block block = (Block) statement;
                 Map<Node, Block> subBlocks = new LinkedHashMap<>();
 
+                // TODO test remove this string
                 builder.set(module).removeAllNext().commit();
 
-                for (Node line : block.getStatements()) {
+                for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
                     Node lineNode = jsLine(module, line);
                     if (line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode) // not a function. its a problem with nashorn parser.
                         subBlocks.put(lineNode, ((FunctionNode) ((VarNode) line).getInit()).getBody());
@@ -100,23 +111,20 @@ public class JsBuilder implements ConverterBuilder {
                 TokenType tokenType = unaryNode.tokenType();
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = jsLine(module, unaryNode.getExpression());
-                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(MathModule.MATH_UTIL_NAME + "/" + MathModule.convertTokenTypeToFuncName(tokenType));
-                    Node func = builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(nativeNode.getFunctionIndex())
-                            .addParam(variable)
-                            .commit();
-                    return builder.create()
-                            .setSource(variable)
+                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(
+                            builder, MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(tokenType));
+                    NativeNode newNativeNode = (NativeNode) builder.create(NodeType.NATIVE_FUNCTION).addParam(variable).commit();
+                    newNativeNode.setFunctionIndex(nativeNode.functionIndex);
+                    return builder.create().setSource(variable)
                             .setValue(variable) // important
-                            .setSet(func)
+                            .setSet(newNativeNode)
                             .commit();
                 } else if (tokenType.toString().equals("-")) {
-                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
+                    NativeNode nativeNode = (NativeNode) Files.getNodeFromRootIfExist(builder, MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
                     Node expression = jsLine(module, unaryNode.getExpression());
-                    return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(nativeNode.getFunctionIndex())
-                            .addParam(expression)
-                            .commit();
+                    NativeNode newNativeNode = (NativeNode) builder.create(NodeType.NATIVE_FUNCTION).addParam(expression).commit();
+                    newNativeNode.setFunctionIndex(nativeNode.functionIndex);
+                    return newNativeNode;
                 } else {
                     return jsLine(module, unaryNode.getExpression());
                 }
@@ -136,24 +144,27 @@ public class JsBuilder implements ConverterBuilder {
                             binaryNode.tokenType() == TokenType.ASSIGN_SUB ||
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
-                        NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist(MathModule.MATH_UTIL_NAME + "/" + MathModule.convertTokenTypeToFuncName(binaryNode.tokenType()));
+                        NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist(
+                                builder, MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create(NodeType.NATIVE_FUNCTION)
-                                .setFunctionIndex(nativeFunc.getFunctionIndex())
                                 .addParam(left)
                                 .addParam(right)
                                 .commit();
+                        ((NativeNode) right).setFunctionIndex(nativeFunc.functionIndex);
                     }
                     return builder.create()
                             .setSource(left)
                             .setSet(right)
                             .commit();
                 } else {
-                    NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist( MathModule.MATH_UTIL_NAME + "/" + MathModule.convertTokenTypeToFuncName(binaryNode.tokenType()));
-                    return builder.create(NodeType.NATIVE_FUNCTION)
-                            .setFunctionIndex(nativeFunc.getFunctionIndex())
+                    NativeNode nativeFunc = (NativeNode) Files.getNodeFromRootIfExist(
+                            builder, MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                    NativeNode newNativeNode = (NativeNode) builder.create(NodeType.NATIVE_FUNCTION)
                             .addParam(left)
                             .addParam(right)
                             .commit();
+                    newNativeNode.setFunctionIndex(nativeFunc.functionIndex);
+                    return newNativeNode;
                 }
             }
 
@@ -183,8 +194,7 @@ public class JsBuilder implements ConverterBuilder {
                     }
                 } else
                     base = jsLine(module, index.getBase());
-                Node propertyNode = builder.create(NodeType.STRING).setData(index.getProperty()).commit();
-                builder.set(base).addProperty(propertyNode).commit();
+                builder.set(base).addProperty(index.getProperty()).commit();
                 return base;
             }
 
@@ -220,9 +230,15 @@ public class JsBuilder implements ConverterBuilder {
                 Node ident = null;
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
-                    Node findNode = builder.set(node).findLocal(name);
-                    if (findNode == null)
-                        findNode = builder.set(node).findParam(name);
+                    Node findNode = Files.getNodeIfExist(builder, node, name);
+                    if (findNode == null) {
+                        for (Node param : builder.set(node).getParams()) {
+                            if (name.equals(builder.set(param).getTitle())) {
+                                findNode = node;
+                                break;
+                            }
+                        }
+                    }
                     if (findNode != null) {
                         ident = findNode;
                         break;
@@ -231,8 +247,7 @@ public class JsBuilder implements ConverterBuilder {
 
                 if (ident == null) {
                     ident = builder.create().commit();
-                    Node titleData = builder.create(NodeType.STRING).setData(identNode.getName()).commit();
-                    builder.set(ident).setTitle(titleData).commit();
+                    builder.set(ident).setTitle(identNode.getName()).commit();
                     builder.set(module).addLocal(ident).commit();
                 }
                 return ident;
@@ -240,7 +255,7 @@ public class JsBuilder implements ConverterBuilder {
 
             if (statement instanceof ObjectNode) {
                 ObjectNode objectNode = (ObjectNode) statement;
-                Node obj = builder.create(NodeType.OBJECT).commit();
+                /*Node obj = builder.create(NodeType.OBJECT).commit();
                 Map<Node, Block> subBlocks = new LinkedHashMap<>();
                 for (PropertyNode property : objectNode.getElements()) {
                     Node propNode = jsLine(obj, property);
@@ -251,7 +266,8 @@ public class JsBuilder implements ConverterBuilder {
                     Block subBlock = subBlocks.get(propNode);
                     jsLine(propNode, subBlock);
                 }
-                return obj;
+                return obj;*/
+                return builder.create().commit();
             }
 
             if (statement instanceof PropertyNode) {
@@ -269,8 +285,7 @@ public class JsBuilder implements ConverterBuilder {
                     return jsLine(module, propertyNode.getValue());
                 } else {
                     Node value = jsLine(module, propertyNode.getValue());
-                    Node titleData = builder.create(NodeType.STRING).setData(key).commit();
-                    builder.set(value).setTitle(titleData).commit();
+                    builder.set(value).setTitle(key).commit();
                     return builder.set(module).addLocal(value).commit();
                 }
             }
@@ -279,12 +294,13 @@ public class JsBuilder implements ConverterBuilder {
                 CallNode call = (CallNode) statement;
                 Node callNode = builder.create().commit();
                 if (call.getArgs().size() > 0) {
-                    for (Node arg : call.getArgs()) {
+                    for (jdk.nashorn.internal.ir.Node arg : call.getArgs()) {
                         Node argNode = jsLine(module, arg);
                         builder.set(callNode).addParam(argNode);
                     }
                 } else {
-                    builder.set(callNode).addParam(0L);
+                    // TODO remove this line
+                    //builder.set(callNode).addParam(0L);
                 }
                 Node sourceFunc = jsLine(module, call.getFunction());
                 return builder.set(callNode)
@@ -295,7 +311,7 @@ public class JsBuilder implements ConverterBuilder {
 
             if (statement instanceof LiteralNode) {
                 LiteralNode literalNode = (LiteralNode) statement;
-
+/*
                 if (literalNode instanceof LiteralNode.ArrayLiteralNode) {
                     LiteralNode.ArrayLiteralNode arrayLiteralNode = (LiteralNode.ArrayLiteralNode) literalNode;
                     Node arr = builder.create(NodeType.ARRAY).commit();
@@ -319,7 +335,7 @@ public class JsBuilder implements ConverterBuilder {
                     return builder.create()
                             .setValue(value)
                             .commit();
-                }
+                }*/
             }
             return null;
         } finally {
@@ -374,7 +390,7 @@ public class JsBuilder implements ConverterBuilder {
         }
     }
 
-    public Node build(Node module, Node rootParserNode) {
+    public Node build(Node module, jdk.nashorn.internal.ir.Node rootParserNode) {
         addParentsToLocalStack(module);
         if (module == null)
             module = builder.create().commit();
@@ -384,10 +400,10 @@ public class JsBuilder implements ConverterBuilder {
 
     private void addParentsToLocalStack(Node module) {
         if (module != null) {
-            Node parent = builder.set(module).getLocalParentNode();
+            Node parent = builder.set(module).getLocalParent();
             while (parent != null) {
                 localStack.add(parent);
-                parent = builder.set(parent).getLocalParentNode();
+                parent = builder.set(parent).getLocalParent();
             }
             Collections.reverse(localStack);
         }
