@@ -1,0 +1,82 @@
+<style>
+    .md-resize-handle, .md-errors-spacer {
+        display: none;
+    }
+</style>
+<div class="layout-fill layout-column" ng-cloak>
+    <md-sidenav class="md-sidenav-left md-whiteframe-24dp"
+                md-is-open="toggle">
+        <md-toolbar class="md-theme-indigo">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="toggle = false">
+                    <md-icon md-svg-src="img/back.svg" style="fill: white"></md-icon>
+                </md-button>
+                <h1>Menu</h1>
+            </div>
+        </md-toolbar>
+        <md-content>
+            This sidenav.
+        </md-content>
+    </md-sidenav>
+    <md-content class="layout-column layout-align-start-center flex layout-align-xs layout-align-sm"
+                style="background: linear-gradient(to top left, powderblue, pink);">
+        <md-toolbar class="layout-row layout-align-center">
+            <div class="md-toolbar-tools">
+                <md-button hide-gt-sm class="md-icon-button" ng-click="toggle = true">
+                    <md-icon md-svg-src="img/menu.svg"></md-icon>
+                </md-button>
+                <h2 flex md-truncate>{{nodename}}</h2>
+            </div>
+        </md-toolbar>
+        <md-content class="layout-row md-whiteframe-24dp" style="width: 960px;">
+            <md-card hide show-gt-xs style="width:300px">
+                wefwef
+            </md-card>
+            <md-card class="layout-column flex">
+                <md-card style="height: 50px; background-color: blueviolet">
+                    <div class="md-toolbar-tools">
+                        <h1>{{nodename}}</h1>
+                    </div>
+                </md-card>
+                <div class="layout-column flex">
+                    <div class="layout-column" style="overflow-y: auto">
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                        <h3>sdfwefwe</h3>
+                    </div>
+                </div>
+                <md-card class="layout-row"
+                         style="box-shadow: 0px -4px 3px rgba(50, 50, 50, 0.2);">
+                    <div class="layout-column layout-align-center-center">
+                        <md-button class="md-icon-button" ng-click="send(nodename, message)">
+                            <md-icon md-svg-src="img/smile.svg"></md-icon>
+                        </md-button>
+                    </div>
+
+                    <md-input-container md-no-float class=" flex">
+                        <textarea md-no-float ng-model="message" rows="1" md-select-on-focus
+                                  placeholder="Type message..."></textarea>
+                    </md-input-container>
+
+                    <md-button style="width: 100px"
+                               ng-click="send(nodename, message)">Send
+                    </md-button>
+                </md-card>
+            </md-card>
+        </md-content>
+    </md-content>
+</div>

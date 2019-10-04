@@ -1,0 +1,37 @@
+<style>
+    .app-block-item{
+        transition: background-color .2s;
+        user-select: none;
+    }
+    .app-block-item:hover {
+        background: #eff0f1;
+    }
+</style>
+<div class="container layout-row layout-align-center"
+     style="background: linear-gradient(to top left, powderblue, pink);">
+    <div class="content">
+        <div ng-repeat="(appName, options) in apps">
+            <md-card >
+                <div ng-click="open(appName)"
+                     class="app-block-item layout-column">
+                    <div class="layout-row"
+                         style="margin: 8px ">
+                        <img ng-src="data?{{options.logo}}" style="width: 100px; height: 100px;">
+                        <div class="layout-column"
+                             style="margin-left: 8px">
+                            <span class="md-headline" style="text-transform: capitalize">{{appName}}</span>
+                            <div class="md-subhead">{{options.description}}</div>
+                        </div>
+                    </div>
+                    <div class="layout-row layout-align-end">
+                        <md-button ng-click="open(appName)" ng-show="options.exist">
+                            Open
+                        </md-button>
+                        <md-button ng-click="download(appName)" ng-show="!options.exist">Download</md-button>
+                    </div>
+                </div>
+            </md-card>
+        </div>
+    </div>
+
+</div>

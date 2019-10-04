@@ -1,0 +1,25 @@
+<style>
+    .launcher-cell {
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+</style>
+<div class="container layout-row layout-align-center"
+     style="background: linear-gradient(45deg, #EECFBA, #C5DDE8);">
+        <md-grid-list
+                class="content"
+                style="margin: 16px;"
+                md-cols-xs="2" md-cols-sm="4" md-cols-md="8" md-cols-gt-md="8"
+                md-row-height-gt-md="1:1" md-row-height="2:2"
+                md-gutter="12px" md-gutter-gt-sm="8px">
+            <md-grid-tile class="launcher-cell"
+                          md-ink-ripple
+                          ng-repeat="appName in apps"
+                          ng-style="{'background-image': 'url(../' + appName + '/logo.png)'}"
+                          ng-click="open(appName)">
+                <md-grid-tile-footer>
+                    <h3 style="text-transform: capitalize">{{appName}}</h3>
+                </md-grid-tile-footer>
+            </md-grid-tile>
+        </md-grid-list>
+</div>

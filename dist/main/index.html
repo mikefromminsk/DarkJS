@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="AngularApp" style="width: 100%; height: 100%; position: fixed;">
+<head>
+    <meta charset="utf-8">
+    <base>
+    <title></title>
+    <meta name="fragment" content="!">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+        #splashArea {
+            background: white;
+            overflow: hidden;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100000;
+        }
+
+        #splashLogo {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAMZAAADGQFmEkgrAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAdFQTFRF////AP//AICAVaqqQL+AM8yZK6qqSbaSOaqqM7OZN7akRLuZPLSlQLOZPbaeQ7GbQLWfPbiZO7GdObOhQLabPLOiQK+fPrKbPLSeOragQLGcPrOfPLWhO7GdQLOfPrSbPbCeO7KgQLScPrWfPLOdOrWfPbOePLSgO7WdP7KfPbOcPLWeO7KfPrSeP7SfPrWcPbKeP7SdPrKePbOgPLSeP7GfPbSePLWfO7KdPrOfPLKePLOfPrSdPbKePbOfPLKePrOdPbSePrKdPLSePbOdPbSePLKfPrOdPbOePbSfPbSdPbKePLOfPrKePbOePrOdPLKePLOfPbSePLOfPLOePbSePbKfPrOePbKdPrSdPrKePLSfPbSfPbOePrOePLOePbSePbOePLSePrOePbOePbOfPLKePrOePbSePbOePrOePbOfPbOePbOfPbOePbOePbKfPLOePbOePbOePbOePbOfPbOePbOePbOePbOePbOePbOePbOePbOfPbSePbOePbOePrOePbOePbOfPbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOePbOeDqNxPQAAAJp0Uk5TAAECAwQFBgcJCg4PERQVFxgZGhscHiAhIiMkJSYnKCkqKywtLzAyMzQ1Njc4Oj0+P0FCQ0RFR0hJSkxNTk9QWVtcY2ZoaWprbG1wcXJ0dnh7f4GHjI6PkZKVmZyfoKGlpqipqqusra6wsbK0tbm/wMHCw8bIyczO0NLb3N3e3+Di5OXm5+nq6+zt7u/w8fLz9fb3+Pn6+/z9/soYrAsAAAKOSURBVBgZ7cH5X8thAAfwj7IY5g5NLVo5UqF2EHLNlVJhjpy5zzSmcqWsTFnWfGerz19rr56nnX2fZ37zQ+83lvzXbCd7el8OjX8O9Pk7m0rxjyo6AklmCd9us6J4DQEWmrmyCsWxP+Liwhcs0LNc/UNTHw9CxzZAlcQZqNV8ocbN5VDw/KLWc5hzRpklcs93bN+W6uYTl4eY8asJpmwjzHjiLUNaeUeIwlQ9TFneMO1dI3JZu6eZEq6DOT8XJM+j0IYgGdoBc5UJStMeLGbF3dHtUHhE6WcNTKyBQj2lWS90Ss+eKkG+fkqXoGP/QA7bkauKUhA6ld+Y8q0SOboouaDhCHFeyIFsQQr90KgepzRejYyNcxTaoLZzgmkTO5HmoxCzQsn5nVm+O7HgBoUXUKoNM0e4FtJjCuegUjfJPJN1EN5ROAKVARYYgPCVwl6ohFkgDCFOYTNUTkeZJ3oa7sGoYRiUDMOIDrphpmSbw3GAQszhcGwrAcZYYAwqeyh8gjDMAsNQOUYhAMEbZ564FyoXKPRBao0zR7wVSs8o+LHgsMEsxmEorZyh4EPaIYNpxiGoHaUwtwkZnt+Ufnug8ZrCe2Rzxzgv5oZGC6Uu5HDFmBJzQWPZIKUq5GqOkJFm6HRReot86+70roWOZ5ZSIxTWwIRjitJTKNhH767AYlqmKCWqYK46RAY3oNDZBBdchznnBFOmu63IVR9g2tsymNo9SSHUUY40i+sBM0bWwlRDhBlDl4/vr1i/q9V3P8IsUSfMvaJW1AOFslvUGKmBWnuSKgEbdNxfaOrPNQv0ytp/cHEPt6M4q6/MsFB/PYpnbbsdZpbkm4tb8Y9Kmzr9fYHP40Mve3tO2rDkf/YXj7ujSuSF7U0AAAAASUVORK5CYII=') no-repeat;
+            background-size: contain;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(calc(-50% - 50px), -50%);
+            width: 100px;
+            height: 100px;
+            animation: bounceLeft 2s;
+        }
+
+        #splashText {
+            color: #333333;
+            font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 48px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(10px, -50%);
+            z-index: -1;
+            animation: bounceRight 2s;
+        }
+
+        @keyframes bounceLeft {
+            0% {
+                transform: translate(-50%, -50%) rotate(0) scale(.3);
+            }
+            40% {
+                transform: translate(-50%, -50%) rotate(360deg) scale(1);
+            }
+            100% {
+                transform: translate(calc(-50% - 50px), -50%) scale(1);
+            }
+        }
+
+        @keyframes bounceRight {
+            0% {
+                opacity: 0;
+            }
+            40% {
+                opacity: 0;
+                transform: translate(-50px, -50%);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(10px, -50%);
+            }
+        }
+
+        .hidden {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s .5s, opacity .5s linear;
+        }
+
+        html,body {
+            height: 100%;
+            margin: 0;
+
+        }
+
+    </style>
+
+    <script>
+        DEBUG = window.location.pathname !== "/"
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("splashArea").classList.add("hidden");
+            setTimeout(function () {
+                document.getElementById("splashArea").remove();
+            }, 500)
+        });
+    </script>
+</head>
+
+<body ng-controller="mainController">
+
+<div id="splashArea">
+    <div id="splashLogo"></div>
+    <span id="splashText">droid</span>
+</div>
+
+
+<ng-view class="ng-view-container" style="width: 100%; height: 100%;"></ng-view>
+
+<script src="angular/js/angular.js"></script>
+<script src="angular/js/angular-animate.min.js"></script>
+<script src="angular/js/angular-aria.min.js"></script>
+<script src="angular/js/angular-messages.min.js"></script>
+<script src="angular/js/angular-material.min.js"></script>
+<script src="angular/js/angular-route.min.js"></script>
+<link rel="stylesheet" href="angular/css/angular-material.min.css">
+
+<!--use only for autoload scripts-->
+<script src="jquery/jquery-3.4.1.slim.min.js"></script>
+
+
+<link rel="stylesheet" href="node/style.css">
+<script src="node/dark.js"></script>
+<script src="node/mainController.js"></script>
+
+</body>
+</html>
