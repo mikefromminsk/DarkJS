@@ -1,0 +1,1 @@
+var test = get("store.node/root", "test") == true

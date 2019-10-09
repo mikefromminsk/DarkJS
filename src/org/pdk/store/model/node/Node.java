@@ -1,6 +1,7 @@
 package org.pdk.store.model.node;
 
 import org.pdk.modules.Func;
+import org.pdk.modules.ModuleManager;
 import org.pdk.store.Storage;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
@@ -49,7 +50,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     @Override
     public byte[] build() {
-        ArrayList<Link> links = new ArrayList<>();
+        /*ArrayList<Link> links = new ArrayList<>();
         listLinks((linkType, link, singleValue) -> {
             Link newLink = new Link();
             newLink.linkType = linkType;
@@ -75,7 +76,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     } else {
                         int sectorSize = 16;
                         byte sectorNumber = 1;
-                        int sectorData = 8/*data for string length*/ + bytes.length;
+                        int sectorData = 8*//*data for string length*//* + bytes.length;
                         while (sectorSize < sectorData) {
                             sectorSize *= 2;
                             sectorNumber += 1;
@@ -84,10 +85,10 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                         long start = storage.putString(bytes);
                         newLink.linkData.putLong(start);
                     }
-                }/* else if (link instanceof MediumStringData) {
+                }*//* else if (link instanceof MediumStringData) {
                     newLink.linkDataType = LinkDataType.MEDIUM_STRING;
                     newLink.linkData.putLong(((MediumStringData) link).stringId);
-                }*/ else if (link instanceof FileData) {
+                }*//* else if (link instanceof FileData) {
                     newLink.linkDataType = LinkDataType.FILE;
                     newLink.linkData.putLong(((FileData) link).fileId);
                 }
@@ -100,7 +101,8 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
         ByteBuffer bb = ByteBuffer.allocate(links.size() * Link.SIZE);
         for (Link link : links)
             bb.put(link.build());
-        return bb.array();
+        return bb.array();*/
+        return null;
     }
 
     public interface NodeLinkListener {
@@ -146,17 +148,17 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
         if (cell != null)
             linkListener.get(LinkType.CELL, cell, false);
         if (func!= null)
-            linkListener.get(LinkType.NATIVE_FUNCTION, functionIndex, true);
+            linkListener.get(LinkType.NATIVE_FUNCTION, ModuleManager.functions.indexOf(func), true);
     }
 
     @Override
     public void parse(byte[] data) {
-        for (int i = 0; i < data.length / Link.SIZE; i++) {
+        /*for (int i = 0; i < data.length / Link.SIZE; i++) {
             Link link = new Link();
             link.parse(Arrays.copyOfRange(data, i * Link.SIZE, i * (Link.SIZE + 1) - 1));
             Object restoredLink = null;
             switch (link.linkDataType) {
-                case LinkDataType.BOOL:
+                case LinkDataType.BOOBL:
                     restoredLink = new BooleanData(link.linkData.getInt() == 1);
                     break;
                 case LinkDataType.NUMBER:
@@ -176,13 +178,13 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     break;
             }
             restore(link.linkType, restoredLink);
-        }
+        }*/
     }
 
     public void restore(LinkType linkType, Object linkData) {
         switch (linkType) {
             case NATIVE_FUNCTION:
-                func =
+                func = ModuleManager.functions.get((Integer) linkData);
                 break;
             case VALUE:
                 value = linkData;

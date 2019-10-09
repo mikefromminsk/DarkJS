@@ -114,10 +114,11 @@ public class NodeBuilder {
         if (string == null){
 
         }
+        return this;
     }
 
     public NodeBuilder addLocal(DataOrNode don){
-
+        return this;
     }
 
     public NodeBuilder setLocal(int index, DataOrNode don){
@@ -148,6 +149,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder setSource(Node node) {
+        return this;
     }
 
     public NodeBuilder setSet(Node setLink) {

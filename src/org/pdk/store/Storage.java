@@ -1,5 +1,6 @@
 package org.pdk.store;
 
+import org.pdk.files.converters.ConverterManager;
 import org.pdk.store.model.node.Node;
 import org.simpledb.InfinityFile;
 import org.simpledb.InfinityStringArray;
@@ -13,8 +14,9 @@ import java.util.TreeMap;
 
 public class Storage {
 
-    private int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
+    private int MAX_TRANSACTION_CACHE_NODE_COUNT = 1000;
     public final String storeDir;
+    public ConverterManager converterManager = new ConverterManager(this);
 
     private ArrayList<Node> transactionNodes = new ArrayList<>();
     private Map<Long, Node> nodesCache = new TreeMap<>();
