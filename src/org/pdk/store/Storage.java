@@ -5,12 +5,14 @@ import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.ThreadNode;
 import org.pdk.store.model.node.meta.NodeMeta;
 import org.pdk.store.model.node.meta.NodeType;
+import org.simpledb.Bytes;
 import org.simpledb.InfinityFile;
 import org.simpledb.InfinityStringArray;
 import org.simpledb.MetaCell;
 import org.simpledb.map.InfinityHashMap;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,12 +29,7 @@ public class Storage {
     private InfinityHashMap dataHashTree;
 
     public Storage(String storeDir) {
-        nodeStorage = new InfinityStringArray(storeDir, "node") {
-            @Override
-            public MetaCell initMeta() {
-                return new NodeMeta();
-            }
-        };
+        nodeStorage = new InfinityStringArray(storeDir, "node");
         dataStorage = new InfinityFile(storeDir, "data");
         dataHashTree = new InfinityHashMap(storeDir, "hash");
     }
@@ -57,7 +54,7 @@ public class Storage {
             case NATIVE_FUNCTION:
                 return new NativeNode();
             default:
-                return new Node();
+                return new Node(this);
         }
     }
 
@@ -95,11 +92,16 @@ public class Storage {
     }
 
     public void addToTransaction(Node node) {
-        if (transactionNodes.size() >= MAX_TRANSACTION_CACHE_NODE_COUNT)
-            transactionCommit();
-        transactionNodes.add(node);
-        node.isSaved = true;
-        nodesCache.put(node.nodeId, node);
+        if (!node.isSaved) {
+            if (transactionNodes.size() >= MAX_TRANSACTION_CACHE_NODE_COUNT)
+                transactionCommit();
+            transactionNodes.add(node);
+            node.isSaved = true;
+            nodesCache.put(node.nodeId, node);
+        }
+    }
+
+    long putString(byte[] bytes){
     }
 
     public void close() throws IOException {
@@ -111,5 +113,11 @@ public class Storage {
 
     public boolean isEmpty() {
         return nodeStorage.fileData.sumFilesSize == 0;
+    }
+
+    public long putString(byte[] bytes, int sectorLength) {
+        ByteBuffer bb = ByteBuffer.allocate(sectorLength);
+        bb.
+        return Bytes.concat(Bytes.long)dataStorage.add(bytes);
     }
 }

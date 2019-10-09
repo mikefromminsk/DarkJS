@@ -1,11 +1,10 @@
 package org.pdk.store.model.node;
 
+import org.pdk.store.Storage;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
-import org.pdk.store.model.data.string.BigStringData;
-import org.pdk.store.model.data.string.MediumStringData;
-import org.pdk.store.model.data.string.SmallStringData;
-import org.pdk.store.model.data.string.StringData;
+import org.pdk.store.model.data.FileData;
+import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.link.Link;
 import org.pdk.store.model.node.link.LinkDataType;
 import org.pdk.store.model.node.link.LinkType;
@@ -39,43 +38,64 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
     public ArrayList<Object> prop;
     // after addObject new link you should addObject it to listLinks and build function
 
+    private Storage storage;
+
+    Node(Storage storage) {
+        this.storage = storage;
+    }
+
     @Override
     public byte[] build() {
         ArrayList<Link> links = new ArrayList<>();
         listLinks((linkType, link, singleValue) -> {
             Link newLink = new Link();
             newLink.linkType = linkType;
-            if (link instanceof Integer){
+            if (link instanceof Integer) {
                 newLink.linkDataType = LinkDataType.NUMBER; // for NativeNode.functionId
-                newLink.linkData.putLong((long)link);
+                newLink.linkData.putLong((long) link);
             } else if (link instanceof Long) {
                 newLink.linkDataType = LinkDataType.NODE;
                 newLink.linkData.putLong((Long) link);
             } else if (link instanceof Data) {
                 if (link instanceof BooleanData) {
-                    newLink.linkDataType = LinkDataType.BOOL;
+                    newLink.linkDataType = LinkDataType.BOOLEAN;
                     newLink.linkData.putLong(((BooleanData) link).bool ? 1L : 0L);
                 } else if (link instanceof NumberData) {
                     newLink.linkDataType = LinkDataType.NUMBER;
                     newLink.linkData.putDouble(((NumberData) link).number);
-                } else if (link instanceof SmallStringData) {
-                    newLink.linkDataType = LinkDataType.SMALL_STRING;
-                    newLink.linkData.put(((SmallStringData) link).bytes);
-                } else if (link instanceof MediumStringData) {
+                } else if (link instanceof StringData) {
+                    StringData stringData = (StringData) link;
+                    byte[] bytes = stringData.getBytes();
+                    if (bytes.length <= 8) {
+                        newLink.linkDataType = (byte) (LinkDataType.STRING_FINISH_LEANER_LENGTH + bytes.length);
+                        newLink.linkData.put(bytes);
+                    } else {
+                        int sectorSize = 16;
+                        byte sectorNumber = 1;
+                        int sectorData = 8/*data for string length*/ + bytes.length;
+                        while (sectorSize < sectorData) {
+                            sectorSize *= 2;
+                            sectorNumber += 1;
+                        }
+                        newLink.linkDataType = (byte)(LinkDataType.STRING_START_MULTI_LENGTH + sectorNumber);
+                        long start = storage.putString(bytes);
+                        newLink.linkData.putLong(start);
+                    }
+                }/* else if (link instanceof MediumStringData) {
                     newLink.linkDataType = LinkDataType.MEDIUM_STRING;
                     newLink.linkData.putLong(((MediumStringData) link).stringId);
-                } else if (link instanceof BigStringData){
-                    newLink.linkDataType = LinkDataType.BIG_STRING;
-                    newLink.linkData.putLong(((BigStringData) link).fileId);
+                }*/ else if (link instanceof FileData) {
+                    newLink.linkDataType = LinkDataType.FILE;
+                    newLink.linkData.putLong(((FileData) link).fileId);
                 }
-            } else if (link instanceof Node){
+            } else if (link instanceof Node) {
                 newLink.linkDataType = LinkDataType.NODE;
                 newLink.linkData.putLong(((Node) link).nodeId);
             }
             links.add(newLink);
         });
         ByteBuffer bb = ByteBuffer.allocate(links.size() * Link.SIZE);
-        for (Link link: links)
+        for (Link link : links)
             bb.put(link.build());
         return bb.array();
     }
@@ -138,13 +158,13 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     restoredLink = new NumberData(link.linkData.getDouble());
                     break;
                 case SMALL_STRING:
-                    restoredLink = new SmallStringData(link.linkData.array());
+                    restoredLink = new StringData(storage).setBytes(link.linkData.array());
                     break;
-                case MEDIUM_STRING:
-                    restoredLink = new MediumStringData(link.linkData.getLong());
+                case STRING:
+                    restoredLink = new StringData(storage, link.linkData.getLong());
                     break;
-                case BIG_STRING:
-                    restoredLink = new BigStringData(link.linkData.getLong());
+                case FILE:
+                    restoredLink = new FileData(link.linkData.getLong());
                     break;
                 case NODE:
                     restoredLink = link.linkData.getLong();

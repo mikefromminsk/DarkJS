@@ -2,8 +2,8 @@ package org.pdk.store;
 
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
-import org.pdk.store.model.data.string.BigStringData;
-import org.pdk.store.model.data.string.StringData;
+import org.pdk.store.model.data.FileData;
+import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.link.LinkType;
 import org.pdk.store.model.node.Node;
 
@@ -50,8 +50,8 @@ public class NodeSerializer extends InputStream {
                 result.append(((NumberData) data).number);
             } else if (data instanceof StringData) {
                 result.append("\"!").append(((StringData) data).bytes).append("\"");
-            } else if (data instanceof BigStringData) {
-                result.append("\"@").append(((BigStringData) data).fileId).append("\"");
+            } else if (data instanceof FileData) {
+                result.append("\"@").append(((FileData) data).fileId).append("\"");
             }
         } else {
             Node node = (Node) don;

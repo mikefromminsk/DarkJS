@@ -1,10 +1,9 @@
 package org.pdk.store;
 
-import com.oracle.jrockit.jfr.InstantEvent;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
-import org.pdk.store.model.data.string.StringData;
+import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.meta.NodeType;
 
@@ -72,11 +71,11 @@ public class NodeBuilder {
     }
 
     public String getTitle() {
-        return new String(node.title.bytes);
+        return new String(node.title.getBytes());
     }
 
     public String getParser() {
-        return new String(node.parser.bytes);
+        return new String(node.parser.getBytes());
     }
 
     public Node getLocalParent() {
@@ -113,12 +112,7 @@ public class NodeBuilder {
     }
 
     public Node commit() {
-        if (node.nodeId == null)
-            storage.add(node);
-        else
-            storage.set(node.nodeId, node);
-        if (!node.isSaved)
-            storage.addToTransaction(node);
+        storage.addToTransaction(node);
         return node;
     }
 
