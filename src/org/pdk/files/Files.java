@@ -3,7 +3,6 @@ package org.pdk.files;
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.node.Node;
-import org.pdk.store.model.node.meta.NodeType;
 
 import java.util.Arrays;
 
@@ -21,7 +20,7 @@ public class Files {
     }
 
     // TODO create getNode with creator first
-    public static Node getNode(NodeBuilder builder, Node root, String path, NodeType nodeType) {
+    public static Node getNode(NodeBuilder builder, Node root, String path, boolean createIfNotExist) {
         builder.set(root);
         // TODO add escape characters /
         if (path != null && !path.equals("")) {
@@ -49,12 +48,12 @@ public class Files {
                 }
 
                 if (!find) {
-                    if (nodeType != null) {
+                    if (createIfNotExist) {
                         Node newNode;
                         if (i == names.length - 1) { // it`s the last
-                            newNode = builder.create(NodeType.NODE).setTitle(name).commit();
+                            newNode = builder.create().setTitle(name).commit();
                         } else {
-                            newNode = builder.create(nodeType).setTitle(name).setParser(type).commit();
+                            newNode = builder.create().setTitle(name).setParser(type).commit();
                         }
                         builder.addLocal(newNode).commit();
                     } else {
@@ -67,18 +66,18 @@ public class Files {
     }
 
     public static Node getNodeIfExist(NodeBuilder builder, Node root, String path){
-        return getNode(builder, root, path, null);
+        return getNode(builder, root, path, false);
     }
 
     public static Node getNodeIfExist(NodeBuilder builder, String path){
-        return getNode(builder, builder.getMaster(), path, null);
+        return getNode(builder, builder.getMaster(), path, false);
     }
 
-    public static Node getNodeFromRoot(NodeBuilder builder, String path, NodeType nodeType){
-        return getNode(builder, builder.getRoot(), path, nodeType);
+    public static Node getNodeFromRoot(NodeBuilder builder, String path, boolean createIfNotExist){
+        return getNode(builder, builder.getRoot(), path, createIfNotExist);
     }
     public static Node getNodeFromRootIfExist(NodeBuilder builder, String path){
-        return getNode(builder, builder.getRoot(), path, null);
+        return getNode(builder, builder.getRoot(), path, false);
     }
 
     public static void replace(NodeBuilder builder, Node from, Node to) {

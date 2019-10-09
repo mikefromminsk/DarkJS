@@ -1,4 +1,4 @@
-package org.pdk.modules.utils;
+package org.pdk.modules;
 
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.DataOrNode;

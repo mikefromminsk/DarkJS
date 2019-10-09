@@ -49,7 +49,7 @@ public class NodeSerializer extends InputStream {
             } else if (data instanceof NumberData) {
                 result.append(((NumberData) data).number);
             } else if (data instanceof StringData) {
-                result.append("\"!").append(((StringData) data).bytes).append("\"");
+                result.append("\"!").append(((StringData) data).getBytes()).append("\"");
             } else if (data instanceof FileData) {
                 result.append("\"@").append(((FileData) data).fileId).append("\"");
             }

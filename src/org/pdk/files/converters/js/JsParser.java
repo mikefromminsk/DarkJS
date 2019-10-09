@@ -5,7 +5,7 @@ import jdk.nashorn.internal.runtime.ErrorManager;
 import jdk.nashorn.internal.runtime.ParserException;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
-import org.pdk.files.converters.utils.ConverterParser;
+import org.pdk.files.converters.ConverterParser;
 import org.pdk.store.NodeBuilder;
 
 public class JsParser extends ConverterParser {

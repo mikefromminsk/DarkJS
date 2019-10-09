@@ -1,4 +1,4 @@
-package org.pdk.files.converters.utils;
+package org.pdk.files.converters;
 
 import org.pdk.store.NodeBuilder;
 

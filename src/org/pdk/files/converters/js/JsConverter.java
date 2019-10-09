@@ -1,8 +1,8 @@
 package org.pdk.files.converters.js;
 
-import org.pdk.files.converters.utils.Converter;
-import org.pdk.files.converters.utils.ConverterBuilder;
-import org.pdk.files.converters.utils.ConverterParser;
+import org.pdk.files.converters.Converter;
+import org.pdk.files.converters.ConverterBuilder;
+import org.pdk.files.converters.ConverterParser;
 import org.pdk.store.NodeBuilder;
 
 public class JsConverter extends Converter {

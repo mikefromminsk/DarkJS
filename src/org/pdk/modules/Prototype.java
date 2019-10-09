@@ -1,4 +1,4 @@
-package org.pdk.modules.utils;
+package org.pdk.modules;
 
 public abstract class Prototype extends Module {
 
@@ -9,10 +9,5 @@ public abstract class Prototype extends Module {
     @Override
     public String path() {
         return DEFAULT_PROTOTYPES_DIR + name();
-    }
-
-    @Override
-    public void methods() {
-
     }
 }

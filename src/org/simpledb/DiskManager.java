@@ -73,8 +73,4 @@ public class DiskManager {
         properties.put(SECTION, CACHE_SIZE_KEY, "" + this.cacheSize);
         properties.put(SECTION, DEVICE_ID_KEY, "" + this.device_id);
     }
-
-    public File getFileById(long fileId) {
-        return new File(dbDir, fileId + ".data");
-    }
 }

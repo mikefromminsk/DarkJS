@@ -3,12 +3,8 @@ package org.pdk.modules;
 import org.pdk.files.Files;
 import org.pdk.modules.prototypes.StringPrototype;
 import org.pdk.modules.root.*;
-import org.pdk.modules.utils.Func;
-import org.pdk.modules.utils.FuncInterface;
 import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.node.NativeNode;
 import org.pdk.store.model.node.Node;
-import org.pdk.store.model.node.meta.NodeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +30,8 @@ public class ModuleManager {
         for (int i = 0; i < interfaces.size(); i++) {
             FuncInterface funcInterface = interfaces.get(i);
             String funcPath = funcInterface.path + funcInterface.name;
-            NativeNode function = (NativeNode) Files.getNodeFromRoot(builder, funcPath, NodeType.NATIVE_FUNCTION);
-            function.setFunctionIndex(i);
+            Node function = Files.getNodeFromRoot(builder, funcPath, true);
+            builder.set(function).setFunction(i);
             for (String paramName: funcInterface.parameters) {
                 Node param = builder.create().setTitle(paramName).commit();
                 builder.set(function).addParam(param).commit();

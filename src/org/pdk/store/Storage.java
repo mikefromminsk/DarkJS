@@ -1,25 +1,20 @@
 package org.pdk.store;
 
-import org.pdk.store.model.node.NativeNode;
 import org.pdk.store.model.node.Node;
-import org.pdk.store.model.node.ThreadNode;
-import org.pdk.store.model.node.meta.NodeMeta;
-import org.pdk.store.model.node.meta.NodeType;
-import org.simpledb.Bytes;
 import org.simpledb.InfinityFile;
 import org.simpledb.InfinityStringArray;
 import org.simpledb.MetaCell;
 import org.simpledb.map.InfinityHashMap;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Storage {
 
-    private static final int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
+    private int MAX_TRANSACTION_CACHE_NODE_COUNT = 10;
+    public final String storeDir;
 
     private ArrayList<Node> transactionNodes = new ArrayList<>();
     private Map<Long, Node> nodesCache = new TreeMap<>();
@@ -29,6 +24,7 @@ public class Storage {
     private InfinityHashMap dataHashTree;
 
     public Storage(String storeDir) {
+        this.storeDir = storeDir;
         nodeStorage = new InfinityStringArray(storeDir, "node");
         dataStorage = new InfinityFile(storeDir, "data");
         dataHashTree = new InfinityHashMap(storeDir, "hash");
@@ -37,8 +33,8 @@ public class Storage {
     public Node get(Long nodeId) {
         Node node = nodesCache.get(nodeId);
         if (node == null) {
-            NodeMeta metaCell = (NodeMeta) nodeStorage.getMeta(nodeId);
-            node = createNodeInstance(metaCell.type);
+            MetaCell metaCell = nodeStorage.getMeta(nodeId);
+            node = new Node(this);
             byte[] readiedData = nodeStorage.read(metaCell.start, metaCell.length);
             node.parse(readiedData);
             node.nodeId = nodeId;
@@ -47,37 +43,15 @@ public class Storage {
         return node;
     }
 
-    public Node createNodeInstance(NodeType nodeType) {
-        switch (nodeType) {
-            case THREAD:
-                return new ThreadNode();
-            case NATIVE_FUNCTION:
-                return new NativeNode();
-            default:
-                return new Node(this);
-        }
-    }
-
-    private NodeType getNodeType(Node node) {
-        if (node instanceof ThreadNode) {
-            return NodeType.NATIVE_FUNCTION;
-        } else if (node instanceof NativeNode) {
-            return NodeType.NATIVE_FUNCTION;
-        } else {
-            return NodeType.NODE;
-        }
-    }
-
     public void transactionCommit() {
         // TODO change transactionNodes to sync list
         synchronized (transactionNodes) {
             for (Node node : transactionNodes) {
                 if (node.nodeId == null) {
-                    NodeMeta metaCell = new NodeMeta();
+                    MetaCell metaCell = new MetaCell();
                     byte[] data = node.build();
                     if (data.length != 0) {
                         byte[] sector = nodeStorage.dataToSector(data);
-                        metaCell.type = getNodeType(node);
                         metaCell.start = nodeStorage.add(sector);
                         metaCell.length = data.length;
                     }
@@ -101,9 +75,6 @@ public class Storage {
         }
     }
 
-    long putString(byte[] bytes){
-    }
-
     public void close() throws IOException {
         transactionCommit();
         nodeStorage.close();
@@ -113,11 +84,5 @@ public class Storage {
 
     public boolean isEmpty() {
         return nodeStorage.fileData.sumFilesSize == 0;
-    }
-
-    public long putString(byte[] bytes, int sectorLength) {
-        ByteBuffer bb = ByteBuffer.allocate(sectorLength);
-        bb.
-        return Bytes.concat(Bytes.long)dataStorage.add(bytes);
     }
 }

@@ -1,5 +1,6 @@
 package org.pdk.store.model.node;
 
+import org.pdk.modules.Func;
 import org.pdk.store.Storage;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.*;
@@ -18,6 +19,8 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     public boolean isSaved;
     public Long nodeId;
+    public Func func;
+    public Thread thread;
     public Object value;
     public Object source;
     public StringData title;
@@ -40,7 +43,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     private Storage storage;
 
-    Node(Storage storage) {
+    public Node(Storage storage) {
         this.storage = storage;
     }
 
@@ -142,6 +145,8 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             linkListener.get(LinkType.PROP, prop, false);
         if (cell != null)
             linkListener.get(LinkType.CELL, cell, false);
+        if (func!= null)
+            linkListener.get(LinkType.NATIVE_FUNCTION, functionIndex, true);
     }
 
     @Override
@@ -151,22 +156,22 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             link.parse(Arrays.copyOfRange(data, i * Link.SIZE, i * (Link.SIZE + 1) - 1));
             Object restoredLink = null;
             switch (link.linkDataType) {
-                case BOOL:
+                case LinkDataType.BOOL:
                     restoredLink = new BooleanData(link.linkData.getInt() == 1);
                     break;
-                case NUMBER:
+                case LinkDataType.NUMBER:
                     restoredLink = new NumberData(link.linkData.getDouble());
                     break;
-                case SMALL_STRING:
-                    restoredLink = new StringData(storage).setBytes(link.linkData.array());
+                case LinkDataType.SMALL_STRING:
+                    restoredLink = new StringData(storage, paramName.getBytes()).setBytes(link.linkData.array());
                     break;
-                case STRING:
+                case LinkDataType.STRING:
                     restoredLink = new StringData(storage, link.linkData.getLong());
                     break;
-                case FILE:
+                case LinkDataType.FILE:
                     restoredLink = new FileData(link.linkData.getLong());
                     break;
-                case NODE:
+                case LinkDataType.NODE:
                     restoredLink = link.linkData.getLong();
                     break;
             }
@@ -176,6 +181,9 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     public void restore(LinkType linkType, Object linkData) {
         switch (linkType) {
+            case NATIVE_FUNCTION:
+                func =
+                break;
             case VALUE:
                 value = linkData;
                 break;

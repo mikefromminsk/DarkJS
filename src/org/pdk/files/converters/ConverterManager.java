@@ -1,7 +1,6 @@
 package org.pdk.files.converters;
 
 import org.pdk.files.converters.js.JsConverter;
-import org.pdk.files.converters.utils.Converter;
 
 import java.util.ArrayList;
 import java.util.List;

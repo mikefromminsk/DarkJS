@@ -7,7 +7,7 @@ public class StringData implements Data {
     private Storage storage;
     private byte[] bytes;
 
-    public StringData(Storage storage) {
+    public StringData(Storage storage, byte[] bytes) {
         this.storage = storage;
     }
 

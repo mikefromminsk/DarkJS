@@ -5,7 +5,6 @@ import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
 import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.Node;
-import org.pdk.store.model.node.meta.NodeType;
 
 import java.util.ArrayList;
 
@@ -19,12 +18,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder create() {
-        return create(NodeType.NODE);
-    }
-
-    public NodeBuilder create(NodeType nodeType) {
-        storage.createNodeInstance(nodeType);
-        return this;
+        return create();
     }
 
     public NodeBuilder get(Long id) {
@@ -38,7 +32,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder setTitle(String paramName) {
-        node.title = new StringData(paramName.getBytes());
+        node.title = new StringData(storage, paramName.getBytes());
         return this;
     }
 
@@ -234,5 +228,9 @@ public class NodeBuilder {
 
     public NodeBuilder setPrototype(Node templateNode) {
         return null;
+    }
+
+    public void setFunction(int i) {
+
     }
 }
