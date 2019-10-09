@@ -45,7 +45,7 @@ public class NodeSerializer extends InputStream {
         if (don instanceof Data) {
             Data data = (Data) don;
             if (data instanceof BooleanData) {
-                result.append(((BooleanData) data).bool);
+                result.append(((BooleanData) data).value);
             } else if (data instanceof NumberData) {
                 result.append(((NumberData) data).number);
             } else if (data instanceof StringData) {

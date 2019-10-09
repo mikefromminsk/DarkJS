@@ -26,6 +26,8 @@ public class Storage {
     private InfinityHashMap dataHashTree;
 
     public Storage(String storeDir) {
+        if (!storeDir.endsWith("\\") && !storeDir.endsWith("/"))
+            storeDir += "/";
         this.storeDir = storeDir;
         nodeStorage = new InfinityStringArray(storeDir, "node");
         dataStorage = new InfinityFile(storeDir, "data");

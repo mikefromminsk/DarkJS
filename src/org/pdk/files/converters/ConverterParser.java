@@ -1,13 +1,7 @@
 package org.pdk.files.converters;
 
-import org.pdk.store.NodeBuilder;
+import org.pdk.store.model.data.FileData;
 
-public abstract class ConverterParser {
-    private NodeBuilder builder;
-
-    public ConverterParser(NodeBuilder builder) {
-        this.builder = builder;
-    }
-
-    protected abstract Object parse();
+public interface ConverterParser {
+    Object parse(FileData data);
 }

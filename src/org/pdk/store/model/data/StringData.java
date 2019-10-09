@@ -4,11 +4,15 @@ import org.pdk.store.Storage;
 
 public class StringData implements Data {
 
-    private Storage storage;
+    protected Storage storage;
     private byte[] bytes;
 
-    public StringData(Storage storage, byte[] bytes) {
+    protected StringData(Storage storage) {
         this.storage = storage;
+    }
+
+    public StringData(Storage storage, byte[] bytes) {
+        this(storage);
     }
 
     public byte[] getBytes() {

@@ -1,18 +1,21 @@
 package org.pdk.files.converters;
 
-import org.pdk.store.Storage;
+public class Converter {
+    private String[] extensions;
+    private ConverterParser parser;
+    private ConverterBuilder builder;
 
-public abstract class Converter {
-    protected Storage storage;
-
-    public Converter(Storage storage) {
-        this.storage = storage;
+    public Converter(String[] extensions, ConverterParser parser, ConverterBuilder builder) {
+        this.extensions = extensions;
+        this.parser = parser;
+        this.builder = builder;
     }
 
-    public abstract String[] extensions();
+    public ConverterParser getParser() {
+        return parser;
+    }
 
-    public abstract ConverterParser parser();
-
-    public abstract ConverterBuilder builder();
-    //public abstract ConverterBuilder serialize();
+    public ConverterBuilder getBuilder() {
+        return builder;
+    }
 }

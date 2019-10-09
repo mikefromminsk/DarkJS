@@ -1,5 +1,6 @@
 package org.pdk.store;
 
+import org.pdk.modules.Func;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
@@ -139,7 +140,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public NodeBuilder addParam(Node param) {
+    public NodeBuilder addParam(DataOrNode param) {
         return this;
     }
 
@@ -152,7 +153,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setSet(Node setLink) {
+    public NodeBuilder setSet(DataOrNode setLink) {
         return null;
     }
 
@@ -232,7 +233,11 @@ public class NodeBuilder {
         return null;
     }
 
-    public void setFunction(int i) {
+    public NodeBuilder setFunc(Func i) {
+        return this;
+    }
 
+    public Storage getStorage() {
+        return storage;
     }
 }

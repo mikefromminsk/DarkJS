@@ -1,9 +1,9 @@
 package org.pdk.store.model.data;
 
 public class BooleanData implements Data {
-    public boolean bool;
+    public boolean value;
 
-    public BooleanData(boolean bool) {
-        this.bool = bool;
+    public BooleanData(boolean value) {
+        this.value = value;
     }
 }

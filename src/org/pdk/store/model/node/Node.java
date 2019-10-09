@@ -4,17 +4,11 @@ import org.pdk.modules.Func;
 import org.pdk.modules.ModuleManager;
 import org.pdk.store.Storage;
 import org.pdk.store.model.DataOrNode;
-import org.pdk.store.model.data.*;
-import org.pdk.store.model.data.FileData;
 import org.pdk.store.model.data.StringData;
-import org.pdk.store.model.node.link.Link;
-import org.pdk.store.model.node.link.LinkDataType;
 import org.pdk.store.model.node.link.LinkType;
 import org.simpledb.InfinityStringArrayCell;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Node implements InfinityStringArrayCell, DataOrNode {
 
@@ -63,7 +57,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             } else if (link instanceof Data) {
                 if (link instanceof BooleanData) {
                     newLink.linkDataType = LinkDataType.BOOLEAN;
-                    newLink.linkData.putLong(((BooleanData) link).bool ? 1L : 0L);
+                    newLink.linkData.putLong(((BooleanData) link).value ? 1L : 0L);
                 } else if (link instanceof NumberData) {
                     newLink.linkDataType = LinkDataType.NUMBER;
                     newLink.linkData.putDouble(((NumberData) link).number);
@@ -103,6 +97,10 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             bb.put(link.build());
         return bb.array();*/
         return null;
+    }
+
+    public Func getFunc() {
+        return func;
     }
 
     public interface NodeLinkListener {

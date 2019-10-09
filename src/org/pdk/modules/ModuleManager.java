@@ -31,7 +31,7 @@ public class ModuleManager {
             FuncInterface funcInterface = interfaces.get(i);
             String funcPath = funcInterface.path + funcInterface.name;
             Node function = Files.getNodeFromRoot(builder, funcPath, true);
-            builder.set(function).setFunction(i);
+            builder.set(function).setFunc(i);
             for (String paramName: funcInterface.parameters) {
                 Node param = builder.create().setTitle(paramName).commit();
                 builder.set(function).addParam(param).commit();
