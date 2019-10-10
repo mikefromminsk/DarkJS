@@ -29,7 +29,8 @@ public class RunnerTest {
             if (f.isFile()) {
                 Node module = new Node(storage);
                 FileData data = new FileData(storage, new FileInputStream(f));
-                Node node =  converter.getBuilder().build(module, converter.getParser().parse(data));
+                Object parserResult = converter.getParser().parse(data);
+                Node node =  converter.getBuilder().build(module, parserResult);
                 runner.run(node);
                 Node[] locals = builder.set(node).getLocals();
                 BooleanData testVar = (BooleanData) builder.set(locals[locals.length - 1]).getValue();

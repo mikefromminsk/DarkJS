@@ -169,7 +169,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public NodeBuilder setValue(Node variable) {
+    public NodeBuilder setValue(DataOrNode variable) {
         return null;
     }
 
@@ -193,8 +193,8 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node[] getParams() {
-        return new Node[0];
+    public DataOrNode[] getParams() {
+        return getDons(node.param);
     }
 
     public Node getIf() {
@@ -209,7 +209,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getSet() {
+    public DataOrNode getSet() {
         return null;
     }
 
@@ -239,5 +239,13 @@ public class NodeBuilder {
 
     public Storage getStorage() {
         return storage;
+    }
+
+    public Node[] getNextList() {
+        return getNodes(node.next);
+    }
+
+    public boolean isNativeFunction() {
+        return node.func != null;
     }
 }

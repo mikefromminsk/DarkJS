@@ -4,10 +4,20 @@ import org.pdk.modules.Func;
 import org.pdk.modules.ModuleManager;
 import org.pdk.store.Storage;
 import org.pdk.store.model.DataOrNode;
+import org.pdk.store.model.data.BooleanData;
+import org.pdk.store.model.data.FileData;
+import org.pdk.store.model.data.NumberData;
 import org.pdk.store.model.data.StringData;
+import org.pdk.store.model.node.link.LinkDataType;
 import org.pdk.store.model.node.link.LinkType;
+import org.pdk.store.model.node.link.NodeLinkListener;
 import org.simpledb.InfinityStringArrayCell;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class Node implements InfinityStringArrayCell, DataOrNode {
@@ -44,67 +54,53 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     @Override
     public byte[] build() {
-        /*ArrayList<Link> links = new ArrayList<>();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
         listLinks((linkType, link, singleValue) -> {
-            Link newLink = new Link();
-            newLink.linkType = linkType;
-            if (link instanceof Integer) {
-                newLink.linkDataType = LinkDataType.NUMBER; // for NativeNode.functionId
-                newLink.linkData.putLong((long) link);
-            } else if (link instanceof Long) {
-                newLink.linkDataType = LinkDataType.NODE;
-                newLink.linkData.putLong((Long) link);
-            } else if (link instanceof Data) {
-                if (link instanceof BooleanData) {
-                    newLink.linkDataType = LinkDataType.BOOLEAN;
-                    newLink.linkData.putLong(((BooleanData) link).value ? 1L : 0L);
+            try {
+                if (link instanceof Long) {
+                    ByteBuffer bb = ByteBuffer.allocate(10);
+                    bb.put((byte) linkType.ordinal());
+                    bb.put((byte) LinkDataType.NODE.ordinal());
+                    bb.putLong((Long) link);
+                    baos.write(bb.array());
+                } else if (link instanceof Node) {
+                    ByteBuffer bb = ByteBuffer.allocate(10);
+                    bb.put((byte) linkType.ordinal());
+                    bb.put((byte) LinkDataType.NODE.ordinal());
+                    bb.putLong(((Node) link).nodeId);
+                    baos.write(bb.array());
+                } else if (link instanceof BooleanData) {
+                    ByteBuffer bb = ByteBuffer.allocate(2);
+                    bb.put((byte) linkType.ordinal());
+                    if (((BooleanData) link).value)
+                        bb.put((byte) LinkDataType.BOOLEAN_TRUE.ordinal());
+                    else
+                        bb.put((byte) LinkDataType.BOOLEAN_FALSE.ordinal());
+                    baos.write(bb.array());
                 } else if (link instanceof NumberData) {
-                    newLink.linkDataType = LinkDataType.NUMBER;
-                    newLink.linkData.putDouble(((NumberData) link).number);
+                    ByteBuffer bb = ByteBuffer.allocate(10);
+                    bb.put((byte) linkType.ordinal());
+                    bb.put((byte) LinkDataType.NUMBER.ordinal());
+                    bb.putDouble(((NumberData) link).number);
+                    baos.write(bb.array());
+                } else if (link instanceof FileData) {
+                    ByteBuffer bb = ByteBuffer.allocate(6);
+                    // TODO
                 } else if (link instanceof StringData) {
-                    StringData stringData = (StringData) link;
-                    byte[] bytes = stringData.getBytes();
-                    if (bytes.length <= 8) {
-                        newLink.linkDataType = (byte) (LinkDataType.STRING_FINISH_LEANER_LENGTH + bytes.length);
-                        newLink.linkData.put(bytes);
-                    } else {
-                        int sectorSize = 16;
-                        byte sectorNumber = 1;
-                        int sectorData = 8*//*data for string length*//* + bytes.length;
-                        while (sectorSize < sectorData) {
-                            sectorSize *= 2;
-                            sectorNumber += 1;
-                        }
-                        newLink.linkDataType = (byte)(LinkDataType.STRING_START_MULTI_LENGTH + sectorNumber);
-                        long start = storage.putString(bytes);
-                        newLink.linkData.putLong(start);
-                    }
-                }*//* else if (link instanceof MediumStringData) {
-                    newLink.linkDataType = LinkDataType.MEDIUM_STRING;
-                    newLink.linkData.putLong(((MediumStringData) link).stringId);
-                }*//* else if (link instanceof FileData) {
-                    newLink.linkDataType = LinkDataType.FILE;
-                    newLink.linkData.putLong(((FileData) link).fileId);
+                    ByteBuffer bb = ByteBuffer.allocate(6);
+                    bb.put((byte) linkType.ordinal());
+                    bb.put((byte) LinkDataType.STRING.ordinal());
+                    byte[] bytes = ((StringData) link).getBytes();
+                    bb.putInt(bytes.length);
+                    baos.write(bb.array());
+                    baos.write(bytes);
                 }
-            } else if (link instanceof Node) {
-                newLink.linkDataType = LinkDataType.NODE;
-                newLink.linkData.putLong(((Node) link).nodeId);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            links.add(newLink);
         });
-        ByteBuffer bb = ByteBuffer.allocate(links.size() * Link.SIZE);
-        for (Link link : links)
-            bb.put(link.build());
-        return bb.array();*/
-        return null;
-    }
-
-    public Func getFunc() {
-        return func;
-    }
-
-    public interface NodeLinkListener {
-        void get(LinkType linkType, Object link, boolean singleValue);
+        return baos.toByteArray();
     }
 
     public void listLinks(NodeLinkListener linkListener) {
@@ -145,100 +141,101 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             linkListener.get(LinkType.PROP, prop, false);
         if (cell != null)
             linkListener.get(LinkType.CELL, cell, false);
-        if (func!= null)
+        if (func != null)
             linkListener.get(LinkType.NATIVE_FUNCTION, ModuleManager.functions.indexOf(func), true);
     }
 
     @Override
     public void parse(byte[] data) {
-        /*for (int i = 0; i < data.length / Link.SIZE; i++) {
-            Link link = new Link();
-            link.parse(Arrays.copyOfRange(data, i * Link.SIZE, i * (Link.SIZE + 1) - 1));
-            Object restoredLink = null;
-            switch (link.linkDataType) {
-                case LinkDataType.BOOBL:
-                    restoredLink = new BooleanData(link.linkData.getInt() == 1);
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        while (bb.hasRemaining()) {
+            LinkType linkType = LinkType.values()[bb.get()];
+            LinkDataType linkDataType = LinkDataType.values()[bb.get()];
+            Object linkData = null;
+            switch (linkDataType) {
+                case NODE:
+                    linkData = bb.getLong();
                     break;
-                case LinkDataType.NUMBER:
-                    restoredLink = new NumberData(link.linkData.getDouble());
+                case BOOLEAN_FALSE:
+                    linkData = new BooleanData(false);
                     break;
-                case LinkDataType.SMALL_STRING:
-                    restoredLink = new StringData(storage, paramName.getBytes()).setBytes(link.linkData.array());
+                case BOOLEAN_TRUE:
+                    linkData = new BooleanData(true);
                     break;
-                case LinkDataType.STRING:
-                    restoredLink = new StringData(storage, link.linkData.getLong());
+                case NUMBER:
+                    linkData = new NumberData(bb.getDouble());
                     break;
-                case LinkDataType.FILE:
-                    restoredLink = new FileData(link.linkData.getLong());
+                case STRING:
+                    int length = bb.getInt();
+                    byte[] bytes = new byte[length];
+                    bb.get(bytes);
+                    linkData = new StringData(storage, bytes);
                     break;
-                case LinkDataType.NODE:
-                    restoredLink = link.linkData.getLong();
+                case FILE:
+                    linkData = new FileData(storage, bb.getInt());
                     break;
             }
-            restore(link.linkType, restoredLink);
-        }*/
-    }
-
-    public void restore(LinkType linkType, Object linkData) {
-        switch (linkType) {
-            case NATIVE_FUNCTION:
-                func = ModuleManager.functions.get((Integer) linkData);
-                break;
-            case VALUE:
-                value = linkData;
-                break;
-            case SOURCE:
-                source = linkData;
-                break;
-            case TITLE:
-                title = (StringData) linkData;
-                break;
-            case SET:
-                set = linkData;
-                break;
-            case TRUE:
-                _true = linkData;
-                break;
-            case ELSE:
-                _else = linkData;
-                break;
-            case EXIT:
-                exit = linkData;
-                break;
-            case WHILE:
-                _while = linkData;
-                break;
-            case IF:
-                _if = linkData;
-                break;
-            case PROTOTYPE:
-                prototype = linkData;
-                break;
-            case LOCAL_PARENT:
-                localParent = linkData;
-                break;
-            case PARSER:
-                parser = (StringData) linkData;
-                break;
-            case LOCAL:
-                if (local == null)
-                    local = new ArrayList<>();
-                local.add(linkData);
-                break;
-            case PARAM:
-                if (param == null)
-                    param = new ArrayList<>();
-                param.add(linkData);
-                break;
-            case NEXT:
-                if (next == null)
-                    next = new ArrayList<>();
-                next.add(linkData);
-                break;
-            case CELL:
-                if (cell == null)
-                    cell = new ArrayList<>();
-                cell.add(linkData);
+            switch (linkType) {
+                case NATIVE_FUNCTION:
+                    func = ModuleManager.functions.get((Integer) linkData);
+                    break;
+                case VALUE:
+                    value = linkData;
+                    break;
+                case SOURCE:
+                    source = linkData;
+                    break;
+                case TITLE:
+                    title = (StringData) linkData;
+                    break;
+                case SET:
+                    set = linkData;
+                    break;
+                case TRUE:
+                    _true = linkData;
+                    break;
+                case ELSE:
+                    _else = linkData;
+                    break;
+                case EXIT:
+                    exit = linkData;
+                    break;
+                case WHILE:
+                    _while = linkData;
+                    break;
+                case IF:
+                    _if = linkData;
+                    break;
+                case PROTOTYPE:
+                    prototype = linkData;
+                    break;
+                case LOCAL_PARENT:
+                    localParent = linkData;
+                    break;
+                case PARSER:
+                    parser = (StringData) linkData;
+                    break;
+                case LOCAL:
+                    if (local == null)
+                        local = new ArrayList<>();
+                    local.add(linkData);
+                    break;
+                case PARAM:
+                    if (param == null)
+                        param = new ArrayList<>();
+                    param.add(linkData);
+                    break;
+                case NEXT:
+                    if (next == null)
+                        next = new ArrayList<>();
+                    next.add(linkData);
+                    break;
+                case CELL:
+                    if (cell == null)
+                        cell = new ArrayList<>();
+                    cell.add(linkData);
+            }
         }
     }
+
 }

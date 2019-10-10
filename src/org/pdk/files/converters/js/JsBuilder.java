@@ -82,7 +82,7 @@ public class JsBuilder extends ConverterBuilder {
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
                         Node nativeFunc = Files.getNodeFromRootIfExist(builder,MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create()
-                                .setFunc(nativeFunc.getFunc())
+                                .setFunc(nativeFunc.func)
                                 .addParam(left)
                                 .addParam(right)
                                 .commit();
@@ -94,7 +94,7 @@ public class JsBuilder extends ConverterBuilder {
                 } else {
                     Node nativeFunc = Files.getNodeFromRootIfExist(builder,MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                     return builder.create()
-                            .setFunc(nativeFunc.getFunc())
+                            .setFunc(nativeFunc.func)
                             .addParam(left)
                             .addParam(right)
                             .commit();

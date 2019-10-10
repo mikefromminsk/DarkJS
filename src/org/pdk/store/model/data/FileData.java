@@ -12,18 +12,21 @@ public class FileData extends StringData {
     private final Random random = new Random();
     public Integer fileId;
     public File file;
-    byte[] byffer;
-    FileInputStream in;
 
     public FileData(Storage storage, InputStream stream) throws IOException {
         super(storage);
         fileId = random.nextInt();
+        // TODO
         long length = Files.copy(stream, Paths.get(storage.storeDir + fileId + ".data"));
     }
 
     public FileData(Storage storage, Integer fileId) {
         super(storage);
         this.fileId = fileId;
+    }
+
+    public Integer getFileId() {
+        return fileId;
     }
 
     public File getFile(){
