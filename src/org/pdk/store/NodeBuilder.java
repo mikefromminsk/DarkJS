@@ -63,10 +63,13 @@ public class NodeBuilder {
 
     public Data getDataParam(int index) {
         Node node = getNode();
-        Node param = (Node) getParam(index);
-        Data paramValue = (Data) set(param).getValue();
+        DataOrNode param = getParam(index);
+        if (param instanceof Node)
+            param = set((Node) param).getValue();
         set(node);
-        return paramValue;
+        if (param != null)
+            return (Data) param;
+        return null;
     }
 
     public StringData getStringParam(int index) {
@@ -238,7 +241,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getSource()  {
+    public Node getSource() {
         if (node.source instanceof Node)
             return (Node) node.source;
         else if (node.source instanceof Long)
@@ -246,7 +249,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public DataOrNode getSet()  {
+    public DataOrNode getSet() {
         if (node.set instanceof Node)
             return (Node) node.set;
         else if (node.set instanceof Long)
@@ -254,7 +257,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getWhile()  {
+    public Node getWhile() {
         if (node._while instanceof Node)
             return (Node) node._while;
         else if (node._while instanceof Long)
@@ -262,7 +265,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getElse()  {
+    public Node getElse() {
         if (node._else instanceof Node)
             return (Node) node._else;
         else if (node._else instanceof Long)
@@ -270,7 +273,7 @@ public class NodeBuilder {
         return null;
     }
 
-    public Node getExit()  {
+    public Node getExit() {
         if (node.exit instanceof Node)
             return (Node) node.exit;
         else if (node.exit instanceof Long)

@@ -18,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RunnerTest {
 
-    String streamToString(InputStream stream){
-        return new Scanner(stream).useDelimiter("\\A").next();
-    }
-
     @Test
     void run() throws IOException {
         File[] list = new File("test_res/run").listFiles();
@@ -43,15 +39,21 @@ public class RunnerTest {
                     BooleanData testVar = (BooleanData) builder.set(locals[locals.length - 1]).getValue();
                     assertTrue(testVar.value);
                     if (!testVar.value) {
-                        System.out.println(streamToString(new NodeSerializer(storage, node)));
+                        printNode(storage, node);
                         return;
                     }
                     assertTrue(true);
                 } catch (Exception e) {
-                    System.out.println(streamToString(new NodeSerializer(storage, node)));
+                    printNode(storage, node);
+                    e.printStackTrace();
                     fail(e.getMessage());
                 }
             }
         }
+    }
+
+    private void printNode(Storage storage, Node node) {
+        String str = new Scanner(new NodeSerializer(storage, node, 15)).useDelimiter("\\A").next();
+        System.out.println(str);
     }
 }

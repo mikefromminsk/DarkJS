@@ -31,9 +31,11 @@ public class NodeSerializer extends InputStream {
         nextNodes.put(node, 0);
     }
 
-    private void appendDon(DataOrNode don, int deepLevel) {
-        if (don instanceof Data) {
-            Data data = (Data) don;
+    private void appendDon(Object obj, int deepLevel) {
+        if (obj instanceof Integer){
+            resultStringBuilder.append((Integer)obj);
+        } else if (obj instanceof Data) {
+            Data data = (Data) obj;
             if (data instanceof BooleanData) {
                 resultStringBuilder.append(((BooleanData) data).value);
             } else if (data instanceof NumberData) {
@@ -44,7 +46,7 @@ public class NodeSerializer extends InputStream {
                 resultStringBuilder.append("\"@").append(((FileData) data).fileId).append("\"");
             }
         } else {
-            Node node = (Node) don;
+            Node node = (Node) obj;
             resultStringBuilder.append("\"n").append(node.nodeId).append("\"");
             if (deepLevel < maxDeepLevel)
                 nextNodes.putIfAbsent(node, deepLevel + 1);
@@ -61,14 +63,18 @@ public class NodeSerializer extends InputStream {
             resultStringBuilder.append("\t\"").append(linkName);
             if (singleValue) {
                 resultStringBuilder.append("\": ");
-                appendDon(link instanceof Long ? storage.get((Long) link) : (DataOrNode) link, deepLevel);
+                if (link instanceof Long)
+                    link = storage.get((Long) link);
+                appendDon(link, deepLevel);
                 resultStringBuilder.append(",\n");
             } else {
                 ArrayList<Object> links = (ArrayList<Object>) link;
                 resultStringBuilder.append("\": [\n");
                 for (Object item : links) {
                     resultStringBuilder.append("\t\t");
-                    appendDon(item instanceof Long ? storage.get((Long) item) : (DataOrNode) item, deepLevel);
+                    if (item instanceof Long)
+                        item = storage.get((Long) item);
+                    appendDon(item, deepLevel);
                     resultStringBuilder.append(",\n");
                 }
                 resultStringBuilder.append("\t],\n");

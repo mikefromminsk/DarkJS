@@ -36,9 +36,16 @@ public class Runner {
         Node source = builder.set(node).getSource();
         if (source != null) {
 
-            DataOrNode setVal = builder.set(node).getSet();
-            if (setVal != null) {
-                builder.set(source).setValue(setVal).commit();
+            DataOrNode set = builder.set(node).getSet();
+            if (set != null) {
+                if (set instanceof Node) {
+                    Node setNode = (Node) set;
+                    run(setNode, ths);
+                    DataOrNode setValue = builder.set(setNode).getValue();
+                    builder.set(source).setValue(setValue).commit();
+                } else if (set instanceof Data) {
+                    builder.set(source).setValue(set).commit();
+                }
             } else {
                 if (builder.set(node).getParams() != null) {
                     for (DataOrNode sourceParam : builder.set(node).getParams())
