@@ -36,11 +36,11 @@ public class Files {
                 }
 
                 boolean find = false;
-                for (DataOrNode don : builder.getLocals()) {
-                    if (don instanceof Node) {
-                        Node node = (Node) don;
-                        if (name.equals(builder.set(node).getTitle())) {
-                            builder.set(node);
+                Node node = builder.getNode();
+                if (node.local != null) {
+                    for (Node local : builder.getLocals()) {
+                        if (name.equals(builder.set(local).getTitle())) {
+                            node = builder.getNode();
                             find = true;
                             break;
                         }
@@ -49,13 +49,11 @@ public class Files {
 
                 if (!find) {
                     if (createIfNotExist) {
-                        Node newNode;
-                        if (i == names.length - 1) { // it`s the last
-                            newNode = builder.create().setTitle(name).commit();
-                        } else {
-                            newNode = builder.create().setTitle(name).setParser(type).commit();
-                        }
-                        builder.addLocal(newNode).commit();
+                        Node newNode = builder.create().setTitle(name).commit();
+                        if (i == names.length - 1)
+                            builder.setParser(type);
+                        builder.set(node).addLocal(newNode).commit();
+                        builder.set(newNode);
                     } else {
                         return null;
                     }
@@ -65,18 +63,27 @@ public class Files {
         return builder.getNode();
     }
 
-    public static Node getNodeIfExist(NodeBuilder builder, Node root, String path){
+    public static Node getNode(NodeBuilder builder, Node root, String path) {
+        return getNode(builder, root, path, true);
+    }
+
+    public static Node getNodeIfExist(NodeBuilder builder, Node root, String path) {
         return getNode(builder, root, path, false);
     }
 
-    public static Node getNodeIfExist(NodeBuilder builder, String path){
+    public static Node getNodeIfExist(NodeBuilder builder, String path) {
         return getNode(builder, builder.getMaster(), path, false);
     }
 
-    public static Node getNodeFromRoot(NodeBuilder builder, String path, boolean createIfNotExist){
+    public static Node getNodeFromRoot(NodeBuilder builder, String path, boolean createIfNotExist) {
         return getNode(builder, builder.getRoot(), path, createIfNotExist);
     }
-    public static Node getNodeFromRootIfExist(NodeBuilder builder, String path){
+
+    public static Node getNodeFromRoot(NodeBuilder builder, String path) {
+        return getNode(builder, builder.getRoot(), path, true);
+    }
+
+    public static Node getNodeFromRootIfExist(NodeBuilder builder, String path) {
         return getNode(builder, builder.getRoot(), path, false);
     }
 

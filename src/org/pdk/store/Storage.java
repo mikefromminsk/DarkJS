@@ -1,20 +1,22 @@
 package org.pdk.store;
 
 import org.pdk.files.converters.ConverterManager;
+import org.pdk.modules.ModuleManager;
 import org.pdk.store.model.node.Node;
 import org.simpledb.InfinityFile;
 import org.simpledb.InfinityStringArray;
 import org.simpledb.MetaCell;
 import org.simpledb.map.InfinityHashMap;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Storage {
 
-    private int MAX_TRANSACTION_CACHE_NODE_COUNT = 1000;
+    private final static int MAX_CACHE_NODE_COUNT = 10000;
+    private final static int MAX_TRANSACTION_NODE_COUNT = 10000;
     public final String storeDir;
     public ConverterManager converterManager = new ConverterManager(this);
 
@@ -22,16 +24,30 @@ public class Storage {
     private Map<Long, Node> nodesCache = new TreeMap<>();
 
     private InfinityStringArray nodeStorage;
-    private InfinityFile dataStorage;
-    private InfinityHashMap dataHashTree;
 
-    public Storage(String storeDir) {
+    public Storage(String storeDir, boolean removeDir) {
         if (!storeDir.endsWith("\\") && !storeDir.endsWith("/"))
             storeDir += "/";
         this.storeDir = storeDir;
+        if (removeDir)
+            deleteDirectory(new File(storeDir));
         nodeStorage = new InfinityStringArray(storeDir, "node");
-        dataStorage = new InfinityFile(storeDir, "data");
-        dataHashTree = new InfinityHashMap(storeDir, "hash");
+        if (nodeStorage.fileData.sumFilesSize == 0)
+            new NodeBuilder(this).create().commit();
+        ModuleManager.initInterfaces(new NodeBuilder(this));
+    }
+
+    void deleteDirectory(File directoryToBeDeleted) {
+        File[] files = directoryToBeDeleted.listFiles();
+        if (files != null) {
+            for (File file : files)
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                    directoryToBeDeleted.delete();
+                }
+                else
+                    file.delete();
+        }
     }
 
     public Node get(Long nodeId) {
@@ -42,51 +58,46 @@ public class Storage {
             byte[] readiedData = nodeStorage.read(metaCell.start, metaCell.length);
             node.parse(readiedData);
             node.nodeId = nodeId;
-            nodesCache.put(nodeId, node);
         }
         return node;
+    }
+
+    public void addToTransaction(Node node) {
+        if (!node.isSaved) {
+            if (transactionNodes.size() >= MAX_TRANSACTION_NODE_COUNT)
+                transactionCommit();
+            transactionNodes.add(node);
+            node.isSaved = true;
+        }
+    }
+
+    public void addToCache(Node node) {
+        nodesCache.put(node.nodeId, node);
+        if (nodesCache.keySet().size() > MAX_CACHE_NODE_COUNT) {
+            nodesCache.clear();
+            // TODO add logic of removing
+        }
     }
 
     public void transactionCommit() {
         // TODO change transactionNodes to sync list
         synchronized (transactionNodes) {
             for (Node node : transactionNodes) {
-                if (node.nodeId == null) {
-                    MetaCell metaCell = new MetaCell();
-                    byte[] data = node.build();
-                    if (data.length != 0) {
-                        byte[] sector = nodeStorage.dataToSector(data);
-                        metaCell.start = nodeStorage.add(sector);
-                        metaCell.length = data.length;
-                    }
-                    node.nodeId = nodeStorage.meta.add(metaCell);
-                    nodesCache.put(node.nodeId, node);
-                } else
-                    nodeStorage.setObject(node.nodeId, node);
+                nodeStorage.setObject(node.nodeId, node);
                 node.isSaved = false;
             }
             transactionNodes.clear();
         }
     }
 
-    public void addToTransaction(Node node) {
-        if (!node.isSaved) {
-            if (transactionNodes.size() >= MAX_TRANSACTION_CACHE_NODE_COUNT)
-                transactionCommit();
-            transactionNodes.add(node);
-            node.isSaved = true;
-            nodesCache.put(node.nodeId, node);
-        }
+    public Long newNodeId() {
+        return nodeStorage.meta.add(new MetaCell());
     }
 
-    public void close() throws IOException {
+    /*public void close() throws IOException {
         transactionCommit();
         nodeStorage.close();
         dataStorage.close();
         dataHashTree.close();
-    }
-
-    public boolean isEmpty() {
-        return nodeStorage.fileData.sumFilesSize == 0;
-    }
+    }*/
 }

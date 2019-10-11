@@ -4,34 +4,35 @@ package org.pdk.store.model.data;
 import org.pdk.store.Storage;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Random;
 
-public class FileData extends StringData {
-    private final Random random = new Random();
+public class FileData implements Data {
+    private final static Random random = new Random();
+    private Storage storage;
     public Integer fileId;
     public File file;
 
     public FileData(Storage storage, InputStream stream) throws IOException {
-        super(storage);
+        this.storage = storage;
         fileId = random.nextInt();
-        // TODO
-        long length = Files.copy(stream, Paths.get(storage.storeDir + fileId + ".data"));
+        getFile().getParentFile().mkdirs();
+        OutputStream outStream = new FileOutputStream(getFile(), false);
+        byte[] buffer = new byte[8 * 1024];
+        int bytesRead;
+        while ((bytesRead = stream.read(buffer)) != -1)
+            outStream.write(buffer, 0, bytesRead);
+        stream.close();
+        outStream.close();
     }
 
     public FileData(Storage storage, Integer fileId) {
-        super(storage);
+        this.storage = storage;
         this.fileId = fileId;
     }
 
-    public Integer getFileId() {
-        return fileId;
-    }
-
-    public File getFile(){
-        if (file != null)
-            file = new File(storage.storeDir + fileId + ".data");
+    public File getFile() {
+        if (file == null)
+            file = new File(storage.storeDir + "tmp/" + fileId + ".data");
         return file;
     }
 }

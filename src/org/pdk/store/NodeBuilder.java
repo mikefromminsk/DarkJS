@@ -1,5 +1,6 @@
 package org.pdk.store;
 
+import org.pdk.files.Files;
 import org.pdk.modules.Func;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
@@ -19,11 +20,7 @@ public class NodeBuilder {
     }
 
     public NodeBuilder create() {
-        return create();
-    }
-
-    public NodeBuilder get(Long id) {
-        node = storage.get(id);
+        node = new Node(storage);
         return this;
     }
 
@@ -32,8 +29,23 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder get(Long id) {
+        node = storage.get(id);
+        storage.addToCache(node);
+        return this;
+    }
+
+    public Node commit() {
+        if (node.nodeId == null) {
+            node.nodeId = storage.newNodeId();
+            storage.addToCache(node);
+        }
+        storage.addToTransaction(node);
+        return node;
+    }
+
     public NodeBuilder setTitle(String paramName) {
-        node.title = new StringData(storage, paramName.getBytes());
+        node.title = new StringData(paramName.getBytes());
         return this;
     }
 
@@ -66,11 +78,11 @@ public class NodeBuilder {
     }
 
     public String getTitle() {
-        return new String(node.title.getBytes());
+        return new String(node.title.bytes);
     }
 
     public String getParser() {
-        return new String(node.parser.getBytes());
+        return new String(node.parser.bytes);
     }
 
     public Node getLocalParent() {
@@ -85,7 +97,7 @@ public class NodeBuilder {
     private Node[] getNodes(ArrayList<Object> list) {
         if (list == null) return null;
         Node[] nodes = new Node[list.size()];
-        for (int i = 0; i < list.size(); i++){
+        for (int i = 0; i < list.size(); i++) {
             Object object = list.get(i);
             if (object instanceof Long)
                 list.set(i, storage.get((Long) object));
@@ -97,7 +109,7 @@ public class NodeBuilder {
     private DataOrNode[] getDons(ArrayList<Object> list) {
         if (list == null) return null;
         DataOrNode[] dons = new DataOrNode[list.size()];
-        for (int i = 0; i < list.size(); i++){
+        for (int i = 0; i < list.size(); i++) {
             Object object = list.get(i);
             if (object instanceof Long)
                 list.set(i, storage.get((Long) object));
@@ -106,91 +118,104 @@ public class NodeBuilder {
         return dons;
     }
 
-    public Node commit() {
-        storage.addToTransaction(node);
-        return node;
-    }
-
-    public NodeBuilder setParser(String string){
-        if (string == null){
-
-        }
+    public NodeBuilder setParser(String string) {
+        if (string != null)
+            node.parser = new StringData(string.getBytes());
         return this;
     }
 
-    public NodeBuilder addLocal(DataOrNode don){
+    public NodeBuilder addLocal(Node item) {
+        if (node.local == null)
+            node.local = new ArrayList<>();
+        node.local.add(item);
+        Node prevNode = node;
+        node = item;
+        node.localParent = prevNode;
+        commit();
+        node = prevNode;
         return this;
     }
 
-    public NodeBuilder setLocal(int index, DataOrNode don){
-        node.local.set(index, don);
+    public NodeBuilder setLocal(int index, Node item) {
+        node.local.set(index, item);
+        Node prevNode = node;
+        set(item);
+        node.localParent = prevNode;
+        commit();
+        set(prevNode);
         return this;
     }
 
-    public NodeBuilder removeLocal(DataOrNode don) {
-        node.local.remove(don);
+    public NodeBuilder removeLocal(Node node) {
+        node.local.remove(node);
         return this;
     }
 
     public Node getMaster() {
-        return null;
+        return Files.getNodeFromRoot(this, "master");
     }
 
     public Node getRoot() {
-        return null;
+        return storage.get(0L);
     }
 
-    public NodeBuilder addParam(DataOrNode param) {
+    public NodeBuilder addParam(DataOrNode item) {
+        if (node.param == null)
+            node.param = new ArrayList<>();
+        node.param.add(item);
         return this;
     }
 
-
-    public NodeBuilder addParam(Long param) {
+    public NodeBuilder addNext(Node item) {
+        if (node.next == null)
+            node.next = new ArrayList<>();
+        node.next.add(item);
         return this;
     }
 
-    public NodeBuilder setSource(Node node) {
+    public NodeBuilder setSource(Node item) {
+        node.source = item;
         return this;
     }
 
-    public NodeBuilder setSet(DataOrNode setLink) {
-        return null;
+    public NodeBuilder setSet(DataOrNode item) {
+        node.set = item;
+        return this;
     }
 
-    public NodeBuilder addNext(Node initBlockNode) {
-        return null;
+    public NodeBuilder setWhile(Node item) {
+        node._while = item;
+        return this;
     }
 
-    public NodeBuilder setWhile(Node forBodyNode) {
-        return null;
+    public NodeBuilder setIf(Node item) {
+        node._if = item;
+        return this;
     }
 
-    public NodeBuilder setIf(Node forTestNode) {
-        return null;
+    public NodeBuilder setValue(DataOrNode item) {
+        node.value = item;
+        return this;
     }
 
-    public NodeBuilder setValue(DataOrNode variable) {
-        return null;
+    public NodeBuilder setTrue(Node item) {
+        node._true = item;
+        return this;
     }
 
-    public NodeBuilder removeAllNext() {
-            return null;
+    public NodeBuilder setElse(Node item) {
+        node._else = item;
+        return this;
     }
 
-    public NodeBuilder addProperty(String property) {
-        return null;
+    public NodeBuilder setExit(Node item) {
+        node.exit = item;
+        return this;
     }
 
-    public NodeBuilder setTrue(Node ifTrueNode) {
-        return null;
-    }
-
-    public NodeBuilder setElse(Node ifElseNode) {
-        return null;
-    }
-
-    public NodeBuilder setExit(Node module) {
-        return null;
+    public NodeBuilder setFunc(Func item) {
+        node.func = item;
+        return this;
     }
 
     public DataOrNode[] getParams() {
@@ -198,54 +223,63 @@ public class NodeBuilder {
     }
 
     public Node getIf() {
+        if (node._if instanceof Node)
+            return (Node) node._if;
+        else if (node._if instanceof Long)
+            return (Node) (node._if = storage.get((Long) node._if));
         return null;
     }
 
     public Node getTrue() {
+        if (node._true instanceof Node)
+            return (Node) node._true;
+        else if (node._true instanceof Long)
+            return (Node) (node._true = storage.get((Long) node._true));
         return null;
     }
 
-    public Node getSource() {
+    public Node getSource()  {
+        if (node.source instanceof Node)
+            return (Node) node.source;
+        else if (node.source instanceof Long)
+            return (Node) (node.source = storage.get((Long) node.source));
         return null;
     }
 
-    public DataOrNode getSet() {
+    public DataOrNode getSet()  {
+        if (node.set instanceof Node)
+            return (Node) node.set;
+        else if (node.set instanceof Long)
+            return (Node) (node.set = storage.get((Long) node.set));
         return null;
     }
 
-    public Node getNext(int i) {
+    public Node getWhile()  {
+        if (node._while instanceof Node)
+            return (Node) node._while;
+        else if (node._while instanceof Long)
+            return (Node) (node._while = storage.get((Long) node._while));
         return null;
     }
 
-    public Node getWhile() {
+    public Node getElse()  {
+        if (node._else instanceof Node)
+            return (Node) node._else;
+        else if (node._else instanceof Long)
+            return (Node) (node._else = storage.get((Long) node._else));
         return null;
     }
 
-    public Node getElse() {
+    public Node getExit()  {
+        if (node.exit instanceof Node)
+            return (Node) node.exit;
+        else if (node.exit instanceof Long)
+            return (Node) (node.exit = storage.get((Long) node.exit));
         return null;
-    }
-
-    public Node getExit() {
-        return null;
-    }
-
-    public NodeBuilder setPrototype(Node templateNode) {
-        return null;
-    }
-
-    public NodeBuilder setFunc(Func i) {
-        return this;
-    }
-
-    public Storage getStorage() {
-        return storage;
     }
 
     public Node[] getNextList() {
         return getNodes(node.next);
     }
 
-    public boolean isNativeFunction() {
-        return node.func != null;
-    }
 }

@@ -14,7 +14,7 @@ public class ModuleManager {
     public static List<Func> functions = new ArrayList<>();
     public static List<FuncInterface> interfaces = new ArrayList<>();
 
-    public List<Func> initInterfaces(NodeBuilder builder) {
+    public static List<Func> initInterfaces(NodeBuilder builder) {
         if (functions.size() == 0) {
             // load prototypes
             new StringPrototype();
@@ -27,14 +27,12 @@ public class ModuleManager {
     }
 
     public static void saveInterfaces(NodeBuilder builder) {
-        for (int i = 0; i < interfaces.size(); i++) {
-            FuncInterface funcInterface = interfaces.get(i);
-            String funcPath = funcInterface.path + funcInterface.name;
-            Node function = Files.getNodeFromRoot(builder, funcPath, true);
-            builder.set(function).setFunc(i);
+        for (FuncInterface funcInterface: interfaces) {
+            Node funcNode = Files.getNodeFromRoot(builder, funcInterface.path + funcInterface.name);
+            funcNode.func = funcInterface.func;
             for (String paramName: funcInterface.parameters) {
                 Node param = builder.create().setTitle(paramName).commit();
-                builder.set(function).addParam(param).commit();
+                builder.set(funcNode).addParam(param).commit();
             }
         }
     }

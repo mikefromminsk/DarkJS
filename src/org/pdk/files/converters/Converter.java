@@ -1,7 +1,7 @@
 package org.pdk.files.converters;
 
 public class Converter {
-    private String[] extensions;
+    public final String[] extensions;
     private ConverterParser parser;
     private ConverterBuilder builder;
 

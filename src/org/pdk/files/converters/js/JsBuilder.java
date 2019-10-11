@@ -29,7 +29,11 @@ public class JsBuilder extends ConverterBuilder {
 
     @Override
     public Node build(Node module, Object parseResult) {
-        return (Node) jsLine(module, (jdk.nashorn.internal.ir.Node) parseResult);
+        addParentsToLocalStack(module);
+        if (module == null)
+            module = builder.create().commit();
+        Block program = ((FunctionNode) parseResult).getBody();
+        return (Node) jsLine(module, program);
     }
 
     DataOrNode jsLine(Node module, jdk.nashorn.internal.ir.Node statement) {
@@ -51,12 +55,22 @@ public class JsBuilder extends ConverterBuilder {
                 }
             }
 
+            /*if (statement instanceof FunctionNode) {
+                FunctionNode function = (FunctionNode) statement;
+                Node func = Files.getNode(builder, module, function.getName());
+                for (IdentNode param : function.getParameters()) {
+                    Node paramNode = builder.create().setTitle(param.getName()).commit();
+                    builder.set(func).addParam(paramNode);
+                }
+                *//*jsLine(functionNode, function.getBody());*//*
+                return func;
+            }*/
+
             if (statement instanceof Block) {
                 Block block = (Block) statement;
+                //module.next = null;
+
                 Map<Node, Block> subBlocks = new LinkedHashMap<>();
-
-                builder.set(module).removeAllNext().commit();
-
                 for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
                     Node lineNode = (Node) jsLine(module, line);
                     if (line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode) // not a function. its a problem with nashorn parser.
@@ -73,14 +87,14 @@ public class JsBuilder extends ConverterBuilder {
 
             if (statement instanceof BinaryNode) {
                 BinaryNode binaryNode = (BinaryNode) statement;
-                Node left = (Node) jsLine(module, binaryNode.lhs());
+                DataOrNode left = jsLine(module, binaryNode.lhs());
                 DataOrNode right = jsLine(module, binaryNode.rhs());
                 if (binaryNode.isAssignment()) {
                     if (binaryNode.tokenType() == TokenType.ASSIGN_ADD ||
                             binaryNode.tokenType() == TokenType.ASSIGN_SUB ||
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
-                        Node nativeFunc = Files.getNodeFromRootIfExist(builder,MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                        Node nativeFunc = Files.getNodeFromRootIfExist(builder, MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create()
                                 .setFunc(nativeFunc.func)
                                 .addParam(left)
@@ -88,11 +102,14 @@ public class JsBuilder extends ConverterBuilder {
                                 .commit();
                     }
                     return builder.create()
-                            .setSource(left)
+                            .setSource((Node) left)
                             .setSet(right)
                             .commit();
                 } else {
-                    Node nativeFunc = Files.getNodeFromRootIfExist(builder,MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                    Node nativeFunc = Files.getNodeFromRootIfExist(builder,
+                            MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                    if (nativeFunc == null)
+                        throw new NullPointerException();
                     return builder.create()
                             .setFunc(nativeFunc.func)
                             .addParam(left)
@@ -110,8 +127,15 @@ public class JsBuilder extends ConverterBuilder {
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
                     Node findNode = Files.getNodeIfExist(builder, node, name);
-                    if (findNode == null)
-                        findNode = Files.getNodeIfExist(builder, node, name);
+                    if (findNode == null) {
+                        if (node.param != null)
+                            for (DataOrNode param : builder.set(node).getParams())
+                                if (param instanceof Node) {
+                                    Node paramNode = (Node) param;
+                                    if (name.equals(builder.set(paramNode).getTitle()))
+                                        findNode = paramNode;
+                                }
+                    }
                     if (findNode != null) {
                         ident = findNode;
                         break;
@@ -136,7 +160,7 @@ public class JsBuilder extends ConverterBuilder {
                     if (literalNode.isNumeric())
                         data = new NumberData(Double.valueOf(literalNode.getString()));
                     else if (literalNode.isString())
-                        data = new StringData(builder.getStorage(), literalNode.getString().getBytes());
+                        data = new StringData(literalNode.getString().getBytes());
                     return data;
                 }
             }
@@ -182,14 +206,6 @@ public class JsBuilder extends ConverterBuilder {
                 return LESS_OR_EQUAL;
         }
         return EQ;
-    }
-
-    public Node build(Node module, jdk.nashorn.internal.ir.Node rootParserNode) {
-        addParentsToLocalStack(module);
-        if (module == null)
-            module = builder.create().commit();
-        Block program = ((FunctionNode) rootParserNode).getBody();
-        return (Node) jsLine(module, program);
     }
 
     private void addParentsToLocalStack(Node module) {

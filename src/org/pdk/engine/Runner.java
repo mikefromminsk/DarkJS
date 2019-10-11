@@ -21,12 +21,12 @@ public class Runner {
 
     public void run(Node node, Node ths) {
 
-        for (Node next : builder.set(node).getNextList()) {
-            run(next);
-        }
+        if (node.next != null)
+            for (Node next : builder.set(node).getNextList())
+                run(next);
 
-        if (builder.set(node).isNativeFunction()) {
-            for (DataOrNode sourceParam : builder.getParams())
+        if (node.func != null) {
+            for (DataOrNode sourceParam : builder.set(node).getParams())
                 if (sourceParam instanceof Node)
                     run((Node) sourceParam, ths);
             DataOrNode result = node.func.invoke(builder.set(node), ths);

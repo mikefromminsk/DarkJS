@@ -86,12 +86,15 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     baos.write(bb.array());
                 } else if (link instanceof FileData) {
                     ByteBuffer bb = ByteBuffer.allocate(6);
-                    // TODO
+                    bb.put((byte) linkType.ordinal());
+                    bb.put((byte) LinkDataType.FILE.ordinal());
+                    bb.putInt(((FileData) link).fileId);
+                    baos.write(bb.array());
                 } else if (link instanceof StringData) {
                     ByteBuffer bb = ByteBuffer.allocate(6);
                     bb.put((byte) linkType.ordinal());
                     bb.put((byte) LinkDataType.STRING.ordinal());
-                    byte[] bytes = ((StringData) link).getBytes();
+                    byte[] bytes = ((StringData) link).bytes;
                     bb.putInt(bytes.length);
                     baos.write(bb.array());
                     baos.write(bytes);
@@ -169,7 +172,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     int length = bb.getInt();
                     byte[] bytes = new byte[length];
                     bb.get(bytes);
-                    linkData = new StringData(storage, bytes);
+                    linkData = new StringData(bytes);
                     break;
                 case FILE:
                     linkData = new FileData(storage, bb.getInt());

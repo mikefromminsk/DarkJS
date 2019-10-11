@@ -14,6 +14,11 @@ abstract public class Module {
 
     public void func(String name, Func func, String... args) {
         ModuleManager.functions.add(func);
-        ModuleManager.interfaces.add(new FuncInterface((path().endsWith("/") ? path() : path() + "/"), name, Arrays.asList(args)));
+        ModuleManager.interfaces.add(
+                new FuncInterface(
+                        func,
+                        (path().endsWith("/") ? path() : path() + "/"),
+                        name,
+                        Arrays.asList(args)));
     }
 }
