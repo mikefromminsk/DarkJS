@@ -6,112 +6,106 @@ import org.pdk.store.model.data.FileData;
 import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.link.LinkType;
 import org.pdk.store.model.node.Node;
+import org.simpledb.Bytes;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class NodeSerializer extends InputStream {
 
-    public static final String NODE_PREFIX = "n";
-    public static final String TYPE_KEY = "type";
-    public static final String DATA_KEY = "data";
-    public static final String STRING_PREFIX = "!";
-    public static final String LINK_PREFIX = "@";
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
-
-    private int maxLevel;
-    private StringBuilder result;
-    private ArrayList<Long> passed = new ArrayList<>();
-    private LinkedHashMap<Node, Integer> next = new LinkedHashMap<>();
-    Storage storage;
+    private int maxDeepLevel;
+    private StringBuilder resultStringBuilder;
+    private ArrayList<Long> passedNodes = new ArrayList<>();
+    private LinkedHashMap<Node, Integer> nextNodes = new LinkedHashMap<>();
+    private Storage storage;
 
     public NodeSerializer(Storage storage, Node node) {
         this(storage, node, 1);
     }
 
-    public NodeSerializer(Storage storage, Node node, int maxLevel) {
+    public NodeSerializer(Storage storage, Node node, int maxDeepLevel) {
         this.storage = storage;
-        this.maxLevel = maxLevel;
-        this.result = new StringBuilder("{\n");
-        next.put(node, 0);
+        this.maxDeepLevel = maxDeepLevel;
+        this.resultStringBuilder = new StringBuilder("{\n");
+        nextNodes.put(node, 0);
     }
 
-    private void appendDon(DataOrNode don, int currentLevel) {
+    private void appendDon(DataOrNode don, int deepLevel) {
         if (don instanceof Data) {
             Data data = (Data) don;
             if (data instanceof BooleanData) {
-                result.append(((BooleanData) data).value);
+                resultStringBuilder.append(((BooleanData) data).value);
             } else if (data instanceof NumberData) {
-                result.append(((NumberData) data).number);
+                resultStringBuilder.append(((NumberData) data).number);
             } else if (data instanceof StringData) {
-                result.append("\"!").append(((StringData) data).bytes).append("\"");
+                resultStringBuilder.append("\"!").append(Bytes.toString(((StringData) data).bytes)).append("\"");
             } else if (data instanceof FileData) {
-                result.append("\"@").append(((FileData) data).fileId).append("\"");
+                resultStringBuilder.append("\"@").append(((FileData) data).fileId).append("\"");
             }
         } else {
             Node node = (Node) don;
-            result.append("\"n").append(node.nodeId).append("\"");
-            if (currentLevel < maxLevel)
-                next.putIfAbsent(node, currentLevel + 1);
+            resultStringBuilder.append("\"n").append(node.nodeId).append("\"");
+            if (deepLevel < maxDeepLevel)
+                nextNodes.putIfAbsent(node, deepLevel + 1);
         }
     }
 
-    public void appendNode(Map.Entry<Node, Integer> nodeEntry) {
-        Node node = nodeEntry.getKey();
-        Integer currentLevel = nodeEntry.getValue();
-        if (passed.indexOf(node.nodeId) != -1) return;
-        result.append("n").append(node.nodeId).append(" :{\n");
+    public void appendNode(Node node, Integer deepLevel) {
+        if (passedNodes.indexOf(node.nodeId) != -1) return;
+        resultStringBuilder.append("\"n").append(node.nodeId).append("\" :{\n");
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
 
             String linkName = linkType.toString().toLowerCase();
-            result.append("\t\"").append(linkName);
+            resultStringBuilder.append("\t\"").append(linkName);
             if (singleValue) {
-                result.append("\": ");
-                appendDon(link instanceof Long ? storage.get((Long) link) :(DataOrNode) link, currentLevel);
-                result.append(",\n");
+                resultStringBuilder.append("\": ");
+                appendDon(link instanceof Long ? storage.get((Long) link) : (DataOrNode) link, deepLevel);
+                resultStringBuilder.append(",\n");
             } else {
                 ArrayList<Object> links = (ArrayList<Object>) link;
-                result.append("\": [\n");
+                resultStringBuilder.append("\": [\n");
                 for (Object item : links) {
-                    appendDon(item instanceof Long ? storage.get((Long) link) : (DataOrNode) link, currentLevel);
-                    result.append(",\n");
+                    resultStringBuilder.append("\t\t");
+                    appendDon(item instanceof Long ? storage.get((Long) item) : (DataOrNode) item, deepLevel);
+                    resultStringBuilder.append(",\n");
                 }
-                result.append("],\n");
+                resultStringBuilder.append("\t],\n");
             }
         });
-        result.append("},\n");
+        resultStringBuilder.append("},\n");
     }
 
-    /* ignore this method*/
+    private byte[] readByByteBuffer;
+
     @Override
     public int read() {
-        return 0;
+        if (readByByteBuffer == null)
+            readByByteBuffer = new byte[1];
+        if (read(readByByteBuffer) != -1)
+            return (int) readByByteBuffer[0];
+        return -1;
     }
 
-
     @Override
-    public int read(byte[] buffer) {
-        if (next.size() == 0)
-            return 0;
-        while (result.length() < buffer.length) {
-            Iterator<Map.Entry<Node, Integer>> it = next.entrySet().iterator();
-            Map.Entry<Node, Integer> entry = it.next();
-            appendNode(entry);
-            passed.add(entry.getKey().nodeId);
-            it.remove();
+    public int read(byte[] outBuffer) {
+        if (nextNodes.size() == 0 && resultStringBuilder.length() == 0)
+            return -1;
+        while (resultStringBuilder.length() < outBuffer.length) {
+            Map.Entry<Node, Integer> firstRecord = nextNodes.entrySet().iterator().next();
+            Node node = firstRecord.getKey();
+            Integer deepLevel = firstRecord.getValue();
+            appendNode(node, deepLevel);
+            nextNodes.remove(node);
+            if (nextNodes.size() == 0)
+                resultStringBuilder.append("}");
+            passedNodes.add(node.nodeId);
         }
-        if (next.size() == 0)
-            result.append("}");
-        byte[] bytes = result.toString().getBytes();
-        int length = Math.min(bytes.length, buffer.length);
-        System.arraycopy(bytes, 0, buffer, 0, length);
-        result.delete(0, length - 1);
-        return length;
+        byte[] resultBytes = resultStringBuilder.toString().getBytes();
+        int minLength = Math.min(resultBytes.length, outBuffer.length);
+        System.arraycopy(resultBytes, 0, outBuffer, 0, minLength);
+        resultStringBuilder.delete(0, minLength);
+        return minLength;
     }
 }

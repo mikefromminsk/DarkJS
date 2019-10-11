@@ -8,15 +8,20 @@ import org.pdk.store.Storage;
 import org.pdk.store.model.data.BooleanData;
 import org.pdk.store.model.data.FileData;
 import org.pdk.store.model.node.Node;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RunnerTest {
+
+    String streamToString(InputStream stream){
+        return new Scanner(stream).useDelimiter("\\A").next();
+    }
+
     @Test
     void run() throws IOException {
         File[] list = new File("test_res/run").listFiles();
@@ -38,12 +43,12 @@ public class RunnerTest {
                     BooleanData testVar = (BooleanData) builder.set(locals[locals.length - 1]).getValue();
                     assertTrue(testVar.value);
                     if (!testVar.value) {
-                        System.out.println(new Scanner(new NodeSerializer(storage, node)).useDelimiter("\\A").next());
+                        System.out.println(streamToString(new NodeSerializer(storage, node)));
                         return;
                     }
                     assertTrue(true);
                 } catch (Exception e) {
-                    System.out.println(new Scanner(new NodeSerializer(storage, node)).useDelimiter("\\A").next());
+                    System.out.println(streamToString(new NodeSerializer(storage, node)));
                     fail(e.getMessage());
                 }
             }
