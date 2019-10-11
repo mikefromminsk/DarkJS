@@ -16,7 +16,7 @@ public class NodeSerializer extends InputStream {
 
     private int maxDeepLevel;
     private StringBuilder resultStringBuilder;
-    private ArrayList<Long> passedNodes = new ArrayList<>();
+    private ArrayList<Long> passedNodeIds = new ArrayList<>();
     private LinkedHashMap<Node, Integer> nextNodes = new LinkedHashMap<>();
     private Storage storage;
 
@@ -52,7 +52,7 @@ public class NodeSerializer extends InputStream {
     }
 
     public void appendNode(Node node, Integer deepLevel) {
-        if (passedNodes.indexOf(node.nodeId) != -1) return;
+        if (passedNodeIds.contains(node.nodeId)) return;
         resultStringBuilder.append("\"n").append(node.nodeId).append("\" :{\n");
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
@@ -100,7 +100,7 @@ public class NodeSerializer extends InputStream {
             nextNodes.remove(node);
             if (nextNodes.size() == 0)
                 resultStringBuilder.append("}");
-            passedNodes.add(node.nodeId);
+            passedNodeIds.add(node.nodeId);
         }
         byte[] resultBytes = resultStringBuilder.toString().getBytes();
         int minLength = Math.min(resultBytes.length, outBuffer.length);
