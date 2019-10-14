@@ -33,21 +33,19 @@ public class MathModule extends Module {
     public void methods() {
 
         func(INC, (builder, ths) -> {
-            NumberData number = ((NumberData) builder.set(ths).getValue());
-            number.number += 1;
-            return number;
+            ((NumberData)builder.getValue()).number += 1;
+            return builder.getNode();
         });
 
         func(DEC, (builder, ths) -> {
-            NumberData number = ((NumberData) builder.set(ths).getValue());
-            number.number -= 1;
-            return number;
+            ((NumberData)builder.getValue()).number -= 1;
+            return builder.getNode();
         });
 
         func(UNARY_MINUS, (builder, ths) -> {
-            NumberData number = ((NumberData) builder.set(ths).getValue());
-            number.number *= -1;
-            return number;
+            NumberData numberData = builder.getNumberParam(0);
+            numberData.number *= -1;
+            return numberData;
         });
 
         func(EQ,/*        */(builder, ths) -> {

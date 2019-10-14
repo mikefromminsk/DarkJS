@@ -184,7 +184,7 @@ public class JsBuilder extends ConverterBuilder {
                 } else if (tokenType.toString().equals("-")) {
                     Node nativeNode = Files.getNodeFromRootIfExist(builder,
                             MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
-                    Node expression = (Node) jsLine(module, unaryNode.getExpression());
+                    DataOrNode expression = jsLine(module, unaryNode.getExpression());
                     return builder.create()
                             .setFunc(nativeNode.func)
                             .addParam(expression)
