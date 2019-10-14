@@ -250,8 +250,8 @@ public class NodeBuilder {
     }
 
     public DataOrNode getSet() {
-        if (node.set instanceof Node)
-            return (Node) node.set;
+        if (node.set instanceof DataOrNode)
+            return (DataOrNode) node.set;
         else if (node.set instanceof Long)
             return (Node) (node.set = storage.get((Long) node.set));
         return null;

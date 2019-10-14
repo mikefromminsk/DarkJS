@@ -44,8 +44,8 @@ public class RunnerTest {
                     }
                     assertTrue(true);
                 } catch (Exception e) {
-                    printNode(storage, node);
                     e.printStackTrace();
+                    printNode(storage, node);
                     fail(e.getMessage());
                 }
             }

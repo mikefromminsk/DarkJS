@@ -55,16 +55,16 @@ public class JsBuilder extends ConverterBuilder {
                 }
             }
 
-            /*if (statement instanceof FunctionNode) {
+            if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
                 Node func = Files.getNode(builder, module, function.getName());
                 for (IdentNode param : function.getParameters()) {
                     Node paramNode = builder.create().setTitle(param.getName()).commit();
-                    builder.set(func).addParam(paramNode);
+                    builder.set(func).addParam(paramNode).commit();
                 }
-                *//*jsLine(functionNode, function.getBody());*//*
+                jsLine(func, function.getBody());
                 return func;
-            }*/
+            }
 
             if (statement instanceof Block) {
                 Block block = (Block) statement;
@@ -76,13 +76,23 @@ public class JsBuilder extends ConverterBuilder {
                     if (line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode) // not a function. its a problem with nashorn parser.
                         subBlocks.put(lineNode, ((FunctionNode) ((VarNode) line).getInit()).getBody());
                     else
-                        builder.set(module).addNext(lineNode);
+                        builder.set(module).addNext(lineNode).commit();
                 }
                 for (Node lineNode : subBlocks.keySet()) {
                     Block subBlock = subBlocks.get(lineNode);
                     jsLine(lineNode, subBlock);
                 }
                 return builder.set(module).commit();
+            }
+
+            if (statement instanceof ReturnNode) {
+                ReturnNode returnNode = (ReturnNode) statement;
+                DataOrNode setNode = jsLine(module, returnNode.getExpression());
+                return builder.create()
+                        .setSource(module)
+                        .setSet(setNode)
+                        .setExit(module)
+                        .commit();
             }
 
             if (statement instanceof BinaryNode) {
@@ -149,6 +159,19 @@ public class JsBuilder extends ConverterBuilder {
                 return ident;
             }
 
+            if (statement instanceof CallNode) {
+                CallNode call = (CallNode) statement;
+                Node callNode = builder.create().commit();
+                for (jdk.nashorn.internal.ir.Node arg : call.getArgs()) {
+                    DataOrNode argNode = jsLine(module, arg);
+                    builder.set(callNode).addParam(argNode);
+                }
+
+                Node sourceFunc = (Node) jsLine(module, call.getFunction());
+                return builder.set(callNode)
+                        .setSource(sourceFunc)
+                        .commit();
+            }
 
             if (statement instanceof LiteralNode) {
                 LiteralNode literalNode = (LiteralNode) statement;
