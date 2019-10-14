@@ -37,12 +37,9 @@ public class RunnerTest {
                     runner.run(node);
                     Node[] locals = builder.set(node).getLocals();
                     BooleanData testVar = (BooleanData) builder.set(locals[locals.length - 1]).getValue();
-                    assertTrue(testVar.value);
-                    if (!testVar.value) {
+                    if (!testVar.value)
                         printNode(storage, node);
-                        return;
-                    }
-                    assertTrue(true);
+                    assertTrue(testVar.value);
                 } catch (Exception e) {
                     e.printStackTrace();
                     printNode(storage, node);

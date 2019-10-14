@@ -194,6 +194,31 @@ public class JsBuilder extends ConverterBuilder {
                 }
             }
 
+            if (statement instanceof ForNode) {
+                ForNode forStatement = (ForNode) statement;
+
+                Node forNode = builder.create().commit();
+                Node initBlockNode = (Node) jsLine(forNode, forStatement.getInit());
+                builder.set(forNode).addNext(initBlockNode).commit();
+
+                Node blockNode = builder.create().commit();
+                // TODO forNode.addLocal(blockNode) for name searching
+                Node forBodyNode = (Node) jsLine(blockNode, forStatement.getBody());
+                Node forTestNode = (Node) jsLine(forNode, forStatement.getTest());
+                Node forStartNode = builder.create().setWhile(forBodyNode).setIf(forTestNode).commit();
+
+                Node forModifyNode = (Node) jsLine(forNode, forStatement.getModify());
+                builder.set(forBodyNode).addNext(forModifyNode).commit();
+
+                builder.set(forNode).addNext(forStartNode).commit();
+                return forNode;
+            }
+
+            if (statement instanceof JoinPredecessorExpression) {
+                JoinPredecessorExpression joinPredecessorExpression = (JoinPredecessorExpression) statement;
+                return jsLine(module, joinPredecessorExpression.getExpression());
+            }
+
             if (statement instanceof CallNode) {
                 CallNode call = (CallNode) statement;
                 Node callNode = builder.create().commit();

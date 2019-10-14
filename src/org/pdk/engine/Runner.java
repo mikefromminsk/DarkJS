@@ -3,6 +3,7 @@ package org.pdk.engine;
 
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.DataOrNode;
+import org.pdk.store.model.data.BooleanData;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.node.Node;
 
@@ -74,11 +75,39 @@ public class Runner {
                     builder.set(node).setValue(sourceValue).commit();
                 }
             }
+
+            if (node._if != null && node._true != null) {
+                Node ifNode = builder.set(node).getIf();
+                run(ifNode, ths);
+                Object ifNodeData = builder.set(ifNode).getValue();
+                if (ifNodeData instanceof BooleanData && ((BooleanData) ifNodeData).value)
+                    run(builder.set(node).getTrue(), ths);
+                else if (node._else != null)
+                    run(builder.set(node).getElse(), ths);
+            }
+
+
+            if (node._while != null && node._if != null) {
+                Node ifNode = builder.set(node).getIf();
+                run(ifNode, ths);
+                BooleanData ifValue = (BooleanData) builder.set(ifNode).getValue();
+                Node whileNode = builder.set(node).getWhile();
+                while (ifValue.value) {
+                    run(whileNode, ths);
+                    if (exitNode != null) {
+                        if (exitNode.equals(node))
+                            exitNode = null;
+                        break;
+                    }
+                    run(ifNode, ths);
+                    ifValue = (BooleanData) builder.set(ifNode).getValue();
+                }
+            }
+
+            if (node.exit != null)
+                exitNode = builder.set(node).getExit();
         }
 
-
-        if (node.exit != null)
-            exitNode = builder.set(node).getExit();
 
     }
 
