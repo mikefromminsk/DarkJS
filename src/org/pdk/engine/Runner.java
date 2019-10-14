@@ -53,10 +53,22 @@ public class Runner {
                         builder.set(source).setValue(set).commit();
                     }
                 } else {
-                    if (builder.set(node).getParams() != null)
-                        for (DataOrNode sourceParam : builder.set(node).getParams())
-                            if (sourceParam instanceof Node)
-                                run((Node) sourceParam, ths);
+                    if (builder.set(node).getParams() != null) {
+                        DataOrNode[] sourceParams = builder.set(source).getParams();
+                        DataOrNode[] nodeParams = builder.set(node).getParams();
+                        for (int i = 0; i < nodeParams.length; i++) {
+                            DataOrNode sourceParam = nodeParams[i];
+                            Data sourceParamData = null;
+                            if (sourceParam instanceof Node) {
+                                Node sourceParamNode = (Node) sourceParam;
+                                run(sourceParamNode, ths);
+                                sourceParamData = (Data) builder.set(sourceParamNode).getValue();
+                            } else if (sourceParam instanceof Data) {
+                                sourceParamData = (Data) sourceParam;
+                            }
+                            builder.set((Node) sourceParams[i]).setValue(sourceParamData).commit();
+                        }
+                    }
                     run(source, ths);
                     DataOrNode sourceValue = builder.set(source).getValue();
                     builder.set(node).setValue(sourceValue).commit();
