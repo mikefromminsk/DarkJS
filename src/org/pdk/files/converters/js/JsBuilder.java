@@ -159,6 +159,41 @@ public class JsBuilder extends ConverterBuilder {
                 return ident;
             }
 
+            if (statement instanceof ExpressionStatement) {
+                ExpressionStatement expressionStatement = (ExpressionStatement) statement;
+                return jsLine(module, expressionStatement.getExpression());
+            }
+
+            if (statement instanceof UnaryNode) {
+                UnaryNode unaryNode = (UnaryNode) statement;
+                // TODO addObject ++a --a
+                TokenType tokenType = unaryNode.tokenType();
+                if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
+                    Node variable = (Node) jsLine(module, unaryNode.getExpression());
+                    Node nativeNode = Files.getNodeFromRootIfExist(builder,
+                            MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(tokenType));
+                    Node func = builder.create()
+                            .setFunc(nativeNode.func)
+                            .addParam(variable)
+                            .commit();
+                    return builder.create()
+                            .setSource(variable)
+                            .setValue(variable) // important
+                            .setSet(func)
+                            .commit();
+                } else if (tokenType.toString().equals("-")) {
+                    Node nativeNode = Files.getNodeFromRootIfExist(builder,
+                            MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
+                    Node expression = (Node) jsLine(module, unaryNode.getExpression());
+                    return builder.create()
+                            .setFunc(nativeNode.func)
+                            .addParam(expression)
+                            .commit();
+                } else {
+                    return jsLine(module, unaryNode.getExpression());
+                }
+            }
+
             if (statement instanceof CallNode) {
                 CallNode call = (CallNode) statement;
                 Node callNode = builder.create().commit();

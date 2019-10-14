@@ -2,9 +2,10 @@ package org.pdk.modules.root;
 
 import org.pdk.modules.Module;
 import org.pdk.store.model.data.BooleanData;
+import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
-
-import java.util.Objects;
+import org.pdk.store.model.data.StringData;
+import org.simpledb.Bytes;
 
 public class MathModule extends Module {
 
@@ -49,8 +50,28 @@ public class MathModule extends Module {
             return number;
         });
 
-        func(EQ,/*        */(builder, ths) -> new BooleanData((Objects.equals(builder.getNumberParam(0).number, builder.getNumberParam(1).number))), "par1", "par2");
-        func(ADD,/*       */(builder, ths) -> new NumberData(builder.getNumberParam(0).number - builder.getNumberParam(1).number), "par1", "par2");
+        func(EQ,/*        */(builder, ths) -> {
+            Data par1 = builder.getParamData(0);
+            Data par2 = builder.getParamData(1);
+            if (par1 instanceof NumberData && par2 instanceof NumberData)
+                return new BooleanData(((NumberData) par1).number == ((NumberData) par2).number);
+            else if (par1 instanceof StringData && par2 instanceof StringData)
+                return new BooleanData(Bytes.compare(((StringData) par1).bytes, ((StringData) par2).bytes));
+            throw new ClassCastException();
+        }, "par1", "par2");
+        func(ADD,/*       */(builder, ths) -> {
+            Data par1 = builder.getParamData(0);
+            Data par2 = builder.getParamData(1);
+            if (par1 instanceof NumberData && par2 instanceof NumberData)
+                return new NumberData(((NumberData) par1).number + ((NumberData) par2).number);
+            else if (par1 instanceof StringData && par2 instanceof NumberData)
+                return new StringData((new String(((StringData) par1).bytes) + ((NumberData) par2).number).getBytes());
+            else if (par2 instanceof StringData && par1 instanceof NumberData)
+                return new StringData((((NumberData) par1).number  +  new String(((StringData) par2).bytes)).getBytes());
+            else if (par1 instanceof StringData && par2 instanceof StringData)
+                return new StringData(Bytes.concat(((StringData) par1).bytes, ((StringData) par2).bytes));
+            throw new ClassCastException();
+        }, "par1", "par2");
         func(SUB,/*       */(builder, ths) -> new NumberData(builder.getNumberParam(0).number - builder.getNumberParam(1).number), "par1", "par2");
         func(MUL,/*       */(builder, ths) -> new NumberData(builder.getNumberParam(0).number * builder.getNumberParam(1).number), "par1", "par2");
         func(DIV,/*       */(builder, ths) -> new NumberData(builder.getNumberParam(0).number / builder.getNumberParam(1).number), "par1", "par2");

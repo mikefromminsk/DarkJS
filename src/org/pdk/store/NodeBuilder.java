@@ -61,7 +61,7 @@ public class NodeBuilder {
         return node;
     }
 
-    public Data getDataParam(int index) {
+    public Data getParamData(int index) {
         Node node = getNode();
         DataOrNode param = getParam(index);
         if (param instanceof Node)
@@ -73,11 +73,11 @@ public class NodeBuilder {
     }
 
     public StringData getStringParam(int index) {
-        return (StringData) getDataParam(index);
+        return (StringData) getParamData(index);
     }
 
     public NumberData getNumberParam(int index) {
-        return (NumberData) getDataParam(index);
+        return (NumberData) getParamData(index);
     }
 
     public String getTitle() {

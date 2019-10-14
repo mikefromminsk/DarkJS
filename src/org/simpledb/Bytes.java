@@ -121,4 +121,7 @@ public class Bytes {
         return new byte[]{type};
     }
 
+    public static boolean compare(byte[] bytes, byte[] bytes1) {
+        return Arrays.equals(bytes, bytes1);
+    }
 }
