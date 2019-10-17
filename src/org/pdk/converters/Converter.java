@@ -1,4 +1,4 @@
-package org.pdk.files.converters;
+package org.pdk.converters;
 
 public class Converter {
     public final String[] extensions;

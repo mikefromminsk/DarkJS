@@ -1,6 +1,7 @@
 package org.pdk.modules.root;
 
 import org.pdk.modules.Module;
+import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.data.BooleanData;
 import org.pdk.store.model.data.Data;
 import org.pdk.store.model.data.NumberData;
@@ -22,6 +23,10 @@ public class MathModule extends Module {
     public final static String MORE_OR_EQUAL = "moreOrEqual"; // >=
     public final static String LESS = "less"; // <
     public final static String LESS_OR_EQUAL = "lessOrEqual"; // <=
+
+    public MathModule(NodeBuilder builder) {
+        super(builder);
+    }
 
 
     @Override

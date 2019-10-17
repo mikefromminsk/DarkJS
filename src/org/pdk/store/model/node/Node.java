@@ -143,9 +143,9 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
         if (prop != null)
             linkListener.get(LinkType.PROP, prop, false);
         if (cell != null)
-            linkListener.get(LinkType.CELL, cell, false);
+            linkListener.get(LinkType.CELL, cell, false);/*
         if (func != null)
-            linkListener.get(LinkType.NATIVE_FUNCTION, ModuleManager.functions.indexOf(func), true);
+            linkListener.get(LinkType.NATIVE_FUNCTION, ModuleManager.functions.indexOf(func), true);*/
     }
 
     @Override
@@ -178,10 +178,10 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                     linkData = new FileData(storage, bb.getInt());
                     break;
             }
-            switch (linkType) {
+            switch (linkType) {/*
                 case NATIVE_FUNCTION:
                     func = ModuleManager.functions.get((Integer) linkData);
-                    break;
+                    break;*/
                 case VALUE:
                     value = linkData;
                     break;

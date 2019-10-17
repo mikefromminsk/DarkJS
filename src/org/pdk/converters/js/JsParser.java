@@ -1,4 +1,4 @@
-package org.pdk.files.converters.js;
+package org.pdk.converters.js;
 
 import jdk.nashorn.internal.ir.Node;
 import jdk.nashorn.internal.runtime.Context;
@@ -6,7 +6,7 @@ import jdk.nashorn.internal.runtime.ErrorManager;
 import jdk.nashorn.internal.runtime.ParserException;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
-import org.pdk.files.converters.ConverterParser;
+import org.pdk.converters.ConverterParser;
 import org.pdk.store.model.data.FileData;
 
 import java.io.FileReader;

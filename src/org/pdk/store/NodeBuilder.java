@@ -1,6 +1,5 @@
 package org.pdk.store;
 
-import org.pdk.files.Files;
 import org.pdk.modules.Func;
 import org.pdk.store.model.DataOrNode;
 import org.pdk.store.model.data.Data;
@@ -9,6 +8,8 @@ import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.Node;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NodeBuilder {
 
@@ -49,6 +50,11 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder setTitle(byte[] paramName) {
+        node.title = new StringData(paramName);
+        return this;
+    }
+
     public DataOrNode getValue() {
         return (DataOrNode) node.value;
     }
@@ -78,14 +84,6 @@ public class NodeBuilder {
 
     public NumberData getNumberParam(int index) {
         return (NumberData) getParamData(index);
-    }
-
-    public String getTitle() {
-        return new String(node.title.bytes);
-    }
-
-    public String getParser() {
-        return new String(node.parser.bytes);
     }
 
     public Node getLocalParent() {
@@ -121,9 +119,9 @@ public class NodeBuilder {
         return dons;
     }
 
-    public NodeBuilder setParser(String string) {
-        if (string != null)
-            node.parser = new StringData(string.getBytes());
+    public NodeBuilder setParser(byte[] bytes) {
+        if (bytes != null)
+            node.parser = new StringData(bytes);
         return this;
     }
 
@@ -155,7 +153,7 @@ public class NodeBuilder {
     }
 
     public Node getMaster() {
-        return Files.getNodeFromRoot(this, "master");
+        return getNodeFromRoot("master");
     }
 
     public Node getRoot() {
@@ -281,8 +279,131 @@ public class NodeBuilder {
         return null;
     }
 
+    public Node getPrototype() {
+        if (node.prototype instanceof Node)
+            return (Node) node.prototype;
+        else if (node.prototype instanceof Long)
+            return (Node) (node.prototype = storage.get((Long) node.prototype));
+        return null;
+    }
+
     public Node[] getNextList() {
         return getNodes(node.next);
     }
 
+    public NodeBuilder addProperty(DataOrNode item) {
+        if (node.prop == null)
+            node.prop = new ArrayList<>();
+        node.prop.add(item);
+        return this;
+    }
+
+    public DataOrNode[] getProps() {
+        return getDons(node.prop);
+    }
+
+
+    public Node getNode(Node root, byte[][] names, byte[] parser, boolean createIfNotExist) {
+        node = root;
+
+        for (int i = 0; i < names.length; i++) {
+            byte[] name = names[i];
+
+            boolean find = false;
+            if (node.local != null) {
+                for (Node local : getLocals()) {
+                    if (Arrays.equals(name, local.title.bytes)) {
+                        node = local;
+                        find = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!find) {
+                if (createIfNotExist) {
+                    Node prev = node;
+                    Node newNode = create().setTitle(name).commit();
+                    if (i == names.length - 1)
+                        setParser(parser);
+                    set(prev).addLocal(newNode).commit();
+                    node = newNode;
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return node;
+    }
+
+    // TODO create getNode with creator first
+    public Node getNode(Node root, String path, boolean createIfNotExist) {
+
+        // TODO add escape characters /
+
+        if (path != null && !path.equals("")) {
+            List<String> list = Arrays.asList(path.split("/"));
+            list.removeAll(Arrays.asList("", null));
+
+            byte[][] names = new byte[list.size()][];
+
+            byte[] parser = null;
+            String lastName = list.get(list.size() - 1);
+            if (lastName.contains(".")) {
+                int dotPos = lastName.indexOf('.');
+                parser = lastName.substring(dotPos + 1).getBytes();
+            }
+
+            for (int i = 0; i < list.size(); i++) {
+                String item = list.get(i);
+                int dotIndex = item.indexOf('.');
+                names[i] = (dotIndex != -1) ? item.substring(0, dotIndex).getBytes() : item.getBytes();
+            }
+
+            return getNode(root, names, parser, createIfNotExist);
+        }
+        return root;
+    }
+
+    public Node getNode(Node root, byte[] name) {
+        return getNode(root, new byte[][]{name}, null, true);
+    }
+
+    public Node getNode(Node root, String path) {
+        return getNode(root, path, true);
+    }
+
+    public Node getNode(String path) {
+        return getNode(node, path, true);
+    }
+
+    public Node getNodeIfExist(Node root, String path) {
+        return getNode(root, path, false);
+    }
+
+    public Node getNodeIfExist(Node root, byte[] name) {
+        return getNode(root, new byte[][]{name}, null, false);
+    }
+
+    public Node getNodeIfExist(String path) {
+        return getNode(getMaster(), path, false);
+    }
+
+    public Node getNodeFromRoot(String path, boolean createIfNotExist) {
+        return getNode(getRoot(), path, createIfNotExist);
+    }
+
+    public Node getNodeFromRoot(String path) {
+        return getNode(getRoot(), path, true);
+    }
+
+    public Node getNodeFromRootIfExist(String path) {
+        return getNode(getRoot(), path, false);
+    }
+
+    public NodeBuilder setPrototype(Node item) {
+        node.prototype = item;
+        return this;
+    }
 }

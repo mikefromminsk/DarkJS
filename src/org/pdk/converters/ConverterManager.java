@@ -1,7 +1,7 @@
-package org.pdk.files.converters;
+package org.pdk.converters;
 
-import org.pdk.files.converters.js.JsBuilder;
-import org.pdk.files.converters.js.JsParser;
+import org.pdk.converters.js.JsBuilder;
+import org.pdk.converters.js.JsParser;
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.Storage;
 import java.util.HashMap;

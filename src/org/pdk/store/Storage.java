@@ -1,12 +1,9 @@
 package org.pdk.store;
 
-import org.pdk.files.converters.ConverterManager;
-import org.pdk.modules.ModuleManager;
+import org.pdk.converters.ConverterManager;
 import org.pdk.store.model.node.Node;
-import org.simpledb.InfinityFile;
 import org.simpledb.InfinityStringArray;
 import org.simpledb.MetaCell;
-import org.simpledb.map.InfinityHashMap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ public class Storage {
         nodeStorage = new InfinityStringArray(storeDir, "node");
         if (nodeStorage.fileData.sumFilesSize == 0)
             new NodeBuilder(this).create().commit();
-        ModuleManager.initInterfaces(new NodeBuilder(this));
     }
 
     void deleteDirectory(File directoryToBeDeleted) {

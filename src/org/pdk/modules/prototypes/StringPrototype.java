@@ -1,9 +1,15 @@
 package org.pdk.modules.prototypes;
 
 import org.pdk.modules.Module;
+import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.data.StringData;
+import org.pdk.store.model.node.Node;
 
 public class StringPrototype extends Module {
+
+    public StringPrototype(NodeBuilder builder) {
+        super(builder);
+    }
 
     @Override
     public String path() {

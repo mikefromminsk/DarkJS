@@ -1,9 +1,8 @@
-package org.pdk.files.converters.js;
+package org.pdk.converters.js;
 
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
-import org.pdk.files.Files;
-import org.pdk.files.converters.ConverterBuilder;
+import org.pdk.converters.ConverterBuilder;
 import org.pdk.modules.root.MathModule;
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.model.DataOrNode;
@@ -12,10 +11,7 @@ import org.pdk.store.model.data.NumberData;
 import org.pdk.store.model.data.StringData;
 import org.pdk.store.model.node.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.pdk.modules.root.MathModule.*;
 
@@ -57,7 +53,7 @@ public class JsBuilder extends ConverterBuilder {
 
             if (statement instanceof FunctionNode) {
                 FunctionNode function = (FunctionNode) statement;
-                Node func = Files.getNode(builder, module, function.getName());
+                Node func = builder.getNode(module, function.getName());
                 for (IdentNode param : function.getParameters()) {
                     Node paramNode = builder.create().setTitle(param.getName()).commit();
                     builder.set(func).addParam(paramNode).commit();
@@ -104,7 +100,8 @@ public class JsBuilder extends ConverterBuilder {
                             binaryNode.tokenType() == TokenType.ASSIGN_SUB ||
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
-                        Node nativeFunc = Files.getNodeFromRootIfExist(builder, MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                        Node nativeFunc = builder.getNodeFromRootIfExist(
+                                MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create()
                                 .setFunc(nativeFunc.func)
                                 .addParam(left)
@@ -116,7 +113,7 @@ public class JsBuilder extends ConverterBuilder {
                             .setSet(right)
                             .commit();
                 } else {
-                    Node nativeFunc = Files.getNodeFromRootIfExist(builder,
+                    Node nativeFunc = builder.getNodeFromRootIfExist(
                             MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                     if (nativeFunc == null)
                         throw new NullPointerException();
@@ -131,18 +128,18 @@ public class JsBuilder extends ConverterBuilder {
 
             if (statement instanceof IdentNode) {
                 IdentNode identNode = (IdentNode) statement;
-                String name = identNode.getName();
+                byte[] name = identNode.getName().getBytes();
 
                 Node ident = null;
                 for (int i = localStack.size() - 1; i >= 0; i--) {
                     Node node = localStack.get(i);
-                    Node findNode = Files.getNodeIfExist(builder, node, name);
+                    Node findNode = builder.getNodeIfExist(node, name);
                     if (findNode == null) {
                         if (node.param != null)
                             for (DataOrNode param : builder.set(node).getParams())
                                 if (param instanceof Node) {
                                     Node paramNode = (Node) param;
-                                    if (name.equals(builder.set(paramNode).getTitle()))
+                                    if (Arrays.equals(name, paramNode.title.bytes))
                                         findNode = paramNode;
                                 }
                     }
@@ -170,7 +167,7 @@ public class JsBuilder extends ConverterBuilder {
                 TokenType tokenType = unaryNode.tokenType();
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = (Node) jsLine(module, unaryNode.getExpression());
-                    Node nativeNode = Files.getNodeFromRootIfExist(builder,
+                    Node nativeNode = builder.getNodeFromRootIfExist(
                             MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(tokenType));
                     Node func = builder.create()
                             .setFunc(nativeNode.func)
@@ -182,7 +179,7 @@ public class JsBuilder extends ConverterBuilder {
                             .setSet(func)
                             .commit();
                 } else if (tokenType.toString().equals("-")) {
-                    Node nativeNode = Files.getNodeFromRootIfExist(builder,
+                    Node nativeNode = builder.getNodeFromRootIfExist(
                             MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
                     DataOrNode expression = jsLine(module, unaryNode.getExpression());
                     return builder.create()
@@ -245,6 +242,44 @@ public class JsBuilder extends ConverterBuilder {
                     else if (literalNode.isString())
                         data = new StringData(literalNode.getString().getBytes());
                     return data;
+                }
+            }
+
+            if (statement instanceof AccessNode) {
+                AccessNode index = (AccessNode) statement;
+                Node base;
+                if (index.getBase() instanceof IdentNode) {
+                    if ("this".equals(((IdentNode) index.getBase()).getName()))
+                        base = builder.create().commit();
+                    else {
+                        base = (Node) jsLine(module, index.getBase());
+                        base = builder.create().setSource(base).commit();
+                    }
+                } else {
+                    base = (Node) jsLine(module, index.getBase());
+                }
+                StringData propertyNode = new StringData(index.getProperty().getBytes());
+                builder.set(base).addProperty(propertyNode).commit();
+                return base;
+            }
+
+            if (statement instanceof PropertyNode) {
+                PropertyNode propertyNode = (PropertyNode) statement;
+                String key = "";
+                if (propertyNode.getKey() instanceof LiteralNode) {
+                    LiteralNode literalNode = (LiteralNode) propertyNode.getKey();
+                    key = literalNode.getString();
+                }
+                if (propertyNode.getKey() instanceof IdentNode) {
+                    IdentNode identNode = (IdentNode) propertyNode.getKey();
+                    key = identNode.getName();
+                }
+                if (propertyNode.getValue() instanceof FunctionNode) {
+                    return jsLine(module, propertyNode.getValue());
+                } else {
+                    Node value = (Node) jsLine(module, propertyNode.getValue());
+                    builder.set(value).setTitle(key).commit();
+                    return builder.set(module).addLocal(value).commit();
                 }
             }
 

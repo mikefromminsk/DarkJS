@@ -1,7 +1,8 @@
 
 import org.junit.jupiter.api.Test;
 import org.pdk.engine.Runner;
-import org.pdk.files.converters.Converter;
+import org.pdk.converters.Converter;
+import org.pdk.modules.ModuleManager;
 import org.pdk.store.NodeBuilder;
 import org.pdk.store.NodeSerializer;
 import org.pdk.store.Storage;
@@ -11,7 +12,6 @@ import org.pdk.store.model.node.Node;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,9 +23,9 @@ public class RunnerTest {
         File[] list = new File("test_res/run").listFiles();
         if (list == null) return;
         Storage storage = new Storage("out/run", true);
-        Runner runner = new Runner(new NodeBuilder(storage));
-        Converter converter = storage.converterManager.fileConverters.get("js");
         NodeBuilder builder = new NodeBuilder(storage);
+        Runner runner = new Runner(builder, new ModuleManager(builder));
+        Converter converter = storage.converterManager.fileConverters.get("js");
         for (File f : list) {
             if (f.isFile()) {
                 Node module = new Node(storage);
