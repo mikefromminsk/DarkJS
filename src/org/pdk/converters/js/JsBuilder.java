@@ -283,6 +283,22 @@ public class JsBuilder extends ConverterBuilder {
                 }
             }
 
+            /*if (statement instanceof ObjectNode) {
+                ObjectNode objectNode = (ObjectNode) statement;
+                Node obj = builder.create().commit();
+                Map<Node, Block> subBlocks = new LinkedHashMap<>();
+                for (PropertyNode property : objectNode.getElements()) {
+                    Node propNode = jsLine(obj, property);
+                    if (property.getValue() instanceof FunctionNode)
+                        subBlocks.put(propNode, ((FunctionNode) property.getValue()).getBody());
+                }
+                for (Node propNode : subBlocks.keySet()) {
+                    Block subBlock = subBlocks.get(propNode);
+                    jsLine(propNode, subBlock);
+                }
+                return obj;
+            }*/
+
             return null;
         } finally {
             localStack.remove(module);
