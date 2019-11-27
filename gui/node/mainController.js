@@ -60,23 +60,19 @@ function extend(dest, src) {
                 dest[key] = src[key];
 }
 
-function dir() {
-    let path = window.location.pathname
-    let indexName = "/index.html"
-    if (path.endsWith(indexName))
-        path = path.substr(0, path.length - indexName.length)
-    if (path == "")
-        path = "/"
-    return path
-}
 
+let pathToRootDir = window.location.pathname
+if (pathToRootDir.endsWith("index.html"))
+    pathToRootDir = pathToRootDir.substr(0, pathToRootDir.length - "index.html".length)
+/*if (!pathToRootDir.endsWith("/"))
+    pathToRootDir = "/"*/
 
-function page(page_name, params) {
+function page(appName, params) {
     params = params || {};
     extend(params, {
-        templateUrl: dir() + page_name + "/index.html",
-        controller: page_name,
-        resolve: loader([dir() + page_name + "/controller.js"])
+        templateUrl: pathToRootDir + appName + "/index.html",
+        controller: appName,
+        resolve: loader([pathToRootDir + appName + "/controller.js"])
     });
     return params;
 }
@@ -91,21 +87,14 @@ function controller(controllerId, callback) {
     angularApplication.register(controllerId, callback);
 }
 
-// !!! important !!!
-function setbasehref(basehref) {
-    document.getElementsByTagName("base")[0].href = basehref;
-}
-
 angularApplication.controller('mainController', function ($rootScope, $scope, $mdSidenav, $mdDialog, $location) {
 
-    $scope.open = function (app) {
-        if (app[0] != "/")
-            app = "/" + app;
-        angularApplication.routeProvider.when(app, page(app.substr(1)))
-        setbasehref(dir() + app + "/")
-        document.title = app.substr(1)
-        // TODO timeout for ripple animation
-        $location.path(app)
+    $scope.open = function (appName) {
+        angularApplication.routeProvider.when("/" + appName, page(appName))
+        // set global path for all urls
+        document.getElementsByTagName("base")[0].href = (pathToRootDir + appName + "/")
+        document.title = appName
+        $location.path(appName)
     };
-    $scope.open($location.path() || "launcher");
+    $scope.open($location.path().substr(1) || "launcher");
 });
