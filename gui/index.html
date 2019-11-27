@@ -94,7 +94,7 @@
     </script>
 </head>
 
-<body ng-controller="mainController">
+<body ng-controller="autoloaderController">
 
 <div id="splashArea">
     <div id="splashLogo"></div>
@@ -112,13 +112,12 @@
 <script src="angular/js/angular-route.min.js"></script>
 <link rel="stylesheet" href="angular/css/angular-material.min.css">
 
-<!--use only for autoload scripts-->
-<script src="jquery/jquery-3.4.1.slim.min.js"></script>
+<link rel="stylesheet" href="basic/style.css">
 
+<script src="jquery/jquery-3.4.1.slim.min.js"></script><!--important-->
+<script src="basic/autoloaderController.js"></script><!--important-->
 
-<link rel="stylesheet" href="node/style.css">
-<script src="node/dark.js"></script>
-<script src="node/mainController.js"></script>
+<script src="basic/dark.js"></script>
 
 </body>
 </html>

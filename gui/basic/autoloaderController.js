@@ -87,7 +87,7 @@ function controller(controllerId, callback) {
     angularApplication.register(controllerId, callback);
 }
 
-angularApplication.controller('mainController', function ($rootScope, $scope, $mdSidenav, $mdDialog, $location) {
+angularApplication.controller('autoloaderController', function ($rootScope, $scope, $mdSidenav, $mdDialog, $location) {
 
     $scope.open = function (appName) {
         angularApplication.routeProvider.when("/" + appName, page(appName))
