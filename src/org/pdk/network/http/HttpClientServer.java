@@ -50,8 +50,9 @@ public class HttpClientServer extends NanoHTTPD {
         start(0);
         if (Instance.get().proxyHost != null)
             try {
+                System.out.println("Test proxy("+ Instance.get().proxyHost + ":" + (Instance.get().proxyPortAdding + defaultPort) +") availability ...");
                 request(Instance.get().proxyHost, Instance.get().proxyPortAdding + defaultPort, "/", "", new HashMap<>()).getInputStream().close();
-            } catch (Exception ignored) {
+            } catch (Exception important) {
             }
     }
 

@@ -42,7 +42,7 @@ public class WsClientServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        System.out.println("start ws on " + getPort() + " port");
+        System.out.println("WebSocket started on " + getPort() + " port");
     }
 
 }

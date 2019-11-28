@@ -242,7 +242,7 @@ public class Instance implements Runnable {
             //testRootIndex();
 
             Instance.get().startHttpServerOnFreePort();
-            System.out.println("start instance " + storeDir + " http port " + (HttpClientServer.defaultPort + portAdding));
+            System.out.println("Instance " + storeDir + " started on " + (HttpClientServer.defaultPort + portAdding) + " port");
             Instance.get().startFtpServer();
             Instance.get().startWsClientServer();
 
@@ -292,7 +292,7 @@ public class Instance implements Runnable {
                     } finally {
                         notify(onStop);
                     }
-                    System.out.println("stop instance " + storeDir);
+                    System.out.println("Instance " + storeDir + " stopped");
                 }
             }
     }

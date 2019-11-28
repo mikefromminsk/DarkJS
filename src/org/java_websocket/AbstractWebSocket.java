@@ -159,7 +159,7 @@ public abstract class AbstractWebSocket extends WebSocketAdapter {
                 log.trace("Connection lost timer deactivated");
                 return;
             }
-            log.trace("Connection lost timer started");
+            //log.trace("Connection lost timer started");
             this.websocketRunning = true;
             restartConnectionLostTimer();
         }

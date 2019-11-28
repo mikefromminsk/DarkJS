@@ -17,13 +17,13 @@ public class Main {
         Instance store = new Instance("out/MainTest/store", true)
                 .setProxy("localhost", proxy.proxyPortAdding, "store.node")
                 .setAccessCode(login, pass)
-                .load("C:/wamp/www/droid")
+                .load("gui")
                 .start();
 
         Instance localnode = new Instance("out/MainTest/client", true)
                 .setProxy("localhost", proxy.proxyPortAdding, "client.node")
                 .setAccessCode(login, pass)
-                .load("C:/wamp/www/droid")
+                .load("gui")
                 .loadExcept("/summator")
                 .start();
 
