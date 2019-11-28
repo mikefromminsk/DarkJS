@@ -1,5 +1,6 @@
 package org.pdk.storage;
 
+import org.pdk.funcitons.FunctionManager;
 import org.pdk.storage.model.data.*;
 import org.pdk.storage.model.data.FileData;
 import org.pdk.storage.model.data.StringData;
@@ -31,8 +32,8 @@ public class NodeSerializer extends InputStream {
     }
 
     private void appendDon(Object obj, int deepLevel) {
-        if (obj instanceof Integer){
-            resultStringBuilder.append((Integer)obj);
+        if (obj instanceof Integer) {
+            resultStringBuilder.append((Integer) obj);
         } else if (obj instanceof Data) {
             Data data = (Data) obj;
             if (data instanceof BooleanData) {
@@ -55,6 +56,10 @@ public class NodeSerializer extends InputStream {
     public void appendNode(Node node, Integer deepLevel) {
         if (passedNodeIds.contains(node.nodeId)) return;
         resultStringBuilder.append("\"n").append(node.nodeId).append("\" :{\n");
+
+        if (node.function != null)
+            resultStringBuilder.append("\t\"native\": \"").append(node.function.path()).append("\",\n");
+
         node.listLinks((linkType, link, singleValue) -> {
             if (linkType == LinkType.LOCAL_PARENT) return;
 

@@ -1,6 +1,6 @@
 package org.pdk.storage;
 
-import org.pdk.modules.Func;
+import org.pdk.funcitons.Function;
 import org.pdk.storage.model.DataOrNode;
 import org.pdk.storage.model.data.Data;
 import org.pdk.storage.model.data.NumberData;
@@ -214,8 +214,8 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setFunc(Func item) {
-        node.func = item;
+    public NodeBuilder setFunc(Function function) {
+        node.function = function;
         return this;
     }
 

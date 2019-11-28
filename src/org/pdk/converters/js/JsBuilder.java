@@ -3,7 +3,7 @@ package org.pdk.converters.js;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 import org.pdk.converters.ConverterBuilder;
-import org.pdk.modules.root.MathModule;
+import org.pdk.funcitons.modules.Math;
 import org.pdk.storage.NodeBuilder;
 import org.pdk.storage.model.DataOrNode;
 import org.pdk.storage.model.data.Data;
@@ -13,7 +13,7 @@ import org.pdk.storage.model.node.Node;
 
 import java.util.*;
 
-import static org.pdk.modules.root.MathModule.*;
+import static org.pdk.funcitons.modules.Math.*;
 
 public class JsBuilder extends ConverterBuilder {
 
@@ -64,15 +64,17 @@ public class JsBuilder extends ConverterBuilder {
 
             if (statement instanceof Block) {
                 Block block = (Block) statement;
-                //module.next = null;
-
                 Map<Node, Block> subBlocks = new LinkedHashMap<>();
                 for (jdk.nashorn.internal.ir.Node line : block.getStatements()) {
-                    Node lineNode = (Node) jsLine(module, line);
-                    if (line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode) // not a function. its a problem with nashorn parser.
+                    // TODO fix JsParser: issue with functions because functions in nashhorn parser be in the end of the block
+                    if (line instanceof VarNode && ((VarNode) line).getInit() instanceof FunctionNode) {
+                        Node lineNode = (Node) jsLine(module, ((VarNode) line).getName());
                         subBlocks.put(lineNode, ((FunctionNode) ((VarNode) line).getInit()).getBody());
-                    else
+                    }
+                    else {
+                        Node lineNode = (Node) jsLine(module, line);
                         builder.set(module).addNext(lineNode).commit();
+                    }
                 }
                 for (Node lineNode : subBlocks.keySet()) {
                     Block subBlock = subBlocks.get(lineNode);
@@ -101,9 +103,9 @@ public class JsBuilder extends ConverterBuilder {
                             binaryNode.tokenType() == TokenType.ASSIGN_MUL ||
                             binaryNode.tokenType() == TokenType.ASSIGN_DIV) {
                         Node nativeFunc = builder.getNodeFromRootIfExist(
-                                MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                                Math.MATH_MODULE + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                         right = builder.create()
-                                .setFunc(nativeFunc.func)
+                                .setFunc(nativeFunc.function)
                                 .addParam(left)
                                 .addParam(right)
                                 .commit();
@@ -114,11 +116,11 @@ public class JsBuilder extends ConverterBuilder {
                             .commit();
                 } else {
                     Node nativeFunc = builder.getNodeFromRootIfExist(
-                            MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
+                            Math.MATH_MODULE + "/" + convertTokenTypeToFuncName(binaryNode.tokenType()));
                     if (nativeFunc == null)
                         throw new NullPointerException();
                     return builder.create()
-                            .setFunc(nativeFunc.func)
+                            .setFunc(nativeFunc.function)
                             .addParam(left)
                             .addParam(right)
                             .commit();
@@ -168,9 +170,9 @@ public class JsBuilder extends ConverterBuilder {
                 if (tokenType == TokenType.INCPOSTFIX || tokenType == TokenType.DECPOSTFIX) {
                     Node variable = (Node) jsLine(module, unaryNode.getExpression());
                     Node nativeNode = builder.getNodeFromRootIfExist(
-                            MathModule.MATH_UTIL_NAME + "/" + convertTokenTypeToFuncName(tokenType));
+                            Math.MATH_MODULE + "/" + convertTokenTypeToFuncName(tokenType));
                     Node func = builder.create()
-                            .setFunc(nativeNode.func)
+                            .setFunc(nativeNode.function)
                             .addParam(variable)
                             .commit();
                     return builder.create()
@@ -180,10 +182,10 @@ public class JsBuilder extends ConverterBuilder {
                             .commit();
                 } else if (tokenType.toString().equals("-")) {
                     Node nativeNode = builder.getNodeFromRootIfExist(
-                            MathModule.MATH_UTIL_NAME + "/" + MathModule.UNARY_MINUS);
+                            Math.MATH_MODULE + "/" + Math.UNARY_MINUS);
                     DataOrNode expression = jsLine(module, unaryNode.getExpression());
                     return builder.create()
-                            .setFunc(nativeNode.func)
+                            .setFunc(nativeNode.function)
                             .addParam(expression)
                             .commit();
                 } else {

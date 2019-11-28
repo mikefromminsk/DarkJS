@@ -2,7 +2,7 @@
 import org.junit.jupiter.api.Test;
 import org.pdk.engine.Runner;
 import org.pdk.converters.Converter;
-import org.pdk.modules.ModuleManager;
+import org.pdk.funcitons.FunctionManager;
 import org.pdk.storage.NodeBuilder;
 import org.pdk.storage.NodeSerializer;
 import org.pdk.storage.Storage;
@@ -24,7 +24,7 @@ public class RunnerTest {
         if (list == null) return;
         Storage storage = new Storage("out/run", true);
         NodeBuilder builder = new NodeBuilder(storage);
-        Runner runner = new Runner(builder, new ModuleManager(builder));
+        Runner runner = new Runner(builder, new FunctionManager(builder));
         Converter converter = storage.converterManager.fileConverters.get("js");
         for (File f : list) {
             if (f.isFile()) {

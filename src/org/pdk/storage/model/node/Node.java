@@ -1,6 +1,7 @@
 package org.pdk.storage.model.node;
 
-import org.pdk.modules.Func;
+import org.pdk.funcitons.Function;
+import org.pdk.funcitons.FunctionManager;
 import org.pdk.storage.Storage;
 import org.pdk.storage.model.DataOrNode;
 import org.pdk.storage.model.data.BooleanData;
@@ -21,7 +22,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
 
     public boolean isSaved;
     public Long nodeId;
-    public Func func;
+    public Function function;
     public Thread thread;
     public Object value;
     public Object source;
@@ -52,7 +53,18 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
     @Override
     public byte[] build() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
+        if (function != null) {
+            try {
+                ByteBuffer bb = ByteBuffer.allocate(6);
+                bb.put((byte) LinkType.NATIVE_FUNCTION.ordinal());
+                bb.put((byte) LinkDataType.NATIVE_FUNCTION_PATH.ordinal());
+                String functionPath = function.path();
+                bb.putInt(functionPath.length());
+                baos.write(functionPath.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         listLinks((linkType, link, singleValue) -> {
             try {
                 if (link instanceof Long) {
@@ -140,9 +152,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
         if (prop != null)
             linkListener.get(LinkType.PROP, prop, false);
         if (cell != null)
-            linkListener.get(LinkType.CELL, cell, false);/*
-        if (func != null)
-            linkListener.get(LinkType.NATIVE_FUNCTION, ModuleManager.functions.indexOf(func), true);*/
+            linkListener.get(LinkType.CELL, cell, false);
     }
 
     @Override
@@ -165,20 +175,20 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 case NUMBER:
                     linkData = new NumberData(bb.getDouble());
                     break;
+                case NATIVE_FUNCTION_PATH:
                 case STRING:
-                    int length = bb.getInt();
-                    byte[] bytes = new byte[length];
-                    bb.get(bytes);
-                    linkData = new StringData(bytes);
+                    byte[] stringData = new byte[bb.getInt()/*length*/];
+                    bb.get(stringData);
+                    linkData = new StringData(stringData);
                     break;
                 case FILE:
                     linkData = new FileData(storage, bb.getInt());
                     break;
             }
-            switch (linkType) {/*
+            switch (linkType) {
                 case NATIVE_FUNCTION:
-                    func = ModuleManager.functions.get((Integer) linkData);
-                    break;*/
+                    function = FunctionManager.functions.get(new String(((StringData)linkData).bytes));
+                    break;
                 case VALUE:
                     value = linkData;
                     break;

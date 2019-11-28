@@ -1,7 +1,7 @@
 package org.pdk.engine;
 
 
-import org.pdk.modules.ModuleManager;
+import org.pdk.funcitons.FunctionManager;
 import org.pdk.storage.NodeBuilder;
 import org.pdk.storage.model.DataOrNode;
 import org.pdk.storage.model.data.BooleanData;
@@ -15,18 +15,14 @@ import java.util.Arrays;
 public class Runner {
 
     private NodeBuilder builder;
-    private ModuleManager moduleManager;
+    private FunctionManager functionManager;
 
-    public Runner(NodeBuilder builder, ModuleManager moduleManager) {
+    public Runner(NodeBuilder builder, FunctionManager functionManager) {
         this.builder = builder;
-        this.moduleManager = moduleManager;
+        this.functionManager = functionManager;
     }
 
-
     private Node getNodePrototype(DataOrNode nodeValue) {
-        if (nodeValue instanceof StringData) {
-            return moduleManager.stringPrototype.node;
-        }
         return null;
     }
 
@@ -119,13 +115,13 @@ public class Runner {
 
     public void run(Node node, Node calledNodeId) {
 
-        if (node.func != null) {
+        if (node.function != null) {
             // TODO duplicate params
             if (node.param != null)
                 for (DataOrNode param : builder.set(node).getParams())
                     if (param instanceof Node)
                         run((Node) param, calledNodeId);
-            DataOrNode result = node.func.invoke(builder.set(node), calledNodeId);
+            DataOrNode result = node.function.invoke(builder.set(node), calledNodeId);
             builder.set(node).setValue(result).commit();
         } else {
 
@@ -156,7 +152,7 @@ public class Runner {
                         builder.set(source).setValue(set).commit();
                     }
                 } else {
-                    if (calledObjectFromSource.func != null) {
+                    if (calledObjectFromSource.function != null) {
                         run(source, calledObjectFromSource);
                     } else {
                         if (node.param != null) {
