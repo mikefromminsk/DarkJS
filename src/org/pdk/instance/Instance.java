@@ -19,7 +19,7 @@ import org.simpledb.DiskManager;
 import org.simpledb.map.Crc16;
 import org.pdk.network.ftp.FtpServer;
 import org.pdk.network.http.HttpClientServer;
-import org.pdk.network.ws.WsClientServer;
+import org.pdk.network.ws.WebSocketServer;
 
 import java.io.*;
 import java.net.BindException;
@@ -69,7 +69,7 @@ public class Instance implements Runnable {
             for (File file : allContents)
                 deleteDirectory(file);
         if (!directoryToBeDeleted.delete())
-            System.out.println("cannot delete file " + directoryToBeDeleted.getAbsolutePath());
+            log("cannot delete file " + directoryToBeDeleted.getAbsolutePath());
         return true;
     }
 
@@ -153,10 +153,11 @@ public class Instance implements Runnable {
     }
 
     private Storage storage;
+
     public Storage getStorage() {
         if (storage == null) {
             storage = new Storage(Instance.get().storeDir, "node");
-            if (storage.isEmpty()){
+            if (storage.isEmpty()) {
                 storage.add(new ThreadNode());
                 getFunctions();
             }
@@ -165,6 +166,7 @@ public class Instance implements Runnable {
     }
 
     private Threads threads;
+
     public Threads getThreads() {
         if (threads == null)
             threads = new Threads();
@@ -172,6 +174,7 @@ public class Instance implements Runnable {
     }
 
     private Node master = null;
+
     public Node getMaster() {
         if (master == null)
             master = Files.getNodeFromRoot("master");
@@ -179,14 +182,15 @@ public class Instance implements Runnable {
     }
 
     // TODO change to change instance
-    public void removeMaster(){
+    public void removeMaster() {
         master = null;
     }
 
     private HttpClientServer httpClientServer;
+
     public HttpClientServer startHttpServerOnFreePort() throws BindException {
-        if (httpClientServer == null){
-            while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF){
+        if (httpClientServer == null) {
+            while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF) {
                 try {
                     httpClientServer = new HttpClientServer(HttpClientServer.defaultPort + portAdding);
                     return httpClientServer;
@@ -200,17 +204,19 @@ public class Instance implements Runnable {
     }
 
     private FtpServer ftpServer;
+
     public FtpServer startFtpServer() {
         if (ftpServer == null)
             ftpServer = new FtpServer(FtpServer.defaultPort + portAdding);
         return ftpServer;
     }
 
-    private WsClientServer wsClientServer;
-    public WsClientServer startWsClientServer() {
-        if (wsClientServer == null)
-            wsClientServer = new WsClientServer(WsClientServer.defaultPort + portAdding);
-        return wsClientServer;
+    private WebSocketServer webSocketServer;
+
+    public WebSocketServer startWsClientServer() {
+        if (webSocketServer == null)
+            webSocketServer = new WebSocketServer(WebSocketServer.defaultPort + portAdding);
+        return webSocketServer;
     }
 
     public void closeAllPorts() throws IOException, InterruptedException {
@@ -218,8 +224,8 @@ public class Instance implements Runnable {
             httpClientServer.stop();
         if (ftpServer != null)
             ftpServer.stop();
-        if (wsClientServer != null)
-            wsClientServer.stop();
+        if (webSocketServer != null)
+            webSocketServer.stop();
     }
 
     @Override
@@ -242,7 +248,7 @@ public class Instance implements Runnable {
             //testRootIndex();
 
             Instance.get().startHttpServerOnFreePort();
-            System.out.println("Instance " + storeDir + " started on " + (HttpClientServer.defaultPort + portAdding) + " port");
+            Instance.get().log("HTTP started on " + (HttpClientServer.defaultPort + portAdding) + " port");
             Instance.get().startFtpServer();
             Instance.get().startWsClientServer();
 
@@ -292,7 +298,7 @@ public class Instance implements Runnable {
                     } finally {
                         notify(onStop);
                     }
-                    System.out.println("Instance " + storeDir + " stopped");
+                    Instance.get().log("Stopped");
                 }
             }
     }
@@ -410,5 +416,10 @@ public class Instance implements Runnable {
             exception = '/' + exception;
         loadExceptList.add(exception);
         return this;
+    }
+
+    public void log(String line) {
+        String lastDir = storeDir.substring(storeDir.lastIndexOf('/') + 1);
+        System.out.println(lastDir + ": " + line);
     }
 }

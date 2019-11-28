@@ -18,13 +18,15 @@ public class Main {
                 .setProxy("localhost", proxy.proxyPortAdding, "store.node")
                 .setAccessCode(login, pass)
                 .load("gui")
+                .loadExcept(".idea")
                 .start();
 
         Instance localnode = new Instance("out/MainTest/client", true)
                 .setProxy("localhost", proxy.proxyPortAdding, "client.node")
                 .setAccessCode(login, pass)
                 .load("gui")
-                .loadExcept("/summator")
+                .loadExcept(".idea")
+                .loadExcept("summator")
                 .start();
 
         localnode.startHttpServerOnFreePort().join();

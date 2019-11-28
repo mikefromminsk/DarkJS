@@ -35,22 +35,12 @@ public class HttpClientServer extends NanoHTTPD {
     public static String BASIC_AUTH_PREFIX = "Basic ";
     public static Map<String, Host> nodeNames = new HashMap<>();
 
-    class Host {
-        String ip;
-        int port;
-
-        public Host(String ip, int port) {
-            this.ip = ip;
-            this.port = port;
-        }
-    }
-
     public HttpClientServer(Integer port) throws IOException {
         super(port == null ? defaultPort : port);
         start(0);
         if (Instance.get().proxyHost != null)
             try {
-                System.out.println("Test proxy("+ Instance.get().proxyHost + ":" + (Instance.get().proxyPortAdding + defaultPort) +") availability ...");
+                Instance.get().log("Test proxy("+ Instance.get().proxyHost + ":" + (Instance.get().proxyPortAdding + defaultPort) +") availability ...");
                 request(Instance.get().proxyHost, Instance.get().proxyPortAdding + defaultPort, "/", "", new HashMap<>()).getInputStream().close();
             } catch (Exception important) {
             }
@@ -154,12 +144,12 @@ public class HttpClientServer extends NanoHTTPD {
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         }
 
+        Instance.get().log(session.getUri() + " (" + (new Date().getTime() - startRequestTime) + ")");
+
         Instance.disconnectThread();
 
         if (response == null)
             response = NanoHTTPD.newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "response is empty");
-
-        System.out.println(session.getUri() + " (" + (new Date().getTime() - startRequestTime) + ")");
 
         return response;
     }
@@ -296,7 +286,7 @@ public class HttpClientServer extends NanoHTTPD {
 
     public HttpURLConnection request(@NotNull String host, @NotNull int port, @NotNull String path, @NotNull String data, @NotNull Map<String, String> headers) throws IOException {
         URL url = new URL("http", host, port, path);
-        System.out.println("GET " + url.toString());
+        Instance.get().log("GET " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

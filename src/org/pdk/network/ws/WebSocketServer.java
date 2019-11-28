@@ -4,17 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 
-public class WsClientServer extends WebSocketServer {
+public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 
     public static int defaultPort = 9500;
 
     private static Gson json = new GsonBuilder().setPrettyPrinting().create();
 
-    public WsClientServer(Integer port) {
+    public WebSocketServer(Integer port) {
         super(new InetSocketAddress(port == null ? defaultPort : port));
         start();
     }
@@ -42,7 +41,7 @@ public class WsClientServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        System.out.println("WebSocket started on " + getPort() + " port");
+        // System.out.println("WebSocket started on " + getPort() + " port");
     }
 
 }
