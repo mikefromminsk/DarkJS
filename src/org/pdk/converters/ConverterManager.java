@@ -2,8 +2,8 @@ package org.pdk.converters;
 
 import org.pdk.converters.js.JsBuilder;
 import org.pdk.converters.js.JsParser;
-import org.pdk.store.NodeBuilder;
-import org.pdk.store.Storage;
+import org.pdk.storage.NodeBuilder;
+import org.pdk.storage.Storage;
 import java.util.HashMap;
 
 public class ConverterManager {

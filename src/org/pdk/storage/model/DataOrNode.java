@@ -1,4 +1,4 @@
-package org.pdk.store.model;
+package org.pdk.storage.model;
 
 public interface DataOrNode {
 }

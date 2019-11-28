@@ -1,7 +1,7 @@
-package org.pdk.store;
+package org.pdk.storage;
 
 import org.pdk.converters.ConverterManager;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.model.node.Node;
 import org.simpledb.InfinityStringArray;
 import org.simpledb.MetaCell;
 

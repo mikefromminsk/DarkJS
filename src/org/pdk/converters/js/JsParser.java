@@ -7,7 +7,7 @@ import jdk.nashorn.internal.runtime.ParserException;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
 import org.pdk.converters.ConverterParser;
-import org.pdk.store.model.data.FileData;
+import org.pdk.storage.model.data.FileData;
 
 import java.io.FileReader;
 import java.io.IOException;

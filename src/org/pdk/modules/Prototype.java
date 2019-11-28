@@ -1,6 +1,6 @@
 package org.pdk.modules;
 
-import org.pdk.store.NodeBuilder;
+import org.pdk.storage.NodeBuilder;
 
 public abstract class Prototype extends Module {
 

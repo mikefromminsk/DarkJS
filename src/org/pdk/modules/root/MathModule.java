@@ -1,11 +1,11 @@
 package org.pdk.modules.root;
 
 import org.pdk.modules.Module;
-import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.data.BooleanData;
-import org.pdk.store.model.data.Data;
-import org.pdk.store.model.data.NumberData;
-import org.pdk.store.model.data.StringData;
+import org.pdk.storage.NodeBuilder;
+import org.pdk.storage.model.data.BooleanData;
+import org.pdk.storage.model.data.Data;
+import org.pdk.storage.model.data.NumberData;
+import org.pdk.storage.model.data.StringData;
 import org.simpledb.Bytes;
 
 public class MathModule extends Module {

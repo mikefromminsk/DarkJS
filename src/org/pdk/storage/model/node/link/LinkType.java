@@ -1,4 +1,4 @@
-package org.pdk.store.model.node.link;
+package org.pdk.storage.model.node.link;
 
 public enum LinkType {
     VALUE,

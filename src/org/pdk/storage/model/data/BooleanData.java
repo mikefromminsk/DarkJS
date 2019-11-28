@@ -1,4 +1,4 @@
-package org.pdk.store.model.data;
+package org.pdk.storage.model.data;
 
 public class BooleanData implements Data {
     public boolean value;

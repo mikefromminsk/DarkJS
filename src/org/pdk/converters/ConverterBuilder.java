@@ -1,7 +1,7 @@
 package org.pdk.converters;
 
-import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.NodeBuilder;
+import org.pdk.storage.model.node.Node;
 
 public abstract class ConverterBuilder {
     public NodeBuilder builder;

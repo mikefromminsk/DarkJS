@@ -1,10 +1,10 @@
-package org.pdk.store;
+package org.pdk.storage;
 
-import org.pdk.store.model.data.*;
-import org.pdk.store.model.data.FileData;
-import org.pdk.store.model.data.StringData;
-import org.pdk.store.model.node.link.LinkType;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.model.data.*;
+import org.pdk.storage.model.data.FileData;
+import org.pdk.storage.model.data.StringData;
+import org.pdk.storage.model.node.link.LinkType;
+import org.pdk.storage.model.node.Node;
 import org.simpledb.Bytes;
 
 import java.io.InputStream;

@@ -4,12 +4,12 @@ import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.TokenType;
 import org.pdk.converters.ConverterBuilder;
 import org.pdk.modules.root.MathModule;
-import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.DataOrNode;
-import org.pdk.store.model.data.Data;
-import org.pdk.store.model.data.NumberData;
-import org.pdk.store.model.data.StringData;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.NodeBuilder;
+import org.pdk.storage.model.DataOrNode;
+import org.pdk.storage.model.data.Data;
+import org.pdk.storage.model.data.NumberData;
+import org.pdk.storage.model.data.StringData;
+import org.pdk.storage.model.node.Node;
 
 import java.util.*;
 

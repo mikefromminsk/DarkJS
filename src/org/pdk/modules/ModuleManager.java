@@ -2,7 +2,7 @@ package org.pdk.modules;
 
 import org.pdk.modules.prototypes.StringPrototype;
 import org.pdk.modules.root.*;
-import org.pdk.store.NodeBuilder;
+import org.pdk.storage.NodeBuilder;
 
 public class ModuleManager {
 

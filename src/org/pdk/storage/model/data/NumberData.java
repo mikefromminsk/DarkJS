@@ -1,4 +1,4 @@
-package org.pdk.store.model.data;
+package org.pdk.storage.model.data;
 
 public class NumberData implements Data {
     public double number;

@@ -1,11 +1,11 @@
-package org.pdk.store;
+package org.pdk.storage;
 
 import org.pdk.modules.Func;
-import org.pdk.store.model.DataOrNode;
-import org.pdk.store.model.data.Data;
-import org.pdk.store.model.data.NumberData;
-import org.pdk.store.model.data.StringData;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.model.DataOrNode;
+import org.pdk.storage.model.data.Data;
+import org.pdk.storage.model.data.NumberData;
+import org.pdk.storage.model.data.StringData;
+import org.pdk.storage.model.node.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;

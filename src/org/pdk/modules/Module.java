@@ -1,7 +1,7 @@
 package org.pdk.modules;
 
-import org.pdk.store.NodeBuilder;
-import org.pdk.store.model.node.Node;
+import org.pdk.storage.NodeBuilder;
+import org.pdk.storage.model.node.Node;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

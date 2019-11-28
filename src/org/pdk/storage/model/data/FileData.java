@@ -1,7 +1,7 @@
-package org.pdk.store.model.data;
+package org.pdk.storage.model.data;
 
 
-import org.pdk.store.Storage;
+import org.pdk.storage.Storage;
 
 import java.io.*;
 import java.util.Random;
