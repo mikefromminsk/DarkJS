@@ -1,5 +1,6 @@
 package org.pdk.instance;
 
+import com.sun.deploy.net.proxy.ProxyUnavailableException;
 import org.pdk.modules.root.*;
 import org.pdk.modules.FuncInterface;
 import org.pdk.modules.Module;
@@ -18,7 +19,7 @@ import org.pdk.files.convertors.node.NodeSerializer;
 import org.simpledb.DiskManager;
 import org.simpledb.map.Crc16;
 import org.pdk.network.ftp.FtpServer;
-import org.pdk.network.http.HttpClientServer;
+import org.pdk.network.http.HttpServer;
 import org.pdk.network.ws.WebSocketServer;
 
 import java.io.*;
@@ -186,21 +187,22 @@ public class Instance implements Runnable {
         master = null;
     }
 
-    private HttpClientServer httpClientServer;
+    private HttpServer httpServer;
 
-    public HttpClientServer startHttpServerOnFreePort() throws BindException {
-        if (httpClientServer == null) {
-            while (httpClientServer == null && HttpClientServer.defaultPort + portAdding < 0xFFFF) {
+    public HttpServer getHttpServer() throws BindException, ProxyUnavailableException {
+        if (httpServer == null) {
+            // start on free port
+            while (httpServer == null && HttpServer.defaultPort + portAdding < 0xFFFF) {
                 try {
-                    httpClientServer = new HttpClientServer(HttpClientServer.defaultPort + portAdding);
-                    return httpClientServer;
-                } catch (IOException e) {
+                    httpServer = new HttpServer(HttpServer.defaultPort + portAdding);
+                    return httpServer;
+                } catch (BindException e) {
                     portAdding++;
                 }
             }
             throw new BindException();
         }
-        return httpClientServer;
+        return httpServer;
     }
 
     private FtpServer ftpServer;
@@ -220,8 +222,8 @@ public class Instance implements Runnable {
     }
 
     public void closeAllPorts() throws IOException, InterruptedException {
-        if (httpClientServer != null)
-            httpClientServer.stop();
+        if (httpServer != null)
+            httpServer.stop();
         if (ftpServer != null)
             ftpServer.stop();
         if (webSocketServer != null)
@@ -247,8 +249,7 @@ public class Instance implements Runnable {
 
             //testRootIndex();
 
-            Instance.get().startHttpServerOnFreePort();
-            Instance.get().log("HTTP started on " + (HttpClientServer.defaultPort + portAdding) + " port");
+            Instance.get().getHttpServer();
             Instance.get().startFtpServer();
             Instance.get().startWsClientServer();
 

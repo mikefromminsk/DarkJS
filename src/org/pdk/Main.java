@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         String login = "john";
         String pass = "1234";
 
@@ -21,7 +21,7 @@ public class Main {
                 .loadExcept(".idea")
                 .start();
 
-        Instance localnode = new Instance("out/MainTest/client", true)
+        Instance localnode = new Instance("out/MainTest/clent", true) // clent for clear logs
                 .setProxy("localhost", proxy.proxyPortAdding, "client.node")
                 .setAccessCode(login, pass)
                 .load("gui")
@@ -29,6 +29,6 @@ public class Main {
                 .loadExcept("summator")
                 .start();
 
-        localnode.startHttpServerOnFreePort().join();
+        localnode.getHttpServer().join();
     }
 }

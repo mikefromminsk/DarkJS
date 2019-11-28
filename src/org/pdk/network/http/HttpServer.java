@@ -1,6 +1,7 @@
 package org.pdk.network.http;
 
 
+import com.sun.deploy.net.proxy.ProxyUnavailableException;
 import org.pdk.files.Files;
 import org.pdk.store.model.node.Node;
 import org.pdk.store.model.node.NodeBuilder;
@@ -19,7 +20,7 @@ import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.*;
 
-public class HttpClientServer extends NanoHTTPD {
+public class HttpServer extends NanoHTTPD {
 
     public static class Headers {
         public final static String CONTENT_LENGTH = "content-length";
@@ -35,14 +36,22 @@ public class HttpClientServer extends NanoHTTPD {
     public static String BASIC_AUTH_PREFIX = "Basic ";
     public static Map<String, Host> nodeNames = new HashMap<>();
 
-    public HttpClientServer(Integer port) throws IOException {
+    public HttpServer(Integer port) throws BindException, ProxyUnavailableException {
         super(port == null ? defaultPort : port);
-        start(0);
+        try {
+            start(0);
+        } catch (IOException e) {
+            throw new BindException();
+        }
+        Instance.get().log("HTTP started on " + getListeningPort() + " port");
         if (Instance.get().proxyHost != null)
             try {
                 Instance.get().log("Test proxy("+ Instance.get().proxyHost + ":" + (Instance.get().proxyPortAdding + defaultPort) +") availability ...");
                 request(Instance.get().proxyHost, Instance.get().proxyPortAdding + defaultPort, "/", "", new HashMap<>()).getInputStream().close();
-            } catch (Exception important) {
+            } catch (IOException e) {
+                //  401 code is mean that proxy is available
+                if (!e.getMessage().startsWith("Server returned HTTP response code: 401"))
+                    throw new ProxyUnavailableException();
             }
     }
 

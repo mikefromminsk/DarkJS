@@ -130,7 +130,12 @@ public class ThreadNode extends Node implements Runnable {
                 RunData runData = runQueue.pollFirst();
                 if (runData != null) {
                     Instance.connectThread(runData.instance);
-                    runner.run(runData.node);
+                    try {
+                        runner.run(runData.node);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // TODO trow exception to up
+                    }
                     Instance.disconnectThread();
                     notify(runData);
                 } else

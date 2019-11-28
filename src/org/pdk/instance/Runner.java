@@ -24,7 +24,7 @@ public class Runner {
 
     private Node propCalledNode = null;
 
-    private Node getProps(Node node) {
+    private Node getProps(Node node) throws Exception {
         Node startNode = node;
         if (builder.set(startNode).getSource() != null && builder.set(startNode).getPropertiesCount() > 0)
             node = builder.set(startNode).getSourceNode();
@@ -110,7 +110,7 @@ public class Runner {
     }
 
     // TODO remove NodeType.OBJECT
-    private void cloneObject(Node sourceNode, Node templateNode) {
+    private void cloneObject(Node sourceNode, Node templateNode) throws Exception {
         // TODO delete setType
         sourceNode.type = NodeType.OBJECT;
         builder.set(sourceNode).commit();
@@ -157,7 +157,7 @@ public class Runner {
         new Node(sourceNodeId).setValue(newArrauNodeId);
     }*/
 
-    void setValue(Node source, Node value, boolean setType, Node ths) {
+    void setValue(Node source, Node value, boolean setType, Node ths) throws Exception {
         if (value == null) {
             builder.set(source).setValue(value).commit();
         } else if (value.type == NodeType.NODE) {
@@ -191,13 +191,13 @@ public class Runner {
         }
     }
 
-    public void run(Node node) {
+    public void run(Node node) throws Exception {
         run(node, null);
     }
 
     private Node exitNode = null;
 
-    private void run(Node node, Node calledNodeId) {
+    private void run(Node node, Node calledNodeId) throws Exception {
         /*{
             NodeBuilder builder = new NodeBuilder().set(node);
             String message = null;
