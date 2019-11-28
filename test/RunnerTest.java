@@ -42,6 +42,7 @@ public class RunnerTest {
                     assertTrue(testVar.value);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println(f.getName());
                     printNode(storage, node);
                     fail(e.getMessage());
                 }
