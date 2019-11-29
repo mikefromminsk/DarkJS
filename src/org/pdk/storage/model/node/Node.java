@@ -57,7 +57,7 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
             try {
                 ByteBuffer bb = ByteBuffer.allocate(6);
                 bb.put((byte) LinkType.NATIVE_FUNCTION.ordinal());
-                bb.put((byte) LinkDataType.NATIVE_FUNCTION_PATH.ordinal());
+                bb.put((byte) LinkDataType.STRING.ordinal());
                 String functionPath = function.path();
                 bb.putInt(functionPath.length());
                 baos.write(functionPath.getBytes());
@@ -175,7 +175,6 @@ public class Node implements InfinityStringArrayCell, DataOrNode {
                 case NUMBER:
                     linkData = new NumberData(bb.getDouble());
                     break;
-                case NATIVE_FUNCTION_PATH:
                 case STRING:
                     byte[] stringData = new byte[bb.getInt()/*length*/];
                     bb.get(stringData);
