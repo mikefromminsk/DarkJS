@@ -1,5 +1,14 @@
 package org.fdns.requests;
 
-public class ProxyPathRequest extends Request {
+import java.util.ArrayList;
+import java.util.List;
 
+public class ProxyPathRequest extends Request {
+    public String findDomain;
+    public List<String> trace = new ArrayList<>();
+    public List<String> backtrace = new ArrayList<>();
+
+    public ProxyPathRequest(String findDomain) {
+        this.findDomain = findDomain;
+    }
 }
