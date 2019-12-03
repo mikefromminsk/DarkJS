@@ -12,7 +12,7 @@ public class WebSocketInstance {
     Random random = new Random();
     Gson json = new Gson();
     ArrayList<String> domains = new ArrayList<>();
-    ArrayList<Host> hosts = new ArrayList<>();
+    Map<String, Host> hosts = new HashMap<>();
     Map<Integer, RequestBody> requestBodies = new LinkedHashMap<>();
     Long CONNECTION_TIMEOUT = 10000L; // milliseconds
 
@@ -26,7 +26,7 @@ public class WebSocketInstance {
 
     }
 
-    void sendProxyRequest(String domain, String data, Runnable success, Runnable error) {
+    public void sendRequest(String domain, String data, Runnable success, Runnable error) {
         removeExpiredRequests();
         Integer requestId = random.nextInt();
         RequestBody requestBody = new RequestBody(requestId, new Date().getTime(), data, success, error);
@@ -44,38 +44,17 @@ public class WebSocketInstance {
             onError(requestBody.requestId);
     }
 
-    public static String randomBase64String(int length) {
-        Random random = ThreadLocalRandom.current();
-        byte[] r = new byte[length];
-        random.nextBytes(r);
-        return new String(Base64.getEncoder().encode(r));
-    }
-
-    int sendToRandomHosts(int requestCount, Request request) {
-        int successfulRequest = 0;
-        for (int i = 0; i < requestCount; i++) {
-            int randomSimilarHostIndex = random.nextInt() % hosts.size();
-            String randomSimilarHostDomain = domains.get(randomSimilarHostIndex);
-            try {
-                send(randomSimilarHostDomain, request);
-                successfulRequest++;
-            } catch (ConnectException ignore) {
-            }
-        }
-        return successfulRequest;
-    }
-
     public void onReceive(String data) {
         Request request = json.fromJson(data, Request.class);
         String requestType = request.requestType;
-        if (requestType.equals(InitializeRequest.class.getSimpleName())) {
-            onInitializeRequest(json.fromJson(data, InitializeRequest.class));
-        } else if (requestType.equals(ProxyPathRequest.class.getSimpleName())) {
+        if (requestType.equals(ProxyPathRequest.class.getSimpleName())) {
             onProxyPathRequest(json.fromJson(data, ProxyPathRequest.class));
         } else if (requestType.equals(ProxyPathBackRequest.class.getSimpleName())) {
             onProxyPathBackRequest(json.fromJson(data, ProxyPathRequest.class));
         } else if (requestType.equals(ProxyDataRequest.class.getSimpleName())) {
             onProxyDataRequest(json.fromJson(data, ProxyDataRequest.class));
+        } else if (requestType.equals(RegistrationRequest.class.getSimpleName())) {
+            onRegistrationRequest(json.fromJson(data, RegistrationRequest.class));
         }
     }
 
@@ -84,20 +63,6 @@ public class WebSocketInstance {
         if (requestBody != null && requestBody.error != null)
             requestBody.error.run();
         requestBodies.remove(requestId);
-    }
-
-    public void initRegistration(String domain) {
-        /*String nextOwnerDomain = randomBase64String(16);
-        String nextOwnerDomainHash = MD5.encode(nextOwnerDomain);
-        Host newHost = new Host(domain, nextOwnerDomainHash);
-        InitializeRequest request = new InitializeRequest(newHost);
-        sendToRandomHosts(10, request);*/
-    }
-
-    private void onInitializeRequest(InitializeRequest request) {
-        if (domains.indexOf(request.host.domain) == -1) {
-
-        }
     }
 
     List<String> findSimilarDomains(String domain) {
@@ -180,14 +145,24 @@ public class WebSocketInstance {
 
     private void onProxyPathFinish(ProxyPathRequest pathRequest) {
         RequestBody requestBody = requestBodies.get(pathRequest.requestId);
-        ProxyDataRequest dataRequest = new ProxyDataRequest(requestBody.body);
-        Collections.reverse(pathRequest.backtrace);
-        dataRequest.path = pathRequest.backtrace;
-        try {
-            send(dataRequest.path.get(1), dataRequest);
-        } catch (ConnectException e) {
-            onError(pathRequest.requestId);
+        if (requestBody.data != null) {
+            ProxyDataRequest dataRequest = new ProxyDataRequest(requestBody.data);
+            Collections.reverse(pathRequest.backtrace);
+            dataRequest.path = pathRequest.backtrace;
+            try {
+                send(dataRequest.path.get(1), dataRequest);
+            } catch (ConnectException e) {
+                onError(pathRequest.requestId);
+            }
+        } else {
+            onSuccess(requestBody.requestId);
         }
+    }
+
+    private void onSuccess(Integer requestId) {
+        RequestBody requestBody = requestBodies.get(requestId);
+        if (requestBody != null && requestBody.success != null)
+            requestBody.success.run();
     }
 
     private void onProxyDataRequest(ProxyDataRequest dataRequest) {
@@ -201,4 +176,66 @@ public class WebSocketInstance {
             }
         }
     }
+
+
+    String randomBase64String(int length) {
+        Random random = ThreadLocalRandom.current();
+        byte[] r = new byte[length];
+        random.nextBytes(r);
+        return new String(Base64.getEncoder().encode(r));
+    }
+
+    public void registration(String domain) {
+        sendRequest(domain, null,
+                () -> {
+                    onRegistrationError(domain);
+                },
+                () -> {
+                    String nextOwnerDomain = randomBase64String(16);
+                    String nextOwnerDomainHash = MD5.encode(nextOwnerDomain);
+                    Host newHost = new Host(domain, nextOwnerDomainHash, selfIp);
+                    RegistrationRequest registrationRequest = new RegistrationRequest(newHost);
+
+                    List<String> similarDomains = findSimilarDomains(domain);
+                    if (similarDomains.size() != 0) {
+                        while (true) {
+                            String target = findFastestDomain(similarDomains);
+                            if (target == null)
+                                break;
+                            try {
+                                send(target, registrationRequest);
+                                break;
+                            } catch (ConnectException e) {
+                                similarDomains.remove(target);
+                            }
+                        }
+                    }
+                    if (similarDomains.size() == 0) {
+                        onRegistrationError(domain);
+                    }
+                });
+    }
+
+    private void onRegistrationError(String domain) {
+
+    }
+
+    void onRegistrationRequest(RegistrationRequest request){
+        domains.add(request.host.domain);
+        hosts.put(request.host.domain, request.host);
+    }
+
+
+
+    public void update(String domain, String nextOwnerDomain){
+        registration(nextOwnerDomain);
+        send();
+    }
+
+
+
+
+
+
+
 }
