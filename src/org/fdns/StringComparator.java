@@ -8,8 +8,6 @@ public class StringComparator {
         char[] second = secondString.toCharArray();
         java.util.Arrays.sort(first);
         java.util.Arrays.sort(second);
-        System.out.println(new String(first));
-        System.out.println(new String(second));
         // TODO change place first and second arrays when it will be fast
         int differenceLevel = 0;
         int secondIndex = 0;

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class PathRequest extends Request {
     public String findDomain;
+    public Boolean isFail;
     public List<String> trace = new ArrayList<>();
     public List<String> backtrace = new ArrayList<>();
 

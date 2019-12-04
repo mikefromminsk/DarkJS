@@ -1,5 +1,7 @@
 package org.fdns;
 
+import org.fdns.callbacks.ServeCallback;
+
 import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +18,12 @@ public class Network {
             instance.onReceive(data);
     }
 
-    public Instance host(String ip) {
-        Instance instance = new Instance(this, ip);
+    public Instance get(String ip) {
+        return instances.get(ip);
+    }
+
+    public Instance host(String ip, ServeCallback serveCallback) {
+        Instance instance = new Instance(this, ip, serveCallback);
         instances.put(ip, instance);
         return instance;
     }
