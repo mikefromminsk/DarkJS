@@ -1,11 +1,11 @@
 package org.fdns.requests;
 
-import org.fdns.Host;
+import org.fdns.Owner;
 
 public class RegistrationRequest extends Request {
-    public Host host;
+    public Owner owner;
 
-    public RegistrationRequest(Host host) {
-        this.host = host;
+    public RegistrationRequest(Owner owner) {
+        this.owner = owner;
     }
 }
