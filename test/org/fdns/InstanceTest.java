@@ -15,29 +15,27 @@ class InstanceTest {
 
         final String[] twoReassignToken = {""};
         network.host("2", data -> "2: " + data).proxy("1")
-                .registration("two",  (reassignToken) -> {
+
+                .registration("two", (reassignToken) -> {
                     twoReassignToken[0] = reassignToken;
-                    log("two registered");
-                }, (message) -> log("two not registered"));
+                    log("2: two registered");
+                }, (message) -> log("2: " + message));
+
 
         network.host("3", data -> "3: " + data).proxy("1")
-                .registration("three",  (reassignToken) -> log("3: domain \"three\" registered"), (message) -> log("3:" + message));
 
-        network.get("3").post("two", "test request data", data -> log(data), (message) -> log("2:" + message));
+                .registration("three", (reassignToken) -> log("3: \"three\" registered"), (message) -> log("3:"  + message));
+
+
+        network.get("3").post("two", "test request data", data -> log("3: " + data), (message) -> log("2: " + message));
+
 
         network.host("4", data -> "4: " + data).proxy("1")
-                .reassign("two", twoReassignToken[0], reassignToken -> {
 
-                }, (message) -> {
+                .reassign("two", twoReassignToken[0], reassignToken -> log("4: reassign success"), (message) ->  log("4: " + message));
 
-                });
+        network.get("3").post("two", "test reassign", data -> log("3: " + data), (message) -> log("2: " + message));
 
-        network.get("3").post("two", "reassign post data",
-                data -> {
-
-                }, message -> {
-
-                });
-
+        log("\n" + network.toString());
     }
 }

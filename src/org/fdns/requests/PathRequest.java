@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathRequest extends Request {
-    public String findDomain;
+    public String domain;
     public Boolean isFail;
     public List<String> trace = new ArrayList<>();
     public List<String> backtrace = new ArrayList<>();
 
-    public PathRequest(String findDomain) {
-        this.findDomain = findDomain;
+    public String token;
+    public String nextIp;
+
+    public PathRequest(String domain, String token, String nextIp) {
+        this.domain = domain;
+        this.token = token;
+        this.nextIp = nextIp;
     }
 }

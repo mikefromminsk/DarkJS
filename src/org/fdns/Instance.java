@@ -18,7 +18,6 @@ public class Instance {
     private ArrayList<String> domains = new ArrayList<>();
     private Map<String, Owner> owners = new HashMap<>();
     private Map<Integer, RequestData> requestsData = new LinkedHashMap<>();
-    private Long CONNECTION_TIMEOUT = 10000L; // milliseconds
 
     private Network network;
     private String selfIp;
@@ -35,24 +34,6 @@ public class Instance {
         network.send(ip, json.toJson(request));
     }
 
-    public void post(String domain, String data, SuccessCallback success, ErrorCallback error) {
-        removeExpiredRequests();
-        Integer requestId = random.nextInt();
-        RequestData requestData = new RequestData(requestId, new Date().getTime(), data, success, error);
-        requestsData.put(requestId, requestData);
-        sendProxyPathRequest(requestId, domain);
-    }
-
-    public void removeExpiredRequests() {
-        /*Long expireTime = new Date().getTime() - CONNECTION_TIMEOUT;
-        ArrayList<RequestData> expiredRequests = new ArrayList<>();
-        for (RequestData requestData : requestsData.values())
-            if (requestData.startTime < expireTime)
-                expiredRequests.add(requestData);*/
-        for (RequestData requestData : requestsData.values())
-            onError(requestData.requestId, "connection timeout");
-    }
-
     public void onReceive(String data) {
         Request request = json.fromJson(data, Request.class);
         String requestType = request.requestType;
@@ -67,11 +48,28 @@ public class Instance {
         }
     }
 
-    private void onError(Integer requestId, String message) {
-        RequestData requestData = requestsData.get(requestId);
-        if (requestData != null && requestData.error != null)
-            requestData.error.run(message);
-        requestsData.remove(requestId);
+    public void post(String domain, SuccessCallback success, ErrorCallback error) {
+        post(domain, null, null, success, error);
+    }
+
+    public void post(String domain, String data, SuccessCallback success, ErrorCallback error) {
+        post(domain, null, data, success, error);
+    }
+
+    public void post(String domain, String token, String data, SuccessCallback success, ErrorCallback error) {
+        for (RequestData requestData : requestsData.values()) // removeExpiredRequests
+            onError(requestData.requestId, "connection timeout");
+
+        Integer requestId = random.nextInt();
+        RequestData requestData = new RequestData(requestId, new Date().getTime(), data, success, error);
+        requestsData.put(requestId, requestData);
+        sendProxyPathRequest(requestId, domain, token);
+    }
+
+    void sendProxyPathRequest(Integer requestId, String domain, String token) {
+        PathRequest pathRequest = new PathRequest(domain, token, selfIp);
+        pathRequest.requestId = requestId;
+        onPathRequest(pathRequest);
     }
 
     List<String> findSimilarDomains(String requestDomain) {
@@ -96,25 +94,30 @@ public class Instance {
         return similarDomains;
     }
 
-    void filterPreviousDomains(List<String> similarDomains, List<String> trace) {
-        similarDomains.removeIf(domain -> trace.indexOf(owners.get(domain).ip) != -1);
-    }
-
-    void sendProxyPathRequest(Integer requestId, String domain) {
-        PathRequest pathRequest = new PathRequest(domain);
-        pathRequest.requestId = requestId;
-        onPathRequest(pathRequest);
-    }
-
     private void onPathRequest(PathRequest request) {
-        if (selfDomains.indexOf(request.findDomain) == -1) {
-            List<String> similarDomains = findSimilarDomains(request.findDomain);
-            filterPreviousDomains(similarDomains, request.trace);
+        if (selfDomains.indexOf(request.domain) == -1) {
+            List<String> similarDomains = findSimilarDomains(request.domain);
+            similarDomains.removeIf(domain -> request.trace.indexOf(owners.get(domain).ip) != -1); // filterPreviousDomains
             request.trace.add(selfIp);
             if (similarDomains.size() == 0) {
                 request.isFail = true;
                 request.requestType = PathBackRequest.class.getSimpleName();
                 onPathBackRequest(request);
+            } else if (similarDomains.size() == 1) {
+                String domain = similarDomains.get(0);
+                Owner owner = owners.get(domain);
+                if (domain.equals(request.domain) && request.token != null
+                        && owner.nextTokenHash.equals(MD5.encode(request.token))) {
+                    owner.ip = request.nextIp;
+                    request.isFail = true;
+                    request.requestType = PathBackRequest.class.getSimpleName();
+                    onPathBackRequest(request);
+                } else {
+                    try {
+                        send(owner.ip, request);
+                    } catch (ConnectException ignored) {
+                    }
+                }
             } else {
                 for (String domain : similarDomains) {
                     try {
@@ -155,13 +158,17 @@ public class Instance {
     private void onProxyPathFinish(PathRequest pathRequest) {
         if (pathRequest.isFail == null) {
             RequestData requestData = requestsData.get(pathRequest.requestId);
-            DataRequest dataRequest = new DataRequest(pathRequest.requestId, requestData.data, new Date().getTime());
-            Collections.reverse(pathRequest.backtrace);
-            dataRequest.path = pathRequest.backtrace;
-            try {
-                send(dataRequest.path.get(1), dataRequest);
-            } catch (ConnectException e) {
-                onError(pathRequest.requestId, "data request connection error to " + dataRequest.path.get(1));
+            if (requestData.data != null) {
+                DataRequest dataRequest = new DataRequest(pathRequest.requestId, requestData.data, new Date().getTime());
+                Collections.reverse(pathRequest.backtrace);
+                dataRequest.path = pathRequest.backtrace;
+                try {
+                    send(dataRequest.path.get(1), dataRequest);
+                } catch (ConnectException e) {
+                    onError(pathRequest.requestId, "data request connection error to " + dataRequest.path.get(1));
+                }
+            } else {
+                onSuccess(requestData.requestId, null);
             }
         } else {
             onError(pathRequest.requestId, "domain is not available");
@@ -190,9 +197,21 @@ public class Instance {
             } catch (ConnectException ignore) {
             }
         } else {
-            RequestData requestData = requestsData.get(dataRequest.requestId);
-            requestData.success.run(dataRequest.data);
+            onSuccess(dataRequest.requestId, dataRequest.data);
         }
+    }
+
+    private void onError(Integer requestId, String message) {
+        RequestData requestData = requestsData.get(requestId);
+        requestsData.remove(requestId);
+        if (requestData != null && requestData.error != null)
+            requestData.error.run(message);
+    }
+
+    private void onSuccess(Integer requestId, String data) {
+        RequestData requestData = requestsData.get(requestId);
+        if (requestData != null && requestData.success != null)
+            requestData.success.run(data);
     }
 
     String randomBase64String(int length) {
@@ -202,31 +221,32 @@ public class Instance {
         return new String(Base64.getEncoder().encode(r));
     }
 
-    public  void registration(String registrationDomain, RegistrationSuccessCallback success, ErrorCallback error) {
+    public void registration(String registrationDomain, RegistrationSuccessCallback success, ErrorCallback error) {
         registration(registrationDomain, null, success, error);
     }
 
-    private void registration(String registrationDomain, String reassignToken, RegistrationSuccessCallback success, ErrorCallback error) {
+    private void registration(String registrationDomain, String token, RegistrationSuccessCallback success, ErrorCallback error) {
         post(registrationDomain,
+                token,
                 null,
                 data -> {
-                    if (error != null) error.run("domain busy");
+                    if (error != null) error.run("domain \"" + registrationDomain + "\" busy");
                 },
                 message -> {
-                    String nextReassignToken = randomBase64String(16);
-                    String nextReassignTokenHash = MD5.encode(nextReassignToken);
-                    Owner newOwner = new Owner(registrationDomain, reassignToken, nextReassignTokenHash, selfIp);
+                    String nextToken = randomBase64String(16);
+                    String nextTokenHash = MD5.encode(nextToken);
+                    Owner newOwner = new Owner(registrationDomain, token, nextTokenHash, selfIp);
                     RegistrationRequest registrationRequest = new RegistrationRequest(newOwner);
                     for (String domain : findSimilarDomains(registrationDomain)) {
                         try {
                             send(owners.get(domain).ip, registrationRequest);
                             selfDomains.add(registrationDomain);
-                            if (success != null) success.onSuccess(nextReassignToken);
+                            if (success != null) success.onSuccess(nextToken);
                             return;
                         } catch (ConnectException ignored) {
                         }
                     }
-                    if (error != null) error.run("domain table do not have similar domains");
+                    if (error != null) error.run("domain \"" + registrationDomain + "\" do not have similar domains");
                 });
     }
 
@@ -246,8 +266,18 @@ public class Instance {
     }
 
     public Instance proxy(String ip) {
-        Owner owner = new Owner("proxy", null,"proxy", ip);
+        Owner owner = new Owner("proxy", null, "proxy", ip);
         addOwner(owner);
         return this;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Owner owner : owners.values())
+            builder.append("domain=").append(owner.domain)
+                    .append(" token=").append(owner.token)
+                    .append(" nextTokenHash=").append(owner.nextTokenHash)
+                    .append(" ip=").append(owner.ip).append("\n");
+        return builder.toString();
     }
 }

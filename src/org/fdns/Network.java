@@ -31,4 +31,11 @@ public class Network {
     public void clear() {
         instances.clear();
     }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (String ip: instances.keySet())
+            builder.append(ip).append(":\n").append(instances.get(ip).toString()).append("\n");
+        return builder.toString();
+    }
 }
