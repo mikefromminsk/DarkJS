@@ -2,6 +2,7 @@ package org.fdns;
 
 import com.google.gson.Gson;
 import org.fdns.callbacks.ErrorCallback;
+import org.fdns.callbacks.RegistrationSuccessCallback;
 import org.fdns.callbacks.ServeCallback;
 import org.fdns.callbacks.SuccessCallback;
 import org.fdns.requests.*;
@@ -201,26 +202,32 @@ public class Instance {
         return new String(Base64.getEncoder().encode(r));
     }
 
-    public String registration(String registrationDomain) {
-        String nextOwnerDomain = randomBase64String(16);
+    public  void registration(String registrationDomain, RegistrationSuccessCallback success, ErrorCallback error) {
+        registration(registrationDomain, null, success, error);
+    }
+
+    private void registration(String registrationDomain, String reassignToken, RegistrationSuccessCallback success, ErrorCallback error) {
         post(registrationDomain,
                 null,
-                data -> onRegistrationError(registrationDomain),
+                data -> {
+                    if (error != null) error.run("domain busy");
+                },
                 message -> {
-                    String nextOwnerDomainHash = MD5.encode(nextOwnerDomain);
-                    Owner newOwner = new Owner(registrationDomain, nextOwnerDomainHash, selfIp);
+                    String nextReassignToken = randomBase64String(16);
+                    String nextReassignTokenHash = MD5.encode(nextReassignToken);
+                    Owner newOwner = new Owner(registrationDomain, reassignToken, nextReassignTokenHash, selfIp);
                     RegistrationRequest registrationRequest = new RegistrationRequest(newOwner);
                     for (String domain : findSimilarDomains(registrationDomain)) {
                         try {
                             send(owners.get(domain).ip, registrationRequest);
                             selfDomains.add(registrationDomain);
+                            if (success != null) success.onSuccess(nextReassignToken);
                             return;
                         } catch (ConnectException ignored) {
                         }
                     }
-                    onRegistrationError(registrationDomain);
+                    if (error != null) error.run("domain table do not have similar domains");
                 });
-        return nextOwnerDomain;
     }
 
     void onRegistrationRequest(RegistrationRequest request) {
@@ -232,45 +239,14 @@ public class Instance {
         owners.put(owner.domain, owner);
     }
 
-    private void onRegistrationError(String unregisteredDomain) {
-        String nextOwnerDomainHash = MD5.encode(unregisteredDomain);
-        for (String selfDomain : selfDomains) {
-            Owner owner = owners.get(selfDomain);
-            if (owner.nextOwnerDomainHash.equals(nextOwnerDomainHash)) {
-                UpdateRequest updateRequest = new UpdateRequest(owner.domain, unregisteredDomain);
-                float successRequests = 0;
-                List<String> similarDomains = findSimilarDomains(owner.domain);
-                for (String domain : similarDomains) {
-                    try {
-                        send(owners.get(domain).ip, updateRequest);
-                        successRequests++;
-                    } catch (ConnectException ignored) {
-                    }
-                }
-                if (successRequests / similarDomains.size() > 0.1f) {
-                    onUpdateSuccess(owner.domain);
-                } else {
-                    onUpdateError(owner.domain);
-                }
-            }
-        }
-
+    public void reassign(String domain, String reassignToken, RegistrationSuccessCallback success, ErrorCallback error) {
+        registration(reassignToken, nextDomain -> {
+            registration(domain, reassignToken, success, error);
+        }, error);
     }
 
-    private void onUpdateSuccess(String domain) {
-
-    }
-
-    private void onUpdateError(String domain) {
-
-    }
-
-    public void update(String nextOwnerDomain, Runnable success, Runnable error) {
-        registration(nextOwnerDomain);
-    }
-
-    public Instance proxy(String proxyIp) {
-        Owner owner = new Owner("proxy", "proxy", proxyIp);
+    public Instance proxy(String ip) {
+        Owner owner = new Owner("proxy", null,"proxy", ip);
         addOwner(owner);
         return this;
     }

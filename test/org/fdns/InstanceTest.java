@@ -2,19 +2,42 @@ package org.fdns;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class InstanceTest {
+
+    void log(String str) {
+        System.out.println(str);
+    }
 
     @Test
     void send() {
         Network network = new Network();
-        network.host("1", null);
-        network.host("2", data -> "result 2").proxy("1").registration("two");
-        network.host("3", data -> "result 3").proxy("1").registration("three");
-        network.get("2").post("three", "data", data -> {
-            assertEquals(data, "result 3");
-            System.out.println("all is ok");
-        }, message -> fail(message));
+        network.host("1", data -> "1: " + data);
+
+        final String[] twoReassignToken = {""};
+        network.host("2", data -> "2: " + data).proxy("1")
+                .registration("two",  (reassignToken) -> {
+                    twoReassignToken[0] = reassignToken;
+                    log("two registered");
+                }, (message) -> log("two not registered"));
+
+        network.host("3", data -> "3: " + data).proxy("1")
+                .registration("three",  (reassignToken) -> log("3: domain \"three\" registered"), (message) -> log("3:" + message));
+
+        network.get("3").post("two", "test request data", data -> log(data), (message) -> log("2:" + message));
+
+        network.host("4", data -> "4: " + data).proxy("1")
+                .reassign("two", twoReassignToken[0], reassignToken -> {
+
+                }, (message) -> {
+
+                });
+
+        network.get("3").post("two", "reassign post data",
+                data -> {
+
+                }, message -> {
+
+                });
+
     }
 }

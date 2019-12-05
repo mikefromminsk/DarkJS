@@ -2,12 +2,14 @@ package org.fdns;
 
 public class Owner {
     public String domain;
-    public String nextOwnerDomainHash;
+    public String nextDomain;
+    public String nextDomainHash;
     public String ip;
 
-    public Owner(String domain, String nextOwnerDomainHash, String ip) {
+    public Owner(String domain, String nextDomain, String nextDomainHash, String ip) {
         this.domain = domain;
-        this.nextOwnerDomainHash = nextOwnerDomainHash;
+        this.nextDomain = nextDomain;
+        this.nextDomainHash = nextDomainHash;
         this.ip = ip;
     }
 }
